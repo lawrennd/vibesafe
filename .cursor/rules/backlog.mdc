@@ -3,10 +3,8 @@ description:
 globs: 
 alwaysApply: true
 ---
-alwaysApply: true
----
 
-# Lynguine Project Backlog System
+# VibeSafe Project Backlog System
 
 ## What is the Backlog System?
 
@@ -64,7 +62,7 @@ To create a new task:
 Example:
 ```bash
 # Copy the template to the appropriate category
-cp backlog/task_template.md backlog/features/2023-06-15_search-functionality.md
+cp backlog/task_template.md backlog/features/2025-05-05_search-functionality.md
 
 # Edit the new task
 vim backlog/features/2023-06-15_search-functionality.md
