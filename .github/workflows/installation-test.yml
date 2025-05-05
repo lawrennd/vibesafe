@@ -1,0 +1,56 @@
+name: VibeSafe Installation Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Allow manual trigger
+  workflow_dispatch:
+  # Run weekly to ensure installation still works
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+
+jobs:
+  test-installation:
+    name: Test Installation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Test minimal installation (shell script only)
+      - name: Test installation with install-minimal.sh
+        shell: bash
+        run: |
+          echo "Testing installation via shell script"
+          # Create a temporary directory to simulate a new project
+          mkdir -p /tmp/vibesafe-test
+          cd /tmp/vibesafe-test
+          
+          # Run the installation script from the repo
+          bash $GITHUB_WORKSPACE/scripts/install-minimal.sh
+          
+          # Verify installation by checking if key directories exist
+          if [ ! -d "./cip" ] || [ ! -d "./backlog" ] || [ ! -d "./tenets" ]; then
+            echo "Installation failed: Missing required directories"
+            exit 1
+          fi
+          
+          # Verify README exists and contains VibeSafe documentation
+          if [ ! -f "./README.md" ] || ! grep -q "VibeSafe" "./README.md"; then
+            echo "Installation failed: Missing or incorrect README"
+            exit 1
+          fi
+          
+          echo "Installation test passed"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Installation test failed on ${{ matrix.os }}" 
