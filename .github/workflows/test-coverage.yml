@@ -1,0 +1,33 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats kcov
+
+      - name: Run tests with coverage
+        run: |
+          chmod +x scripts/run-tests-with-coverage.sh
+          ./scripts/run-tests-with-coverage.sh
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: lawrennd/vibesafe
+          directory: ./coverage
+          fail_ci_if_error: false
+          verbose: true 

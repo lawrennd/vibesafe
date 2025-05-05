@@ -54,27 +54,70 @@ echo "Copying VibeSafe templates..."
 # Create the directory structure
 mkdir -p cip backlog/documentation backlog/features backlog/infrastructure backlog/bugs tenets
 
-# Copy template files
-cp "$TEMP_DIR/templates/backlog/README.md" backlog/
-cp "$TEMP_DIR/templates/backlog/task_template.md" backlog/
-cp "$TEMP_DIR/templates/backlog/update_index.py" backlog/
+# Copy backlog template files if they exist
+if [ -d "$TEMP_DIR/templates/backlog" ]; then
+  cp -f "$TEMP_DIR/templates/backlog/README.md" backlog/ 2>/dev/null || echo "Warning: Could not copy backlog README"
+  cp -f "$TEMP_DIR/templates/backlog/task_template.md" backlog/ 2>/dev/null || echo "Warning: Could not copy task template"
+  cp -f "$TEMP_DIR/templates/backlog/update_index.py" backlog/ 2>/dev/null || echo "Warning: Could not copy update script"
+else
+  # Create minimal backlog files if templates don't exist
+  echo "# Backlog System" > backlog/README.md
+  echo "This directory contains tasks for the project." >> backlog/README.md
+  
+  echo "# Task: [Title]" > backlog/task_template.md
+  echo "" >> backlog/task_template.md
+  echo "- **ID**: [YYYY-MM-DD_short-name]" >> backlog/task_template.md
+  echo "- **Status**: Proposed" >> backlog/task_template.md
+  echo "- **Priority**: [High/Medium/Low]" >> backlog/task_template.md
+  echo "" >> backlog/task_template.md
+  echo "## Description" >> backlog/task_template.md
+  echo "" >> backlog/task_template.md
+  echo "## Acceptance Criteria" >> backlog/task_template.md
+fi
 
-cp "$TEMP_DIR/templates/cip/README.md" cip/
-cp "$TEMP_DIR/templates/cip/cip_template.md" cip/
+# Copy CIP template files if they exist
+if [ -d "$TEMP_DIR/templates/cip" ]; then
+  cp -f "$TEMP_DIR/templates/cip/README.md" cip/ 2>/dev/null || echo "Warning: Could not copy CIP README"
+  cp -f "$TEMP_DIR/templates/cip/cip_template.md" cip/ 2>/dev/null || echo "Warning: Could not copy CIP template"
+else
+  # Create minimal CIP files if templates don't exist
+  echo "# Code Improvement Proposals (CIPs)" > cip/README.md
+  echo "This directory contains Code Improvement Proposals for the project." >> cip/README.md
+  
+  echo "# CIP-XXXX: [Title]" > cip/cip_template.md
+  echo "" >> cip/cip_template.md
+  echo "## Summary" >> cip/cip_template.md
+  echo "A brief summary of the proposed improvement." >> cip/cip_template.md
+fi
 
-cp "$TEMP_DIR/templates/tenets/README.md" tenets/
-cp "$TEMP_DIR/templates/tenets/tenet_template.md" tenets/
-cp "$TEMP_DIR/templates/tenets/combine_tenets.py" tenets/
+# Copy tenet template files if they exist
+if [ -d "$TEMP_DIR/templates/tenets" ]; then
+  cp -f "$TEMP_DIR/templates/tenets/README.md" tenets/ 2>/dev/null || echo "Warning: Could not copy tenets README"
+  cp -f "$TEMP_DIR/templates/tenets/tenet_template.md" tenets/ 2>/dev/null || echo "Warning: Could not copy tenet template"
+  cp -f "$TEMP_DIR/templates/tenets/combine_tenets.py" tenets/ 2>/dev/null || echo "Warning: Could not copy combine script"
+else
+  # Create minimal tenet files if templates don't exist
+  echo "# Tenets" > tenets/README.md
+  echo "This directory contains the guiding principles for the project." >> tenets/README.md
+  
+  echo "## Tenet: [id]" > tenets/tenet_template.md
+  echo "" >> tenets/tenet_template.md
+  echo "**Title**: [Concise Title]" >> tenets/tenet_template.md
+  echo "" >> tenets/tenet_template.md
+  echo "**Description**: [Description of the tenet]" >> tenets/tenet_template.md
+fi
 
 # Copy any cursor rules if they exist
 if [ -d "$TEMP_DIR/templates/.cursor" ]; then
   mkdir -p .cursor/rules
-  cp "$TEMP_DIR/templates/.cursor/rules/"* .cursor/rules/ 2>/dev/null || :
+  cp "$TEMP_DIR/templates/.cursor/rules/"* .cursor/rules/ 2>/dev/null || echo "Warning: Could not copy Cursor rules"
 fi
 
-# Create a basic README.md in the current directory
-echo "Creating project README.md..."
-cat > README.md << 'EOL'
+# Create a basic README.md in the current directory only if it doesn't exist
+echo "Checking for existing README.md..."
+if [ ! -f "README.md" ]; then
+  echo "Creating project README.md..."
+  cat > README.md << 'EOL'
 # Project Name
 
 This project uses [VibeSafe](https://github.com/lawrennd/vibesafe) for project management.
@@ -101,6 +144,9 @@ project/
 2. Use the backlog to track tasks
 3. Document code improvements using CIPs
 EOL
+else
+  echo "Existing README.md found, skipping creation."
+fi
 
 # Clean up
 rm -rf "$TEMP_DIR"

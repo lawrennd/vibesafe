@@ -1,0 +1,23 @@
+codecov:
+  require_ci_to_pass: false
+  notify:
+    wait_for_ci: false
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+
+coverage:
+  status:
+    project:
+      default:
+        # Allow coverage to drop by 2%
+        threshold: 2%
+    patch:
+      default:
+        # Allow new contributions to drop coverage by 5%
+        threshold: 5%
+
+ignore:
+  - "scripts/test/**/*"   # Ignore test files 

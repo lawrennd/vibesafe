@@ -65,6 +65,29 @@ teardown() {
   grep -q "Getting Started" "README.md"
 }
 
+@test "Installation preserves existing README.md" {
+  # Create an existing README.md with unique content
+  echo "# Existing Project" > README.md
+  echo "This is a custom README that should be preserved." >> README.md
+  
+  # Store the checksum of the original README
+  README_CHECKSUM=$(md5sum README.md | awk '{print $1}')
+  
+  # Run the installation script
+  bash "$INSTALL_SCRIPT"
+  
+  # Check that README.md still has the original content
+  [ -f "README.md" ]
+  
+  # Verify checksum to ensure file wasn't modified
+  NEW_CHECKSUM=$(md5sum README.md | awk '{print $1}')
+  [ "$README_CHECKSUM" = "$NEW_CHECKSUM" ]
+  
+  # Also verify original text is present
+  grep -q "Existing Project" "README.md"
+  grep -q "custom README" "README.md"
+}
+
 @test "Installation works when templates directory is missing" {
   # Create a mock repo without templates
   MOCK_REPO="$(mktemp -d)"
@@ -75,19 +98,15 @@ teardown() {
   # Create a minimal README
   echo "# Mock Repo" > "$MOCK_REPO/README.md"
   
-  # Mock the git clone by temporarily overriding the git function
-  git() {
-    if [[ "$1" == "clone" ]]; then
-      cp -r "$MOCK_REPO/." "$3"
-      return 0
-    else
-      command git "$@"
-    fi
-  }
-  export -f git
+  # Create a modified version of the install script
+  MODIFIED_SCRIPT="${TEST_DIR}/install-modified.sh"
+  cp "$INSTALL_SCRIPT" "$MODIFIED_SCRIPT"
   
-  # Run the installation script
-  bash "$INSTALL_SCRIPT"
+  # Update the script to use our mock repo instead of the actual repo
+  sed -i.bak "s|REPO_URL=\"https://github.com/lawrennd/vibesafe.git\"|REPO_URL=\"file://$MOCK_REPO\"|g" "$MODIFIED_SCRIPT"
+  
+  # Run the modified installation script
+  bash "$MODIFIED_SCRIPT"
   
   # Check that key directories and files were still created
   [ -d "cip" ]

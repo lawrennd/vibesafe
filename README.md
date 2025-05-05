@@ -1,6 +1,8 @@
 # VibeSafe
 
 [![Installation Test](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml)
+[![Test Coverage](https://github.com/lawrennd/vibesafe/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/test-coverage.yml)
+[![codecov](https://codecov.io/gh/lawrennd/vibesafe/branch/main/graph/badge.svg)](https://codecov.io/gh/lawrennd/vibesafe)
 
 VibeSafe is a collection of standardized project management practices designed to promote consistent, high-quality development across projects.
 
@@ -130,6 +132,20 @@ While VibeSafe provides a standardized set of practices, you can and should adap
 1. Use the CIP system (in the root `/cip` directory) to propose improvements
 2. Use the backlog system (in the root `/backlog` directory) to track tasks
 3. Submit pull requests that follow VibeSafe practices
+
+## Testing
+
+VibeSafe includes a comprehensive test suite to ensure reliability across platforms:
+
+```bash
+# Run all tests
+bats scripts/test/*.bats
+
+# Run tests with coverage reporting
+./scripts/run-tests-with-coverage.sh
+```
+
+For more information about testing, see [scripts/test/README.md](scripts/test/README.md).
 
 ## License
 

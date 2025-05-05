@@ -1,6 +1,77 @@
-# VibeSafe Script Tests
+# VibeSafe Test Suite
 
-This directory contains tests for VibeSafe scripts using the Bats (Bash Automated Testing System) framework.
+This directory contains tests for VibeSafe scripts and functionality.
+
+## Running Tests
+
+To run all tests:
+
+```bash
+bats scripts/test/*.bats
+```
+
+To run a specific test file:
+
+```bash
+bats scripts/test/install-test.bats
+```
+
+## Test Coverage
+
+### Prerequisites
+
+To generate test coverage reports, you need [kcov](https://github.com/SimonKagstrom/kcov) installed:
+
+- On Ubuntu/Debian: `sudo apt-get install kcov`
+- On macOS: `brew install kcov`
+
+### Running Tests with Coverage
+
+Use the provided script to run tests with coverage:
+
+```bash
+./scripts/run-tests-with-coverage.sh
+```
+
+This will:
+1. Run all tests with kcov to track coverage
+2. Generate an HTML coverage report in the `coverage/` directory
+3. Display a summary of the coverage results
+
+### Viewing Coverage Reports
+
+Open `coverage/index.html` in your browser to view the detailed coverage report.
+
+### CI Integration
+
+When running in GitHub Actions, test coverage is automatically uploaded to [Codecov](https://codecov.io).
+
+## Writing Tests
+
+Tests are written using [Bats](https://github.com/bats-core/bats-core) (Bash Automated Testing System).
+
+### Basic Test Structure
+
+```bash
+#!/usr/bin/env bats
+
+setup() {
+  # Code to run before each test
+}
+
+teardown() {
+  # Code to run after each test
+}
+
+@test "Test name" {
+  # Test code
+  [ true ]  # Assertion
+}
+```
+
+### Test Examples
+
+See the existing `.bats` files in this directory for examples of how to write tests.
 
 ## Prerequisites
 
@@ -21,20 +92,6 @@ sudo apt-get install bats
 git clone https://github.com/bats-core/bats-core.git
 cd bats-core
 ./install.sh /usr/local
-```
-
-## Running the Tests
-
-From the repository root, run:
-
-```bash
-bats scripts/test/*.bats
-```
-
-Or to run a specific test file:
-
-```bash
-bats scripts/test/install-test.bats
 ```
 
 ## Test Structure
