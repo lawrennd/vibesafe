@@ -20,9 +20,9 @@ Through the evolution of VibeSafe, we've observed emerging patterns that embody 
 
 VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that shape our approach to project management:
 
-1. **[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)**: *"We optimize for configurability over our own preferences."*
-2. **[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)**: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
-3. **[Documentation as First-Class Citizen](tenets/vibesafe/documentation-first.md)**: *"If it's not documented, it doesn't exist."*
+1. *[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)*: *"We optimize for configurability over our own preferences."*
+2. *[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)*: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
+3. *[Documentation as First-Class Citizen](tenets/vibesafe/documentation-first.md)*: *"If it's not documented, it doesn't exist."*
 4
 [View all tenets →](tenets/vibesafe-tenets.md)
 
@@ -30,11 +30,13 @@ VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that sha
 
 VibeSafe contains templates and configurations for three key project management systems:
 
-1. **Code Improvement Plans (CIPs)**: A structured approach to proposing, documenting, and implementing meaningful improvements to codebases.
+1. An [emerging philosophy](philosophy.md) of human-AI collaboration for code and systems design.
 
-2. **Backlog System**: A systematic way to track tasks, issues, and improvements that need to be implemented.
+2. *Code Improvement Plans (CIPs)*: A structured approach to proposing, documenting, and implementing meaningful improvements to codebases.
 
-3. **Tenet System**: A framework for defining, managing, and sharing project guiding principles.
+3. *Backlog System*: A systematic way to track tasks, issues, and improvements that need to be implemented.
+
+4. *Tenet System*: A framework for defining, managing, and sharing project guiding principles.
 
 ## Quick Installation
 
@@ -144,12 +146,12 @@ You can also look at the root level directories (outside of templates/) for exam
 
 ## Benefits of Using VibeSafe
 
-- **Consistency**: Standardized approaches to project management across different projects
-- **Quality**: Structured processes leading to higher quality code and documentation
-- **Efficiency**: Reduce time spent on project management setup
-- **Collaboration**: Clear communication formats for team members
-- **Onboarding**: Easier for new team members to understand project practices
-- **Dogfooding**: VibeSafe itself uses these practices, demonstrating their effectiveness
+- *Consistency*: Standardized approaches to project management across different projects
+- *Quality*: Structured processes leading to higher quality code and documentation
+- *Efficiency*: Reduce time spent on project management setup
+- *Collaboration*: Clear communication formats for team members
+- *Onboarding*: Easier for new team members to understand project practices
+- *Dogfooding*: VibeSafe itself uses these practices, demonstrating their effectiveness
 
 ## Customizing for Your Project
 
