@@ -145,6 +145,8 @@ def generate_index_content(tasks):
             if tasks_with_status:
                 # Sort by created date
                 def sort_key(task):
+                    if task.get('created') is None:
+                        return ''
                     return task.get('created', '')
                 
                 for task in sorted(tasks_with_status, key=sort_key, reverse=True):
@@ -166,6 +168,8 @@ def generate_index_content(tasks):
     
     if completed_tasks:
         def sort_key(task):
+            if task.get('updated') is None:
+                return ''
             return task.get('updated', '')
         
         for task in sorted(completed_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
@@ -183,6 +187,8 @@ def generate_index_content(tasks):
     
     if abandoned_tasks:
         def sort_key(task):
+            if task.get('updated') is None:
+                return ''
             return task.get('updated', '')
         
         for task in sorted(abandoned_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5

@@ -20,11 +20,15 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Create VibeSafe Documentation Style Guide](documentation/2025-05-05_documentation-style-guide.md)
 
+- [Evaluate Elevating "Breadcrumbs Pattern" to a Formal Tenet](documentation/2025-05-05_breadcrumbs-pattern-tenet.md)
+
 - [Evaluate Documentation Systems Compatible with VibeSafe Tenets](documentation/2025-05-05_documentation-system-evaluation.md)
 
 - [Improve VibeSafe README with Examples](documentation/2025-05-05_improve-readme.md)
 
 - [Create VibeSafe Getting Started Guide](documentation/2025-05-05_getting-started-guide.md)
+
+- [Create Unified Philosophy Document Based on CIP-0008](documentation/2025-05-05_unified-philosophy-document.md)
 
 
 ## Infrastructure
@@ -87,6 +91,8 @@ This file provides an overview of all current backlog items organized by categor
 ## Recently Completed Tasks
 
 - [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
+
+- [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
 
 
 ## Recently Abandoned Tasks

@@ -22,6 +22,12 @@ VibeSafe's structured approach to documentation, requirements, and code improvem
 
 VibeSafe creates what could be described as "information landmarks" that both humans and LLMs can use to orient themselves in the conceptual landscape of a project.
 
+### The Breadcrumbs Pattern: An Emergent Practice
+
+This philosophy has manifested organically through what we've come to call the ["Breadcrumbs Pattern"](patterns/breadcrumbs.md) in VibeSafe's development. This pattern involves leaving explicit traces of thought processes through CIPs, tenets, and documentation – creating a trail that both humans and AI systems can follow to understand the project's evolution. 
+
+The Breadcrumbs Pattern embodies the concept of "information landmarks" in practice, providing fixed reference points that enable reliable saccadic exploration of complex information spaces. By documenting not just what decisions were made but why they were made, this pattern creates the conditions for more effective human-LLM collaboration.
+
 ## Community-Driven Implementation: Creating a Safe Environment for Exploration
 
 VibeSafe is designed with a community approach for navigating the path toward more accessible software engineering. Its light-touch methodology, MIT licensing, and flexible architecture create an open framework that invites collaborative progress.

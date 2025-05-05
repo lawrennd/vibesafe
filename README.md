@@ -12,6 +12,10 @@ VibeSafe's approach is rooted in a philosophy of creating shared understanding a
 
 We're currently exploring an evolution of this philosophy with [CIP-0008](cip/cip0008.md), which proposes unifying our philosophical foundations and introducing new tenets focused on human-AI collaboration.
 
+## Emerging Patterns
+
+Through the evolution of VibeSafe, we've observed emerging patterns that embody our philosophy in practice. Most notably, the [Breadcrumbs Pattern](patterns/breadcrumbs.md) describes how we leave explicit traces of our thinking processes through CIPs, tenets, and documentation – creating a navigable trail for both humans and AI systems.
+
 ## Our Tenets
 
 VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that shape our approach to project management:
@@ -79,6 +83,8 @@ This repository follows a "dogfooding" approach - VibeSafe follows its own pract
 vibesafe/
 ├── README.md                 # This file
 ├── philosophy.md             # VibeSafe's philosophical foundation
+├── patterns/                 # Emerging patterns in VibeSafe practices
+│   └── breadcrumbs.md        # The Breadcrumbs Pattern documentation
 ├── scripts/                  # Installation scripts
 │   └── install-minimal.sh    # Minimal installation script
 ├── tenets/                   # Tenet system for VibeSafe itself
