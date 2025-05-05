@@ -6,6 +6,12 @@
 
 VibeSafe is a collection of standardized project management practices designed to promote consistent, high-quality development across projects.
 
+## Our Philosophy
+
+VibeSafe's approach is rooted in a philosophy of creating shared understanding and structured collaboration between humans and AI systems. Our [philosophy document](philosophy.md) explores how VibeSafe relates to research on natural language requirements and human-LLM interactions.
+
+We're currently exploring an evolution of this philosophy with [CIP-0008](cip/cip0008.md), which proposes unifying our philosophical foundations and introducing new tenets focused on human-AI collaboration.
+
 ## Our Tenets
 
 VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that shape our approach to project management:
@@ -13,7 +19,7 @@ VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that sha
 1. **[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)**: *"We optimize for configurability over our own preferences."*
 2. **[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)**: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
 3. **[Documentation as First-Class Citizen](tenets/vibesafe/documentation-first.md)**: *"If it's not documented, it doesn't exist."*
-
+4
 [View all tenets →](tenets/vibesafe-tenets.md)
 
 ## What's Inside
@@ -72,6 +78,7 @@ This repository follows a "dogfooding" approach - VibeSafe follows its own pract
 ```
 vibesafe/
 ├── README.md                 # This file
+├── philosophy.md             # VibeSafe's philosophical foundation
 ├── scripts/                  # Installation scripts
 │   └── install-minimal.sh    # Minimal installation script
 ├── tenets/                   # Tenet system for VibeSafe itself
