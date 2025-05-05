@@ -1,0 +1,170 @@
+---
+title: Code Improvement Plans (CIPs)
+description: A structured process for planning and implementing significant code changes
+author: Neil Lawrence
+date: 2025-05-05
+alwaysApply: true
+---
+
+# Code Improvement Plans (CIPs)
+
+## What is a CIP?
+
+A Code Improvement Plan (CIP) is a structured approach to proposing, documenting, and implementing meaningful improvements to the codebase. CIPs serve as:
+
+1. *Documentation* for design decisions and architectural changes
+2. *Project management* tools to track implementation progress
+3. *Communication* mechanisms for sharing ideas with collaborators
+4. *Historical records* of why and how code evolved over time
+
+## When to Create a CIP
+
+Create a CIP when you want to make changes that:
+
+- Affect multiple parts of the codebase
+- Change fundamental architecture or design patterns
+- Introduce new features with significant impact
+- Require substantial refactoring or restructuring
+- Need coordination across multiple contributors
+
+## CIP Directory Structure
+
+The `cip/` directory in the repository contains all Code Improvement Plans and follows this structure:
+
+```
+cip/
+├── README.md                 # Overview of the CIP process
+├── cip_template.md           # Template for creating new CIPs
+├── cip0001.md                # First CIP
+├── cip0002.md                # Second CIP
+└── ...                       # Additional CIPs
+```
+
+### Numbering System
+
+CIPs use a hexadecimal numbering system:
+
+- Starting at `0001` (not `0000`)
+- Expressed as four hexadecimal digits (0-9, A-F)
+- Examples: `0001`, `000A`, `00FF`, `0100`, etc.
+- File naming convention: `cip[number].md` (e.g., `cip0001.md`, `cip00AF.md`)
+
+The hexadecimal system allows for up to 65,535 CIPs (FFFF in hex), which should be more than sufficient for most projects.
+
+### Using the Template
+
+To create a new CIP:
+
+1. Copy the `cip_template.md` file
+2. Assign the next available hexadecimal number
+3. Name the file `cip[number].md` (e.g., `cip0042.md`)
+4. Fill out all required sections following the template structure
+5. Add the CIP to the list in `README.md`
+
+Example:
+```bash
+# Copy the template
+cp cip/cip_template.md cip/cip000F.md
+
+# Edit the new CIP
+vim cip/cip000F.md
+
+# Update the README
+vim cip/README.md
+```
+
+## Using CIPs in Code Creation
+
+This "Cursor Rule" is a recommended workflow for using CIPs effectively in your development process:
+
+### 1. Plan First, Code Second
+
+*Rule*: Create a CIP before writing any substantial code for the improvement.
+
+```
+✅ Create CIP → Get feedback → Refine plan → Implement code
+❌ Write code → Document after → Try to explain decisions retrospectively
+```
+
+### 2. One Improvement, One CIP
+
+*Rule*: Each significant improvement should have its own CIP with a unique identifier.
+
+```
+✅ CIP-0001: Documentation Improvements
+✅ CIP-0002: Test Coverage Enhancement
+❌ CIP-0003: Various Code Cleanups and Improvements
+```
+
+### 3. Status Tracking
+
+*Rule*: Keep the CIP status accurate and updated as the implementation progresses.
+
+```
+- [ ] Proposed → Initial documentation complete
+- [ ] Accepted → Plan reviewed and approved
+- [ ] Implemented → Code changes complete
+- [ ] Closed → Implementation reviewed and merged
+```
+
+### 4. Branch Naming Convention
+
+*Rule*: Name branches after the CIP they implement.
+
+```
+✅ git checkout -b cip000F-refactor-authentication
+❌ git checkout -b auth-refactor
+```
+
+### 5. Commit Messages
+
+*Rule*: Reference the CIP in your commit messages.
+
+```
+✅ CIP-000F: Implement JWT authentication service
+❌ Add auth service
+```
+
+### 6. Implementation Status Updates
+
+*Rule*: Update the CIP document as you complete implementation steps.
+
+```
+## Implementation Status
+- [x] Design database schema
+- [x] Create migration scripts
+- [ ] Implement service layer
+- [ ] Add API endpoints
+```
+
+### 7. CIP Review Process
+
+*Rule*: Solicit feedback on CIPs before full implementation.
+
+```
+✅ Share CIP draft → Get feedback → Revise → Implement
+❌ Implement → Request review → Try to retroactively adjust plan
+```
+
+## CIP Template Structure
+
+Each CIP should include these sections:
+
+1. *Header* - CIP number and title (e.g., `# CIP-0042: Authentication Refactoring`)
+2. *Status* - Current state of the implementation
+3. *Description* - Brief overview of the proposal
+4. *Motivation* - Why this change is needed
+5. *Implementation* - Specific changes to be made
+6. *Implementation Status* - Checklist of completed items
+7. *References* - Links to relevant documentation or discussions
+8. *Author and Date* - Attribution and timing information
+
+The template file (`cip_template.md`) contains placeholders for all these sections and provides guidance on what information to include.
+
+## Benefits of Following the CIP Process
+
+- *Improved planning* leads to more cohesive implementations
+- *Better communication* among team members about significant changes
+- *Higher-quality code* through thoughtful design before implementation
+- *Historical record* of why changes were made for future reference
+- *Reduced rework* by identifying issues before implementation 
