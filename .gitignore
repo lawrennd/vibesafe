@@ -1,0 +1,15 @@
+# IDE and editor files
+*.code-workspace
+.vscode/
+.idea/
+
+# Temporary and backup files
+*~
+*#*#
+.#*
+*.bak
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db 
