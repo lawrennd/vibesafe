@@ -16,7 +16,30 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y bats kcov
+          # Install bats
+          sudo apt-get install -y bats
+          
+          # Try to install kcov from Ubuntu repositories
+          if ! sudo apt-get install -y kcov; then
+            echo "kcov not found in main repositories, trying to find package name..."
+            apt-cache search kcov || true
+            
+            # As a fallback, build from source
+            echo "Building kcov from source..."
+            sudo apt-get install -y cmake build-essential binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev
+            cd /tmp
+            git clone https://github.com/SimonKagstrom/kcov.git
+            cd kcov
+            mkdir build
+            cd build
+            cmake ..
+            make
+            sudo make install
+          fi
+          
+          # Verify kcov is installed
+          which kcov
+          kcov --version
 
       - name: Run tests with coverage
         run: |
