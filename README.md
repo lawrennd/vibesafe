@@ -22,6 +22,25 @@ VibeSafe contains templates and configurations for three key project management 
 
 3. **Tenet System**: A framework for defining, managing, and sharing project guiding principles.
 
+## Quick Installation
+
+VibeSafe is designed to be simple to install and use. The quickest way to get started is with our one-line installation script:
+
+```bash
+# Create a new directory for your project (if needed)
+mkdir my-project && cd my-project
+
+# Install VibeSafe with the minimal installation script
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+```
+
+This script will:
+- Create the basic VibeSafe directory structure
+- Copy template files for CIPs, backlog tasks, and tenets
+- Add a starter README.md to your project
+
+The installation requires only `bash` and `git`, with no additional dependencies.
+
 ## Repository Structure
 
 This repository follows a "dogfooding" approach - VibeSafe follows its own practices while also providing templates for other projects:
@@ -29,6 +48,8 @@ This repository follows a "dogfooding" approach - VibeSafe follows its own pract
 ```
 vibesafe/
 ├── README.md                 # This file
+├── scripts/                  # Installation scripts
+│   └── install-minimal.sh    # Minimal installation script
 ├── tenets/                   # Tenet system for VibeSafe itself
 │   ├── README.md             # Overview of the tenet system
 │   ├── tenet_template.md     # Template for creating new tenets
@@ -59,13 +80,11 @@ vibesafe/
     └── .cursor/rules/        # Cursor rules templates
 ```
 
-## How to Use VibeSafe in Your Project
+## Alternative Ways to Use VibeSafe
 
-You can integrate VibeSafe practices into your project in two main ways:
+If you prefer not to use the installation script, you can integrate VibeSafe practices into your project in these ways:
 
-### 1. Copy the Templates
-
-When starting a new project, copy the templates from the `templates` directory:
+### 1. Copy the Templates Manually
 
 ```bash
 # Create CIP system in your project
@@ -73,6 +92,9 @@ cp -r /path/to/vibesafe/templates/cip /path/to/your/project/
 
 # Create Backlog system in your project
 cp -r /path/to/vibesafe/templates/backlog /path/to/your/project/
+
+# Create Tenet system in your project
+cp -r /path/to/vibesafe/templates/tenets /path/to/your/project/
 
 # Copy Cursor rules
 mkdir -p /path/to/your/project/.cursor/rules
