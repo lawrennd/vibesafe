@@ -16,7 +16,13 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Create System-Specific Documentation Guides](documentation/2025-05-05_system-specific-guides.md)
+
+- [Create VibeSafe Documentation Style Guide](documentation/2025-05-05_documentation-style-guide.md)
+
 - [Improve VibeSafe README with Examples](documentation/2025-05-05_improve-readme.md)
+
+- [Create VibeSafe Getting Started Guide](documentation/2025-05-05_getting-started-guide.md)
 
 
 ## Infrastructure
