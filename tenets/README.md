@@ -6,6 +6,13 @@ This directory contains the VibeSafe tenet system, a framework for defining, man
 
 Tenets are guiding principles that inform decision-making in a project. Unlike rigid rules, tenets are principles to consider and balance when making decisions. When different tenets come into conflict, judgment is required to determine which principles should take precedence in a specific context.
 
+**Key characteristics of effective tenets**:
+
+1. **Limited in number**: Typically around 7 (±2) tenets are optimal - enough to cover key principles but few enough to remember and apply consistently
+2. **Central to the project**: Tenets should be at the forefront of project thinking, not an afterthought
+3. **Memorable and actionable**: Easy to recall and apply in practical situations
+4. **Balanced and complementary**: Together provide a comprehensive decision framework
+
 ## The Tenet System
 
 The VibeSafe tenet system provides:
@@ -14,6 +21,7 @@ The VibeSafe tenet system provides:
 2. **Integration with Workflows**: Ways to reference tenets in CIPs and backlog tasks
 3. **Versioning**: Tracking changes to tenets over time
 4. **Tooling**: Validation and visualization for tenet management
+5. **Prominence**: Methods to keep tenets visible and top-of-mind
 
 ## Directory Contents
 
@@ -27,11 +35,24 @@ The VibeSafe tenet system provides:
 
 ### Creating Tenets
 
-1. Copy the `tenet_template.md` file
-2. Fill in the sections for each tenet
-3. Use clear, concise language
-4. Include specific examples and counter-examples
-5. Consider potential conflicts with other tenets
+1. Start with a small set of tenets (5-7 is ideal)
+2. Copy the `tenet_template.md` file
+3. Fill in the sections for each tenet
+4. Use clear, concise language
+5. Include specific examples and counter-examples
+6. Consider potential conflicts with other tenets
+7. Resist the urge to create too many tenets - focus on core principles
+
+### Placing Tenets at the Forefront
+
+Tenets should be central to your project, not an afterthought:
+
+1. Link to tenets from your main project README
+2. Reference them in onboarding documentation
+3. Include tenet discussions in project meetings
+4. Use them actively in decision-making processes 
+5. Consider displaying them prominently in project spaces
+6. Introduce them early when explaining the project
 
 ### Referencing Tenets
 
@@ -50,6 +71,7 @@ Tenets should evolve as the project grows and learns:
 2. Document the rationale for significant changes
 3. Consider backward compatibility with existing references
 4. Periodically review tenets for relevance and clarity
+5. Maintain the small, focused set - when adding a new tenet, consider if an existing one can be removed
 
 ## Example Tenet Usage
 
@@ -82,6 +104,7 @@ To implement the tenet system in your project:
 
 1. Copy the `tenets` directory structure
 2. Adapt the `tenet_template.md` to your needs
-3. Define your own project tenets
-4. Update your CIP and backlog templates to reference tenets
-5. Create a tenet visualization if useful for your team 
+3. Define your own project tenets (remember: approximately 7)
+4. Add tenets to your main README and documentation
+5. Update your CIP and backlog templates to reference tenets
+6. Create a tenet visualization if useful for your team 
