@@ -33,7 +33,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-*No tasks currently proposed.*
+- [Develop Testing Framework for VibeSafe Installation Methods](infrastructure/2025-05-05_installation-testing-plan.md)
 
 
 ## Features
