@@ -11,11 +11,11 @@ jobs:
   test-coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Cache kcov build
         id: cache-kcov
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /usr/local/bin/kcov
           key: ${{ runner.os }}-kcov-${{ hashFiles('.github/workflows/test-coverage.yml') }}
