@@ -29,7 +29,7 @@ teardown() {
 
 @test "Installation creates required directories" {
   # Run the installation script
-  bash "$INSTALL_SCRIPT"
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
   
   # Check that key directories were created
   [ -d "cip" ]
@@ -43,7 +43,7 @@ teardown() {
 
 @test "Installation creates required template files" {
   # Run the installation script
-  bash "$INSTALL_SCRIPT"
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
   
   # Check that key template files were created
   [ -f "cip/README.md" ]
@@ -56,7 +56,7 @@ teardown() {
 
 @test "Installation creates project README.md" {
   # Run the installation script
-  bash "$INSTALL_SCRIPT"
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
   
   # Check that README.md exists and contains expected content
   [ -f "README.md" ]
@@ -74,7 +74,7 @@ teardown() {
   README_CHECKSUM=$(md5sum README.md | awk '{print $1}')
   
   # Run the installation script
-  bash "$INSTALL_SCRIPT"
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
   
   # Check that README.md still has the original content
   [ -f "README.md" ]
@@ -89,37 +89,24 @@ teardown() {
 }
 
 @test "Installation works when templates directory is missing" {
-  # Create a mock repo without templates
-  MOCK_REPO="$(mktemp -d)"
+  # Run the installation script with environment variable to skip cloning
+  # This tests the fallback logic without modifying the script
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
   
-  # Initialize a git repo
-  git init "$MOCK_REPO"
-  
-  # Create a minimal README
-  echo "# Mock Repo" > "$MOCK_REPO/README.md"
-  
-  # Create a modified version of the install script
-  MODIFIED_SCRIPT="${TEST_DIR}/install-modified.sh"
-  cp "$INSTALL_SCRIPT" "$MODIFIED_SCRIPT"
-  
-  # Update the script to use our mock repo instead of the actual repo
-  sed -i.bak "s|REPO_URL=\"https://github.com/lawrennd/vibesafe.git\"|REPO_URL=\"file://$MOCK_REPO\"|g" "$MODIFIED_SCRIPT"
-  
-  # Run the modified installation script
-  bash "$MODIFIED_SCRIPT"
-  
-  # Check that key directories and files were still created
+  # Check that key directories and files were created
   [ -d "cip" ]
   [ -d "backlog" ]
   [ -d "tenets" ]
   [ -f "README.md" ]
-  
-  # Clean up
-  rm -rf "$MOCK_REPO"
+  [ -f "backlog/README.md" ]
+  [ -f "cip/README.md" ]
+  [ -f "tenets/README.md" ]
 }
 
 @test "Installation script returns success status" {
   # Run the installation script and capture exit code
+  # Correct the approach for setting environment variables with 'run'
+  export VIBESAFE_SKIP_CLONE=true
   run bash "$INSTALL_SCRIPT"
   
   # Check exit status
@@ -127,4 +114,92 @@ teardown() {
   
   # Also check for success message in output
   [[ "$output" == *"VibeSafe has been successfully installed"* ]]
+}
+
+@test "Installation works with custom templates directory" {
+  # Create directory structure for custom templates
+  mkdir -p "$TEST_DIR/custom_templates"
+  mkdir -p "$TEST_DIR/custom_templates/templates"
+  mkdir -p "$TEST_DIR/custom_templates/templates/backlog"
+  mkdir -p "$TEST_DIR/custom_templates/templates/cip"
+  mkdir -p "$TEST_DIR/custom_templates/templates/tenets"
+  
+  # Create custom template files
+  echo "# Custom Backlog System" > "$TEST_DIR/custom_templates/templates/backlog/README.md"
+  echo "# Custom CIP System" > "$TEST_DIR/custom_templates/templates/cip/README.md"
+  echo "# Custom Tenets System" > "$TEST_DIR/custom_templates/templates/tenets/README.md"
+  
+  # Run the script with the custom templates directory
+  VIBESAFE_TEMPLATES_DIR="$TEST_DIR/custom_templates" bash "$INSTALL_SCRIPT"
+  
+  # Verify that the custom templates were used
+  [ -f "backlog/README.md" ]
+  [ -f "cip/README.md" ]
+  [ -f "tenets/README.md" ]
+  grep -q "Custom Backlog System" "backlog/README.md"
+  grep -q "Custom CIP System" "cip/README.md"
+  grep -q "Custom Tenets System" "tenets/README.md"
+}
+
+@test "Installation preserves custom directory structure" {
+  # Create complete directory structure for custom templates
+  mkdir -p "$TEST_DIR/custom_templates"
+  mkdir -p "$TEST_DIR/custom_templates/templates"
+  mkdir -p "$TEST_DIR/custom_templates/templates/backlog"
+  mkdir -p "$TEST_DIR/custom_templates/templates/backlog/custom_subdirectory"
+  mkdir -p "$TEST_DIR/custom_templates/templates/cip"
+  mkdir -p "$TEST_DIR/custom_templates/templates/cip/examples"
+  mkdir -p "$TEST_DIR/custom_templates/templates/tenets"
+  
+  # Create standard README files
+  echo "# Custom Backlog System" > "$TEST_DIR/custom_templates/templates/backlog/README.md"
+  echo "# Custom CIP System" > "$TEST_DIR/custom_templates/templates/cip/README.md"
+  echo "# Custom Tenets System" > "$TEST_DIR/custom_templates/templates/tenets/README.md"
+  
+  # Create custom subdirectory files
+  echo "# Custom Backlog Subdirectory" > "$TEST_DIR/custom_templates/templates/backlog/custom_subdirectory/README.md"
+  echo "# Example CIP" > "$TEST_DIR/custom_templates/templates/cip/examples/example.md"
+  
+  # Run the script with the custom templates directory
+  VIBESAFE_TEMPLATES_DIR="$TEST_DIR/custom_templates" bash "$INSTALL_SCRIPT"
+  
+  # Verify that the custom directory structure was preserved
+  [ -d "backlog/custom_subdirectory" ]
+  [ -d "cip/examples" ]
+  [ -f "backlog/custom_subdirectory/README.md" ]
+  [ -f "cip/examples/example.md" ]
+  
+  # Verify content was preserved
+  grep -q "Custom Backlog Subdirectory" "backlog/custom_subdirectory/README.md"
+  grep -q "Example CIP" "cip/examples/example.md"
+}
+
+@test "Installation works with debug output enabled" {
+  # Run the installation script with debug output
+  # Use correct approach for setting environment variables with 'run'
+  export VIBESAFE_DEBUG=true
+  export VIBESAFE_SKIP_CLONE=true
+  run bash "$INSTALL_SCRIPT"
+  
+  # Check for debug output in the output
+  [[ "$output" == *"[DEBUG]"* ]]
+  
+  # Check that installation still succeeded
+  [ "$status" -eq 0 ]
+}
+
+@test "Installation handles non-existent repository gracefully" {
+  # Run the installation script with a non-existent repository
+  # Use a timeout to avoid hanging and the correct way to set env vars
+  export VIBESAFE_REPO_URL="https://github.com/nonexistent/repo.git"
+  run timeout 10 bash "$INSTALL_SCRIPT"
+  
+  # Check that installation completed (may not be success)
+  [[ "$output" == *"VibeSafe has been successfully installed"* ]]
+  
+  # Check that key directories and files were created anyway
+  [ -d "cip" ]
+  [ -d "backlog" ]
+  [ -d "tenets" ]
+  [ -f "README.md" ]
 } 

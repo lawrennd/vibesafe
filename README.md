@@ -45,6 +45,26 @@ This script will:
 
 The installation requires only `bash` and `git`, with no additional dependencies. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
 
+### Customizing the Installation
+
+The installation script supports several environment variables for customization:
+
+```bash
+# Use a custom repository URL
+VIBESAFE_REPO_URL=https://github.com/your-fork/vibesafe.git bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+
+# Use local templates directory
+VIBESAFE_TEMPLATES_DIR=/path/to/your/templates bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+
+# Skip repository cloning (use default templates)
+VIBESAFE_SKIP_CLONE=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+
+# Enable debug output
+VIBESAFE_DEBUG=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+```
+
+The script is designed to be self-documenting, with the template structure defined by the repository rather than hard-coded in the script itself. This approach makes it easy to customize and extend the template system.
+
 ## Repository Structure
 
 This repository follows a "dogfooding" approach - VibeSafe follows its own practices while also providing templates for other projects:

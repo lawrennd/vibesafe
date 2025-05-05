@@ -8,116 +8,87 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Print banner
-echo -e "${GREEN}"
-echo "██╗   ██╗██╗██████╗ ███████╗███████╗ █████╗ ███████╗███████╗"
-echo "██║   ██║██║██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝██╔════╝"
-echo "██║   ██║██║██████╔╝█████╗  ███████╗███████║█████╗  █████╗  "
-echo "╚██╗ ██╔╝██║██╔══██╗██╔══╝  ╚════██║██╔══██║██╔══╝  ██╔══╝  "
-echo " ╚████╔╝ ██║██████╔╝███████╗███████║██║  ██║██║     ███████╗"
-echo "  ╚═══╝  ╚═╝╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝"
-echo -e "${NC}"
-echo "Minimal Installation Script"
-echo "----------------------------"
+# Default configuration (can be overridden via environment variables)
+: "${VIBESAFE_REPO_URL:=https://github.com/lawrennd/vibesafe.git}"
+: "${VIBESAFE_SKIP_CLONE:=false}"
+: "${VIBESAFE_TEMPLATES_DIR:=}"
+: "${VIBESAFE_DEBUG:=false}"
 
 # Function to check if a command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
-# Check prerequisites
-echo "Checking prerequisites..."
-if ! command_exists git; then
-  echo -e "${RED}Error: git is required but not installed.${NC}"
-  echo "Please install git and try again."
-  exit 1
-fi
+# Function for debug output
+debug() {
+  if [ "$VIBESAFE_DEBUG" = "true" ]; then
+    echo "[DEBUG] $1"
+  fi
+}
 
-# Set the repository URL
-REPO_URL="https://github.com/lawrennd/vibesafe.git"
+# Function to print banner
+print_banner() {
+  echo -e "${GREEN}"
+  echo "██╗   ██╗██╗██████╗ ███████╗███████╗ █████╗ ███████╗███████╗"
+  echo "██║   ██║██║██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝██╔════╝"
+  echo "██║   ██║██║██████╔╝█████╗  ███████╗███████║█████╗  █████╗  "
+  echo "╚██╗ ██╔╝██║██╔══██╗██╔══╝  ╚════██║██╔══██║██╔══╝  ██╔══╝  "
+  echo " ╚████╔╝ ██║██████╔╝███████╗███████║██║  ██║██║     ███████╗"
+  echo "  ╚═══╝  ╚═╝╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝"
+  echo -e "${NC}"
+  echo "Minimal Installation Script"
+  echo "----------------------------"
+}
 
-# Create temporary directory
-TEMP_DIR=$(mktemp -d)
-echo "Created temporary directory: $TEMP_DIR"
-
-# Clone the repository into the temp directory
-echo "Cloning VibeSafe repository..."
-if ! git clone --quiet "$REPO_URL" "$TEMP_DIR"; then
-  echo -e "${RED}Error: Failed to clone repository.${NC}"
-  rm -rf "$TEMP_DIR"
-  exit 1
-fi
-
-# Copy the templates into the current directory
-echo "Copying VibeSafe templates..."
-
-# Create the directory structure
-mkdir -p cip backlog/documentation backlog/features backlog/infrastructure backlog/bugs tenets
-
-# Copy backlog template files if they exist
-if [ -d "$TEMP_DIR/templates/backlog" ]; then
-  cp -f "$TEMP_DIR/templates/backlog/README.md" backlog/ 2>/dev/null || echo "Warning: Could not copy backlog README"
-  cp -f "$TEMP_DIR/templates/backlog/task_template.md" backlog/ 2>/dev/null || echo "Warning: Could not copy task template"
-  cp -f "$TEMP_DIR/templates/backlog/update_index.py" backlog/ 2>/dev/null || echo "Warning: Could not copy update script"
-else
-  # Create minimal backlog files if templates don't exist
-  echo "# Backlog System" > backlog/README.md
-  echo "This directory contains tasks for the project." >> backlog/README.md
+# Function to create default template file
+create_default_template() {
+  local dir="$1"
+  local file="$2"
+  local content="$3"
   
-  echo "# Task: [Title]" > backlog/task_template.md
-  echo "" >> backlog/task_template.md
-  echo "- **ID**: [YYYY-MM-DD_short-name]" >> backlog/task_template.md
-  echo "- **Status**: Proposed" >> backlog/task_template.md
-  echo "- **Priority**: [High/Medium/Low]" >> backlog/task_template.md
-  echo "" >> backlog/task_template.md
-  echo "## Description" >> backlog/task_template.md
-  echo "" >> backlog/task_template.md
-  echo "## Acceptance Criteria" >> backlog/task_template.md
-fi
-
-# Copy CIP template files if they exist
-if [ -d "$TEMP_DIR/templates/cip" ]; then
-  cp -f "$TEMP_DIR/templates/cip/README.md" cip/ 2>/dev/null || echo "Warning: Could not copy CIP README"
-  cp -f "$TEMP_DIR/templates/cip/cip_template.md" cip/ 2>/dev/null || echo "Warning: Could not copy CIP template"
-else
-  # Create minimal CIP files if templates don't exist
-  echo "# Code Improvement Proposals (CIPs)" > cip/README.md
-  echo "This directory contains Code Improvement Proposals for the project." >> cip/README.md
+  # Make sure the directory exists
+  mkdir -p "$dir"
   
-  echo "# CIP-XXXX: [Title]" > cip/cip_template.md
-  echo "" >> cip/cip_template.md
-  echo "## Summary" >> cip/cip_template.md
-  echo "A brief summary of the proposed improvement." >> cip/cip_template.md
-fi
+  echo "$content" > "$dir/$file"
+  debug "Created default template: $dir/$file"
+}
 
-# Copy tenet template files if they exist
-if [ -d "$TEMP_DIR/templates/tenets" ]; then
-  cp -f "$TEMP_DIR/templates/tenets/README.md" tenets/ 2>/dev/null || echo "Warning: Could not copy tenets README"
-  cp -f "$TEMP_DIR/templates/tenets/tenet_template.md" tenets/ 2>/dev/null || echo "Warning: Could not copy tenet template"
-  cp -f "$TEMP_DIR/templates/tenets/combine_tenets.py" tenets/ 2>/dev/null || echo "Warning: Could not copy combine script"
-else
-  # Create minimal tenet files if templates don't exist
-  echo "# Tenets" > tenets/README.md
-  echo "This directory contains the guiding principles for the project." >> tenets/README.md
+# Function to create the default directory structure
+# Only used when we can't get the structure from the repo
+create_default_directory_structure() {
+  debug "Creating default directory structure"
+  mkdir -p cip backlog/documentation backlog/features backlog/infrastructure backlog/bugs tenets
+}
+
+# Function to create default backlog files
+create_default_backlog_files() {
+  create_default_template "backlog" "README.md" "# Backlog System\nThis directory contains tasks for the project."
   
-  echo "## Tenet: [id]" > tenets/tenet_template.md
-  echo "" >> tenets/tenet_template.md
-  echo "**Title**: [Concise Title]" >> tenets/tenet_template.md
-  echo "" >> tenets/tenet_template.md
-  echo "**Description**: [Description of the tenet]" >> tenets/tenet_template.md
-fi
+  create_default_template "backlog" "task_template.md" "# Task: [Title]\n\n- **ID**: [YYYY-MM-DD_short-name]\n- **Status**: Proposed\n- **Priority**: [High/Medium/Low]\n\n## Description\n\n## Acceptance Criteria"
+  
+  # Create backlog subdirectories
+  mkdir -p backlog/documentation backlog/features backlog/infrastructure backlog/bugs
+}
 
-# Copy any cursor rules if they exist
-if [ -d "$TEMP_DIR/templates/.cursor" ]; then
-  mkdir -p .cursor/rules
-  cp "$TEMP_DIR/templates/.cursor/rules/"* .cursor/rules/ 2>/dev/null || echo "Warning: Could not copy Cursor rules"
-fi
+# Function to create default CIP files
+create_default_cip_files() {
+  create_default_template "cip" "README.md" "# Code Improvement Proposals (CIPs)\nThis directory contains Code Improvement Proposals for the project."
+  
+  create_default_template "cip" "cip_template.md" "# CIP-XXXX: [Title]\n\n## Summary\nA brief summary of the proposed improvement."
+}
 
-# Create a basic README.md in the current directory only if it doesn't exist
-echo "Checking for existing README.md..."
-if [ ! -f "README.md" ]; then
-  echo "Creating project README.md..."
-  cat > README.md << 'EOL'
+# Function to create default tenet files
+create_default_tenet_files() {
+  create_default_template "tenets" "README.md" "# Tenets\nThis directory contains the guiding principles for the project."
+  
+  create_default_template "tenets" "tenet_template.md" "## Tenet: [id]\n\n**Title**: [Concise Title]\n\n**Description**: [Description of the tenet]"
+}
+
+# Function to create default README.md
+create_default_readme() {
+  if [ ! -f "README.md" ]; then
+    echo "Creating project README.md..."
+    cat > README.md << 'EOL'
 # Project Name
 
 This project uses [VibeSafe](https://github.com/lawrennd/vibesafe) for project management.
@@ -144,20 +115,181 @@ project/
 2. Use the backlog to track tasks
 3. Document code improvements using CIPs
 EOL
-else
-  echo "Existing README.md found, skipping creation."
-fi
+    debug "Created default README.md"
+  else
+    echo "Existing README.md found, skipping creation."
+    debug "Preserved existing README.md"
+  fi
+}
 
-# Clean up
-rm -rf "$TEMP_DIR"
+# Function to copy the directory structure and templates from the repository
+copy_templates_from_repo() {
+  local templates_dir="$1"
+  
+  debug "Copying directory structure and templates from repository"
+  
+  # First, check if templates directory exists
+  if [ -d "$templates_dir/templates" ]; then
+    # Copy entire directory structure as-is, preserving structure
+    debug "Found templates directory, copying directory structure"
+    
+    # Create base directories first (in case the structure is partial)
+    mkdir -p cip backlog tenets
+    
+    # Copy backlog directory structure if it exists
+    if [ -d "$templates_dir/templates/backlog" ]; then
+      debug "Copying backlog directory structure"
+      
+      # First create the directory structure
+      find "$templates_dir/templates/backlog" -type d | while read -r dir; do
+        # Create the equivalent directory in the target
+        target_dir="${dir#$templates_dir/templates/}"
+        debug "Creating directory: $target_dir"
+        mkdir -p "$target_dir"
+      done
+      
+      # Then copy the files
+      find "$templates_dir/templates/backlog" -type f | while read -r file; do
+        # Determine the target file path
+        target_file="${file#$templates_dir/templates/}"
+        debug "Copying file: $file to $target_file"
+        cp -f "$file" "$target_file"
+      done
+    else
+      debug "No backlog directory structure found, creating defaults"
+      create_default_backlog_files
+    fi
+    
+    # Copy CIP directory structure if it exists
+    if [ -d "$templates_dir/templates/cip" ]; then
+      debug "Copying CIP directory structure"
+      
+      # First create the directory structure
+      find "$templates_dir/templates/cip" -type d | while read -r dir; do
+        # Create the equivalent directory in the target
+        target_dir="${dir#$templates_dir/templates/}"
+        debug "Creating directory: $target_dir"
+        mkdir -p "$target_dir"
+      done
+      
+      # Then copy the files
+      find "$templates_dir/templates/cip" -type f | while read -r file; do
+        # Determine the target file path
+        target_file="${file#$templates_dir/templates/}"
+        debug "Copying file: $file to $target_file"
+        cp -f "$file" "$target_file"
+      done
+    else
+      debug "No CIP directory structure found, creating defaults"
+      create_default_cip_files
+    fi
+    
+    # Copy tenets directory structure if it exists
+    if [ -d "$templates_dir/templates/tenets" ]; then
+      debug "Copying tenets directory structure"
+      
+      # First create the directory structure
+      find "$templates_dir/templates/tenets" -type d | while read -r dir; do
+        # Create the equivalent directory in the target
+        target_dir="${dir#$templates_dir/templates/}"
+        debug "Creating directory: $target_dir"
+        mkdir -p "$target_dir"
+      done
+      
+      # Then copy the files
+      find "$templates_dir/templates/tenets" -type f | while read -r file; do
+        # Determine the target file path
+        target_file="${file#$templates_dir/templates/}"
+        debug "Copying file: $file to $target_file"
+        cp -f "$file" "$target_file"
+      done
+    else
+      debug "No tenets directory structure found, creating defaults"
+      create_default_tenet_files
+    fi
+    
+    # Copy any cursor rules if they exist
+    if [ -d "$templates_dir/templates/.cursor" ]; then
+      debug "Found cursor templates in repository"
+      mkdir -p .cursor/rules
+      cp "$templates_dir/templates/.cursor/rules/"* .cursor/rules/ 2>/dev/null || echo "Warning: Could not copy Cursor rules"
+    fi
+  else
+    debug "No templates directory found in repository, creating default structure"
+    create_default_directory_structure
+    create_default_backlog_files
+    create_default_cip_files
+    create_default_tenet_files
+  fi
+}
 
-echo -e "${GREEN}VibeSafe has been successfully installed!${NC}"
-echo "The basic project structure has been created."
-echo ""
-echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Define your project tenets in the tenets/ directory"
-echo "2. Use the backlog to track tasks"
-echo "3. Document code improvements using CIPs"
-echo ""
-echo "For more information, visit: https://github.com/lawrennd/vibesafe"
-echo "" 
+# Main installation function
+install_vibesafe() {
+  local temp_dir=""
+  
+  print_banner
+  
+  # Check prerequisites
+  echo "Checking prerequisites..."
+  if ! command_exists git && [ "$VIBESAFE_SKIP_CLONE" = "false" ]; then
+    echo -e "${RED}Error: git is required but not installed.${NC}"
+    echo "Please install git and try again."
+    return 1
+  fi
+  
+  # Use provided templates directory or clone repository
+  if [ -n "$VIBESAFE_TEMPLATES_DIR" ]; then
+    debug "Using provided templates directory: $VIBESAFE_TEMPLATES_DIR"
+    copy_templates_from_repo "$VIBESAFE_TEMPLATES_DIR"
+  elif [ "$VIBESAFE_SKIP_CLONE" = "true" ]; then
+    debug "Skipping repository clone, using default templates"
+    create_default_directory_structure
+    create_default_backlog_files
+    create_default_cip_files
+    create_default_tenet_files
+  else
+    # Clone the repository
+    temp_dir=$(mktemp -d)
+    debug "Created temporary directory: $temp_dir"
+    echo "Cloning VibeSafe repository..."
+    
+    if git clone --quiet "$VIBESAFE_REPO_URL" "$temp_dir"; then
+      debug "Successfully cloned repository from $VIBESAFE_REPO_URL"
+      echo "Copying VibeSafe templates..."
+      copy_templates_from_repo "$temp_dir"
+    else
+      debug "Failed to clone repository, using default templates"
+      echo "Warning: Failed to clone repository, using minimal templates instead."
+      create_default_directory_structure
+      create_default_backlog_files
+      create_default_cip_files
+      create_default_tenet_files
+    fi
+  fi
+  
+  # Create or preserve README
+  echo "Checking for existing README.md..."
+  create_default_readme
+  
+  # Clean up temporary directory if we created one
+  if [ -n "$temp_dir" ]; then
+    rm -rf "$temp_dir"
+    debug "Removed temporary directory"
+  fi
+  
+  echo -e "${GREEN}VibeSafe has been successfully installed!${NC}"
+  echo "The basic project structure has been created."
+  echo ""
+  echo -e "${YELLOW}Next steps:${NC}"
+  echo "1. Define your project tenets in the tenets/ directory"
+  echo "2. Use the backlog to track tasks"
+  echo "3. Document code improvements using CIPs"
+  echo ""
+  echo "For more information, visit: https://github.com/lawrennd/vibesafe"
+  echo ""
+  
+  return 0
+}
+
+# Run the installation
+install_vibesafe 
