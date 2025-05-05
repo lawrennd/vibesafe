@@ -40,7 +40,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-*No tasks currently ready.*
+- [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)
 
 
 ### In Progress
