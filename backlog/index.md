@@ -16,7 +16,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-*No tasks currently proposed.*
+- [Improve VibeSafe README with Examples](documentation/2025-05-05_improve-readme.md)
 
 
 ## Infrastructure
@@ -39,6 +39,8 @@ This file provides an overview of all current backlog items organized by categor
 ## Features
 
 ### Ready
+
+- [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)
 
 - [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)
 
@@ -74,7 +76,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
-*No tasks recently completed.*
+- [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
 
 
 ## Recently Abandoned Tasks
