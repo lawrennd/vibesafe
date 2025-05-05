@@ -1,5 +1,7 @@
 # VibeSafe
 
+[![Installation Test](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml)
+
 VibeSafe is a collection of standardized project management practices designed to promote consistent, high-quality development across projects.
 
 ## Our Tenets
@@ -24,7 +26,7 @@ VibeSafe contains templates and configurations for three key project management 
 
 ## Quick Installation
 
-VibeSafe is designed to be simple to install and use. The quickest way to get started is with our one-line installation script:
+VibeSafe is designed to be simple to install and use across all major platforms (Linux, macOS, and Windows). The quickest way to get started is with our one-line installation script:
 
 ```bash
 # Create a new directory for your project (if needed)
@@ -39,7 +41,7 @@ This script will:
 - Copy template files for CIPs, backlog tasks, and tenets
 - Add a starter README.md to your project
 
-The installation requires only `bash` and `git`, with no additional dependencies.
+The installation requires only `bash` and `git`, with no additional dependencies. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
 
 ## Repository Structure
 
