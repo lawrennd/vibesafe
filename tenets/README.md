@@ -23,25 +23,53 @@ The VibeSafe tenet system provides:
 4. **Tooling**: Validation and visualization for tenet management
 5. **Prominence**: Methods to keep tenets visible and top-of-mind
 
-## Directory Contents
+## Directory Structure
 
-- `README.md` - This overview file
-- `tenet_template.md` - Template for creating new tenets
-- `vibesafe-tenets.md` - VibeSafe's own tenets as an example
-- *Future*: `tenets.yaml` - Machine-readable tenet definitions
-- *Future*: Tooling for tenet validation and visualization
+```
+tenets/
+├── README.md                 # This file
+├── tenet_template.md         # Template for creating new tenets
+├── combine_tenets.py         # Script to combine individual tenets
+├── vibesafe/                 # VibeSafe's own tenets as example
+│   ├── user-autonomy.md      # Individual tenet files
+│   ├── simplicity-of-use.md
+│   └── ...
+├── vibesafe-tenets.md        # Combined tenets document (generated)
+└── vibesafe-tenets.yaml      # Machine-readable tenets (generated)
+```
 
 ## How to Use Tenets
 
 ### Creating Tenets
 
 1. Start with a small set of tenets (5-7 is ideal)
-2. Copy the `tenet_template.md` file
-3. Fill in the sections for each tenet
+2. Create a directory for your project's tenets (e.g., `tenets/myproject/`)
+3. Copy the `tenet_template.md` file for each tenet into your directory
 4. Use clear, concise language
 5. Include specific examples and counter-examples
 6. Consider potential conflicts with other tenets
-7. Resist the urge to create too many tenets - focus on core principles
+7. Run the combination script to generate the combined document
+
+### Individual Tenet Files
+
+Each tenet should be stored in its own file following the template format. This approach offers several benefits:
+
+1. **Clear versioning**: Each tenet can be versioned independently
+2. **Focused editing**: Easier to update a specific tenet
+3. **Better collaboration**: Reduces merge conflicts when multiple people edit tenets
+4. **Reusability**: Tenets can be easily shared and reused across projects
+
+### Generating Combined Documents
+
+Use the `combine_tenets.py` script to generate:
+
+1. A combined Markdown document containing all tenets
+2. A YAML representation for machine processing
+
+Example:
+```bash
+python tenets/combine_tenets.py
+```
 
 ### Placing Tenets at the Forefront
 
@@ -89,22 +117,14 @@ It balances these tenets by starting with sensible defaults while allowing
 customization for advanced users.
 ```
 
-Or in a backlog task:
-
-```markdown
-## Implementation Notes
-
-Implementation should prioritize the **Documentation First** tenet, ensuring 
-thorough documentation before implementation begins.
-```
-
 ## Implementing in Your Project
 
 To implement the tenet system in your project:
 
 1. Copy the `tenets` directory structure
-2. Adapt the `tenet_template.md` to your needs
-3. Define your own project tenets (remember: approximately 7)
-4. Add tenets to your main README and documentation
-5. Update your CIP and backlog templates to reference tenets
-6. Create a tenet visualization if useful for your team 
+2. Create a subdirectory for your project's tenets
+3. Adapt the `tenet_template.md` to your needs
+4. Define your own project tenets (remember: approximately 7)
+5. Run the combination script to generate the combined documents
+6. Add tenets to your main README and documentation
+7. Update your CIP and backlog templates to reference tenets 

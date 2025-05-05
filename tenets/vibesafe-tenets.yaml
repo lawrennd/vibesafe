@@ -1,0 +1,35 @@
+tenets:
+- !!python/object/apply:collections.OrderedDict
+  - - - id
+      - documentation-first
+    - - title
+      - Documentation as First-Class Citizen
+    - - description
+      - Documentation is not an afterthought but a core part of any feature or tool.
+        We write documentation first, then implement to match the documented behavior.
+        This approach ensures that our interfaces are understandable and user-focused.
+    - - quote
+      - If it's not documented, it doesn't exist.
+- !!python/object/apply:collections.OrderedDict
+  - - - id
+      - simplicity-of-use
+    - - title
+      - Simplicity at the Point of Use
+    - - description
+      - While implementations may be complex behind the scenes, the user experience
+        should be simple and intuitive. We prioritize ease of adoption and daily use
+        over theoretical elegance or showing off technical prowess.
+    - - quote
+      - Complicated to build is acceptable; complicated to use is not.
+- !!python/object/apply:collections.OrderedDict
+  - - - id
+      - user-autonomy
+    - - title
+      - User Autonomy Over Prescription
+    - - description
+      - We provide tools and frameworks that respect users' freedom to make their
+        own architectural and implementation choices. We avoid making decisions that
+        restrict users unnecessarily. When designing solutions, we build flexibility
+        in from the start rather than imposing our preferred approach.
+    - - quote
+      - We optimize for configurability over our own preferences.
