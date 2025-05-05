@@ -2,13 +2,25 @@
 
 VibeSafe is a collection of standardized project management practices designed to promote consistent, high-quality development across projects.
 
+## Our Tenets
+
+VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that shape our approach to project management:
+
+1. **[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)**: *"We optimize for configurability over our own preferences."*
+2. **[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)**: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
+3. **[Documentation as First-Class Citizen](tenets/vibesafe/documentation-first.md)**: *"If it's not documented, it doesn't exist."*
+
+[View all tenets →](tenets/vibesafe-tenets.md)
+
 ## What's Inside
 
-VibeSafe contains templates and configurations for two key project management systems:
+VibeSafe contains templates and configurations for three key project management systems:
 
 1. **Code Improvement Plans (CIPs)**: A structured approach to proposing, documenting, and implementing meaningful improvements to codebases.
 
 2. **Backlog System**: A systematic way to track tasks, issues, and improvements that need to be implemented.
+
+3. **Tenet System**: A framework for defining, managing, and sharing project guiding principles.
 
 ## Repository Structure
 
@@ -17,6 +29,13 @@ This repository follows a "dogfooding" approach - VibeSafe follows its own pract
 ```
 vibesafe/
 ├── README.md                 # This file
+├── tenets/                   # Tenet system for VibeSafe itself
+│   ├── README.md             # Overview of the tenet system
+│   ├── tenet_template.md     # Template for creating new tenets
+│   ├── combine_tenets.py     # Script to combine individual tenets
+│   ├── vibesafe/             # Directory of individual tenets
+│   ├── vibesafe-tenets.md    # Combined tenets document
+│   └── vibesafe-tenets.yaml  # Machine-readable tenets
 ├── backlog/                  # Backlog system for VibeSafe itself
 │   ├── README.md             # Overview of the backlog system
 │   ├── task_template.md      # Template for creating new tasks
@@ -34,6 +53,7 @@ vibesafe/
 │   ├── backlog.mdc           # Rule describing the backlog system
 │   └── cip.mdc               # Rule describing the CIP system
 └── templates/                # Templates for other projects
+    ├── tenets/               # Tenet system template
     ├── backlog/              # Backlog system template
     ├── cip/                  # CIP system template
     └── .cursor/rules/        # Cursor rules templates

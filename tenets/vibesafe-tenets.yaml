@@ -14,13 +14,14 @@ tenets:
   - - - id
       - simplicity-of-use
     - - title
-      - Simplicity at the Point of Use
+      - Simplicity at All Levels
     - - description
-      - While implementations may be complex behind the scenes, the user experience
-        should be simple and intuitive. We prioritize ease of adoption and daily use
-        over theoretical elegance or showing off technical prowess.
+      - We prioritize ease of adoption and daily use over theoretical elegance or
+        technical prowess. VibeSafe should be lightweight in implementation, with
+        minimal dependencies that are commonly available. We favor simplicity both
+        in user experience and in implementation.
     - - quote
-      - Complicated to build is acceptable; complicated to use is not.
+      - Simplicity matters everywhere - in usage, code, and dependencies.
 - !!python/object/apply:collections.OrderedDict
   - - - id
       - user-autonomy
