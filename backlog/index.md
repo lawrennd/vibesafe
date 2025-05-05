@@ -33,6 +33,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Implement Tenet System as a Core VibeSafe Feature](infrastructure/2025-05-05_implement-tenets.md)
+
 - [Develop Testing Framework for VibeSafe Installation Methods](infrastructure/2025-05-05_installation-testing-plan.md)
 
 
