@@ -52,7 +52,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-*No tasks currently proposed.*
+- [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
 
 ## Bugs
