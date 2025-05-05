@@ -12,9 +12,27 @@ on:
     - cron: '0 0 * * 0'  # Every Sunday at midnight
 
 jobs:
+  bats-test:
+    name: Bats Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Bats
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          cd bats-core
+          sudo ./install.sh /usr/local
+
+      - name: Run Bats tests
+        run: |
+          bats scripts/test/*.bats
+
   test-installation:
-    name: Test Installation
+    name: Installation Test
     runs-on: ${{ matrix.os }}
+    needs: bats-test
     strategy:
       fail-fast: false
       matrix:
