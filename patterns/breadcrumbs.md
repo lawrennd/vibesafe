@@ -70,12 +70,14 @@ This creates a navigable trail that both humans and AI systems can follow to und
 
 ## Relationship to VibeSafe Tenets
 
-The Breadcrumbs Pattern embodies several VibeSafe tenets:
+The Breadcrumbs Pattern embodies several VibeSafe tenets.
 
 - **Documentation as First-Class Citizen**: Breadcrumbs are a form of living documentation
 - **Self-Documentation Through Implementation**: The breadcrumbs pattern itself documents its own value through its implementation
 - **Shared Information Landmarks**: Each breadcrumb serves as a landmark for orientation
 - **Information Exploration Patterns**: Breadcrumbs support various exploration approaches
+
+The first two tenets could be combined as a document it as you go tenet (DIAYGO).
 
 ## Implementing the Breadcrumbs Pattern
 
