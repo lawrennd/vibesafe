@@ -4,7 +4,7 @@
 
 The Breadcrumbs Pattern is an emergent approach to collaborative development in the VibeSafe project, inspired by the classic fairy tale where characters leave a trail of breadcrumbs to mark their path. In the context of VibeSafe, the pattern involves:
 
-1. **Explicitly documenting thought processes** as they unfold
+1. **Explicitly documenting thought processes** as they unfold (document it a you go, DIAYGO)
 2. **Creating persistent artifacts** (CIPs, tenets, backlog items) that capture reasoning
 3. **Leaving visible traces** of decision-making that can be followed by others
 4. **Building shared context** between humans and AI systems
