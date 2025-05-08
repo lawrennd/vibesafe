@@ -40,7 +40,7 @@ Each CIP can have one of the following statuses:
 - [CIP-0004](./cip0004.md): Tenet System for Project Governance
 - [CIP-0005](./cip0005.md): Documentation-First Implementation
 - [CIP-0006](./cip0006.md): Installation Script Redesign
-- [CIP-0007](./cip0007.md): New Tenet - Self-Documentation Through Implementation
+- [CIP-0007](./cip0007.md): New Tenet - Documentation and Implementation as a Unified Whole
 - [CIP-0008](./cip0008.md): Unified Philosophy Document and New Tenets for Human-LLM Collaboration
 
 ## Creating a Good CIP

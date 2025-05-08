@@ -8,9 +8,9 @@ VibeSafe shares several key principles with the "Requirements are All You Need" 
 
 1. **User Autonomy**: Both VibeSafe and the paper emphasize empowering end users. VibeSafe's "User Autonomy Over Prescription" tenet aligns with the paper's vision of allowing users to own more of the software development lifecycle.
 
-2. **Documentation Centrality**: VibeSafe's "Documentation as First-Class Citizen" tenet, which treats documentation as a core component rather than an afterthought, resonates with the paper's emphasis on natural requirements as the starting point for software development.
+2. **Documentation Centrality**: VibeSafe's "Documentation and Implementation as a Unified Whole" tenet, which treats documentation and implementation as an interdependent system, resonates with the paper's emphasis on natural requirements as the starting point for software development.
 
-3. **Self-Documenting Systems**: VibeSafe's "Self-Documentation Through Implementation" tenet parallels the paper's vision where the system itself serves as documentation that's always in sync with behavior.
+3. **Self-Documenting Systems**: VibeSafe's approach of "Document to guide implementation; implement to validate documentation" parallels the paper's vision where the system itself serves as documentation that's always in sync with behavior.
 
 4. **Simplicity at All Levels**: VibeSafe prioritizes simplicity in usage, code, and dependencies, similar to the paper's goal of making software engineering more accessible to end users.
 
