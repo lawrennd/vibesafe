@@ -42,6 +42,7 @@ Each CIP can have one of the following statuses:
 - [CIP-0006](./cip0006.md): Installation Script Redesign
 - [CIP-0007](./cip0007.md): New Tenet - Documentation and Implementation as a Unified Whole
 - [CIP-0008](./cip0008.md): Unified Philosophy Document and New Tenets for Human-LLM Collaboration
+- [CIP-0009](./cip0009.md): Requirements Conversation Framework
 
 ## Creating a Good CIP
 
