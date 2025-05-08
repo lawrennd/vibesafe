@@ -1,15 +1,42 @@
 tenets:
 - !!python/object/apply:collections.OrderedDict
   - - - id
-      - documentation-first
+      - documentation-as-code
     - - title
-      - Documentation as First-Class Citizen
+      - Documentation and Implementation as a Unified Whole
     - - description
-      - Documentation is not an afterthought but a core part of any feature or tool.
-        We write documentation first, then implement to match the documented behavior.
-        This approach ensures that our interfaces are understandable and user-focused.
+      - Documentation and implementation should be treated as a unified, interdependent
+        system rather than separate concerns. Documentation guides implementation
+        by establishing clear goals and expectations, while implementation embodies
+        and validates that documentation through self-documenting design. This bidirectional
+        relationship ensures that our systems remain understandable, accurate, and
+        maintainable.
     - - quote
-      - If it's not documented, it doesn't exist.
+      - Document to guide implementation; implement to validate documentation.
+- !!python/object/apply:collections.OrderedDict
+  - - - id
+      - information-exploration-patterns
+    - - title
+      - Information Exploration Patterns
+    - - description
+      - VibeSafe supports different patterns of information exploration, from detailed
+        focus on specific improvements to broader conceptual navigation. This approach
+        parallels how humans naturally navigate information spaces, allowing both
+        fine-grained understanding and big-picture perspective.
+    - - quote
+      - Navigate from detail to context and back again.
+- !!python/object/apply:collections.OrderedDict
+  - - - id
+      - shared-information-landmarks
+    - - title
+      - Shared Information Landmarks
+    - - description
+      - VibeSafe creates explicit "information landmarks" in code and documentation
+        that serve as fixed reference points for both humans and AI systems. These
+        landmarks provide a shared conceptual framework that grounds understanding
+        and enables reliable exploration of complex information spaces.
+    - - quote
+      - Reliable collaboration requires shared reference points.
 - !!python/object/apply:collections.OrderedDict
   - - - id
       - simplicity-of-use
