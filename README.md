@@ -32,7 +32,7 @@ VibeSafe contains templates and configurations for three key project management 
 
 1. An [emerging philosophy](philosophy.md) of human-AI collaboration for code and systems design.
 
-2. *Code Improvement Plans (CIPs)*: A structured approach to proposing, documenting, and implementing meaningful improvements to codebases.
+2. *Code/Capability Improvement Plans (CIPs)*: A structured approach to proposing, documenting, and implementing meaningful improvements to codebases or other capabilities.
 
 3. *Backlog System*: A systematic way to track tasks, issues, and improvements that need to be implemented.
 
