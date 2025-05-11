@@ -1,7 +1,7 @@
 ---
 id: "000B"
 title: "VibeSafe Update Script"
-status: "proposed"
+status: "implemented"
 created: "2025-05-11"
 last_updated: "2025-05-11"
 author: "Neil Lawrence"
@@ -17,8 +17,8 @@ tags:
 ## Status
 
 - [x] Proposed: [2025-05-11]
-- [ ] Accepted
-- [ ] Implemented
+- [x] Accepted: [2025-05-11]
+- [x] Implemented: [2025-05-11]
 - [ ] Closed
 
 ## Description
@@ -81,12 +81,12 @@ The update script will be designed with user experience in mind:
 4. Ability to roll back changes if something goes wrong
 
 ## Implementation Status
-- [ ] Define version tracking mechanism
-- [ ] Create component registry of managed VibeSafe elements
-- [ ] Implement detection of missing components
-- [ ] Implement update functionality
-- [ ] Create tests for the update script
-- [ ] Document the update script usage
+- [x] Define version tracking mechanism
+- [x] Create component registry of managed VibeSafe elements
+- [x] Implement detection of missing components
+- [x] Implement update functionality
+- [x] Create tests for the update script
+- [x] Document the update script usage
 
 ## References
 
