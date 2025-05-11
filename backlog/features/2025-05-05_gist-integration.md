@@ -1,3 +1,20 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_gist-integration
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: medium
+status: proposed
+tags:
+- documentation
+- feature
+- infrastructure
+- testing
+- cip
+- backlog
+title: Evaluate and Implement Gist Integration for VibeSafe
+---
+
 # Task: Evaluate and Implement Gist Integration for VibeSafe
 
 - **ID**: 2025-05-05_gist-integration

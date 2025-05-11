@@ -1,3 +1,19 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_github-repository-setup
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: high
+status: completed
+tags:
+- documentation
+- feature
+- bug
+- cip
+- backlog
+title: Set Up GitHub Repository for VibeSafe
+---
+
 # Task: Set Up GitHub Repository for VibeSafe
 
 - **ID**: 2025-05-05_github-repository-setup

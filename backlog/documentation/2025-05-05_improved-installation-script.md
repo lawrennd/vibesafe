@@ -1,3 +1,18 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_improved-installation-script
+last_updated: '2025-05-11'
+owner: Neil Lawrence
+priority: high
+status: completed
+tags:
+- bug
+- testing
+- installation
+- backlog
+title: Improved Installation Script
+---
+
 # Task: Improved Installation Script
 
 - **ID**: 2025-05-05_improved-installation-script

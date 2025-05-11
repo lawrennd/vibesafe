@@ -1,3 +1,19 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_implement-tenets
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: high
+status: proposed
+tags:
+- documentation
+- feature
+- tenets
+- cip
+- backlog
+title: Implement Tenet System as a Core VibeSafe Feature
+---
+
 # Task: Implement Tenet System as a Core VibeSafe Feature
 
 - **ID**: 2025-05-05_implement-tenets
