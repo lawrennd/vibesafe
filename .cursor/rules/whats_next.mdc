@@ -1,0 +1,78 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# VibeSafe Project Status Summarizer ("What's Next" Script)
+
+## What is the "What's Next" Script?
+
+The "What's Next" script is a project status summarizer that helps LLMs and human users quickly understand the current state of the VibeSafe project and identify pending tasks.
+
+## When to Use the "What's Next" Script
+
+Use the "What's Next" script when:
+
+- You are beginning work on the VibeSafe project and need context
+- You want to understand the current project priorities
+- You need to identify which files need YAML frontmatter
+- You are looking for high-priority tasks to work on
+- You need to see the Git status, CIPs, and backlog in one view
+
+## How to Run the Script
+
+Run the script from the root directory of the VibeSafe repository:
+
+```bash
+python scripts/whats_next.py
+```
+
+### Command Line Options
+
+The script supports several command line options:
+
+- `--no-git`: Skip Git status information
+- `--no-color`: Disable colored output
+- `--cip-only`: Only show CIP information
+- `--backlog-only`: Only show backlog information
+- `--quiet`: Suppress all output except next steps
+
+Examples:
+
+```bash
+# Show only the next steps (useful for quick reference)
+python scripts/whats_next.py --quiet
+
+# Focus only on CIPs
+python scripts/whats_next.py --cip-only
+```
+
+## What the Script Provides
+
+The script provides a comprehensive overview of:
+
+1. **Git Status**: Current branch, recent commits, modified files, untracked files
+2. **CIP Status**: All CIPs categorized by status (proposed, accepted, implemented, closed)
+3. **Backlog Status**: Backlog items with priority and status information
+4. **Recommended Next Steps**: Prioritized actions based on the project's current state
+5. **Files Needing YAML Frontmatter**: Specific files missing required metadata
+
+## For LLMs: How to Use This Information
+
+As an LLM working on the VibeSafe project, you should:
+
+1. Run the "What's Next" script at the beginning of your session
+2. Review the recommended next steps section for guidance on priorities
+3. Pay attention to any files needing YAML frontmatter
+4. Focus on high-priority backlog items and accepted CIPs
+5. Check the current branch before making changes
+
+This approach ensures you have the necessary context to make informed decisions about what to work on and how to prioritize tasks.
+
+## YAML Frontmatter
+
+The script checks for YAML frontmatter in CIPs and backlog items. All such files should have proper frontmatter with required metadata fields. For examples, see the [YAML Frontmatter Examples](../docs/yaml_frontmatter_examples.md) document.
+
+## Documentation
+
+For detailed documentation on the "What's Next" script, see [docs/whats_next_script.md](../docs/whats_next_script.md).

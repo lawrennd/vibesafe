@@ -38,6 +38,8 @@ VibeSafe contains templates and configurations for three key project management 
 
 4. *Tenet System*: A framework for defining, managing, and sharing project guiding principles.
 
+5. *What's Next Script*: A project status summarizer that helps both humans and LLMs quickly understand the current state of the project and identify pending tasks.
+
 ## Quick Installation
 
 VibeSafe is designed to be simple to install and use across all major platforms (Linux, macOS, and Windows). The quickest way to get started is with our one-line installation script:
@@ -88,7 +90,10 @@ vibesafe/
 ├── patterns/                 # Emerging patterns in VibeSafe practices
 │   └── breadcrumbs.md        # The Breadcrumbs Pattern documentation
 ├── scripts/                  # Installation scripts
-│   └── install-minimal.sh    # Minimal installation script
+│   ├── install-minimal.sh    # Minimal installation script
+│   └── whats_next.py         # Project status summarizer script
+├── docs/                     # Documentation files
+│   └── whats_next_script.md  # Documentation for the What's Next script
 ├── tenets/                   # Tenet system for VibeSafe itself
 │   ├── README.md             # Overview of the tenet system
 │   ├── tenet_template.md     # Template for creating new tenets
@@ -185,3 +190,25 @@ For more information about testing, see [scripts/test/README.md](scripts/test/RE
 ## License
 
 MIT
+
+## Productivity Tools
+
+VibeSafe includes several productivity tools to enhance your development workflow:
+
+### What's Next Script
+
+The [What's Next Script](docs/whats_next_script.md) helps you quickly understand the current state of your project and identify pending tasks. It provides a comprehensive overview of:
+
+- Git repository status
+- CIP status
+- Backlog item status
+- Recommended next steps
+- Files needing YAML frontmatter
+
+Run it from your project root directory:
+
+```bash
+python scripts/whats_next.py
+```
+
+This is particularly useful for LLMs working on the project, as it provides instant context about the project's current state and priorities. See the [documentation](docs/whats_next_script.md) for more details and command-line options.
