@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
 # VibeSafe Project Status Summarizer ("What's Next" Script)
@@ -21,10 +21,18 @@ Use the "What's Next" script when:
 
 ## How to Run the Script
 
-Run the script from the root directory of the VibeSafe repository:
+After installation (using `./install-whats-next.sh`), run the script from the root directory of the VibeSafe repository:
 
 ```bash
+./whats-next
+```
+
+If you prefer to run it directly, make sure to activate the virtual environment first:
+
+```bash
+source .venv/bin/activate
 python scripts/whats_next.py
+deactivate  # When finished
 ```
 
 ### Command Line Options
@@ -41,10 +49,10 @@ Examples:
 
 ```bash
 # Show only the next steps (useful for quick reference)
-python scripts/whats_next.py --quiet
+./whats-next --quiet
 
 # Focus only on CIPs
-python scripts/whats_next.py --cip-only
+./whats-next --cip-only
 ```
 
 ## What the Script Provides
@@ -69,10 +77,21 @@ As an LLM working on the VibeSafe project, you should:
 
 This approach ensures you have the necessary context to make informed decisions about what to work on and how to prioritize tasks.
 
+## Installation
+
+The "What's Next" script requires Python 3.6+ and the PyYAML library. It uses a virtual environment to manage dependencies.
+
+To install:
+
+```bash
+# This creates a virtual environment and sets up a convenient wrapper
+./install-whats-next.sh
+```
+
 ## YAML Frontmatter
 
-The script checks for YAML frontmatter in CIPs and backlog items. All such files should have proper frontmatter with required metadata fields. For examples, see the [YAML Frontmatter Examples](../docs/yaml_frontmatter_examples.md) document.
+The script checks for YAML frontmatter in CIPs and backlog items. All such files should have proper frontmatter with required metadata fields. For examples, see the [YAML Frontmatter Examples](mdc:../docs/yaml_frontmatter_examples.md) document.
 
 ## Documentation
 
-For detailed documentation on the "What's Next" script, see [docs/whats_next_script.md](../docs/whats_next_script.md).
+For detailed documentation on the "What's Next" script, see [docs/whats_next_script.md](mdc:../docs/whats_next_script.md).
