@@ -55,6 +55,38 @@ if ! run_with_timeout "kcov --include-pattern=install-minimal.sh $COVERAGE_DIR b
   echo "Coverage may be incomplete, but continuing..."
 fi
 
+# Run Python tests if they exist
+if [ -d "tests" ] && [ -f "scripts/whats_next.py" ]; then
+  echo "Running Python tests..."
+  # Make the script executable if it exists but isn't executable
+  if [ -f "scripts/run-python-tests.sh" ]; then
+    chmod +x scripts/run-python-tests.sh
+    ./scripts/run-python-tests.sh
+  else
+    # If the script doesn't exist, run the tests directly using virtual environment
+    if command -v python3 >/dev/null 2>&1; then
+      # Create and activate a virtual environment if it doesn't exist
+      VENV_DIR=".venv"
+      if [ ! -d "$VENV_DIR" ]; then
+        echo "Creating virtual environment..."
+        python3 -m venv "$VENV_DIR"
+      fi
+      
+      echo "Activating virtual environment..."
+      source "$VENV_DIR/bin/activate"
+      
+      # Install dependencies in the virtual environment
+      python3 -m pip install --quiet pytest pytest-cov pyyaml
+      python3 -m pytest tests/ --cov=scripts/ --cov-report=xml:$COVERAGE_DIR/python-coverage.xml
+      
+      # Deactivate virtual environment
+      deactivate
+    else
+      echo "Python 3 not found, skipping Python tests"
+    fi
+  fi
+fi
+
 # Merge coverage reports for better results
 echo "Merging coverage reports..."
 if ! run_with_timeout "kcov --merge $COVERAGE_DIR/kcov-merged $COVERAGE_DIR/*/" 30 "merging coverage reports"; then
