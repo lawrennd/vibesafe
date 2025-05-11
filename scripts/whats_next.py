@@ -418,6 +418,12 @@ def main():
                 for cip in cips_info['by_status']['accepted']:
                     frontmatter_indicator = f" {Colors.RED}(No Frontmatter){Colors.ENDC}" if cip.get('no_frontmatter') else ""
                     print(f"  {Colors.GREEN}{cip['id']}{Colors.ENDC}: {cip['title']}{frontmatter_indicator}")
+            
+            if cips_info['by_status']['implemented']:
+                print(f"\n{Colors.BOLD}Implemented CIPs:{Colors.ENDC}")
+                for cip in cips_info['by_status']['implemented']:
+                    frontmatter_indicator = f" {Colors.RED}(No Frontmatter){Colors.ENDC}" if cip.get('no_frontmatter') else ""
+                    print(f"  {Colors.GREEN}{cip['id']}{Colors.ENDC}: {cip['title']}{frontmatter_indicator}")
     
     # Scan Backlog if not cip-only
     backlog_info = {}

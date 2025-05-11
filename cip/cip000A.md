@@ -1,10 +1,23 @@
+---
+id: "000A"
+title: "Project Status Summarizer (\"What's Next\" Script)"
+status: "implemented"
+created: "2025-05-11"
+last_updated: "2025-05-11"
+author: "Neil Lawrence"
+tags:
+  - "project-management"
+  - "automation"
+  - "tooling"
+---
+
 # CIP-000A: Project Status Summarizer ("What's Next" Script)
 
 ## Status
 
-- [x] Proposed: [2025-05-11]
+- [ ] Proposed: [2025-05-11]
 - [ ] Accepted
-- [ ] Implemented
+- [x] Implemented: [2025-05-11]
 - [ ] Closed
 
 ## Summary
@@ -124,14 +137,14 @@ This change will require updating existing CIPs and backlog items to include YAM
    - Best practices for using the script with LLMs
 
 ## Implementation Status
-- [ ] Define YAML frontmatter standards for CIPs and backlog items
-- [ ] Create Python script for parsing Git status/logs
-- [ ] Create Python script for parsing CIPs with YAML support
-- [ ] Create Python script for parsing backlog items with YAML support
-- [ ] Implement project status summarizer
-- [ ] Implement "next steps" recommendation engine
-- [ ] Document the "what's next" script usage
-- [ ] Write tests for all components
+- [x] Define YAML frontmatter standards for CIPs and backlog items
+- [x] Create Python script for parsing Git status/logs
+- [x] Create Python script for parsing CIPs with YAML support
+- [x] Create Python script for parsing backlog items with YAML support
+- [x] Implement project status summarizer
+- [x] Implement "next steps" recommendation engine
+- [x] Document the "what's next" script usage
+- [x] Write tests for all components
 
 ## References
 - [Backlog System Documentation](../backlog/README.md)
