@@ -43,4 +43,7 @@ wheels/
 *.egg
 .coverage
 htmlcov/
-.pytest_cache/ 
+.pytest_cache/
+
+# Generated files
+whats-next 
