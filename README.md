@@ -56,8 +56,9 @@ This script will:
 - Create the basic VibeSafe directory structure
 - Copy template files for CIPs, backlog tasks, and tenets
 - Add a starter README.md to your project
+- Set up the "What's Next" script for project status tracking (if Python 3 is available)
 
-The installation requires only `bash` and `git`, with no additional dependencies. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
+The installation requires only `bash` and `git`, with no additional dependencies for the core features. The "What's Next" script requires Python 3 and will be installed automatically if available. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
 
 ### Customizing the Installation
 
@@ -72,6 +73,9 @@ VIBESAFE_TEMPLATES_DIR=/path/to/your/templates bash -c "$(curl -fsSL https://raw
 
 # Skip repository cloning (use default templates)
 VIBESAFE_SKIP_CLONE=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+
+# Skip installing the "What's Next" script
+VIBESAFE_INSTALL_WHATS_NEXT=false bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
 
 # Enable debug output
 VIBESAFE_DEBUG=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
@@ -200,15 +204,24 @@ VibeSafe includes several productivity tools to enhance your development workflo
 The [What's Next Script](docs/whats_next_script.md) helps you quickly understand the current state of your project and identify pending tasks. It provides a comprehensive overview of:
 
 - Git repository status
-- CIP status
+- CIP (Code Improvement Proposal) status
 - Backlog item status
 - Recommended next steps
 - Files needing YAML frontmatter
 
-Run it from your project root directory:
+To install and use the script:
 
 ```bash
-python scripts/whats_next.py
+# Install the script and its dependencies (creates a virtual environment)
+./install-whats-next.sh
+
+# Run the script
+./whats-next
+
+# Show just the next steps
+./whats-next --quiet
 ```
 
-This is particularly useful for LLMs working on the project, as it provides instant context about the project's current state and priorities. See the [documentation](docs/whats_next_script.md) for more details and command-line options.
+The script is particularly useful for LLMs working on the VibeSafe project, as it provides quick context about the project's current state and priorities.
+
+For more information, see [docs/whats_next_script.md](docs/whats_next_script.md).
