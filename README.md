@@ -225,3 +225,19 @@ To install and use the script:
 The script is particularly useful for LLMs working on the VibeSafe project, as it provides quick context about the project's current state and priorities.
 
 For more information, see [docs/whats_next_script.md](docs/whats_next_script.md).
+
+### VibeSafe Update Script
+
+The `vibesafe-update` script ensures your VibeSafe installation has all the necessary components:
+
+```bash
+# Check for missing components
+./vibesafe-update --check
+
+# Install missing components
+./vibesafe-update
+```
+
+This script automatically detects and adds missing VibeSafe components to your installation, ensuring you have access to all the latest features and tools.
+
+For more information, see [VibeSafe Update Script Documentation](docs/vibesafe_update_script.md).
