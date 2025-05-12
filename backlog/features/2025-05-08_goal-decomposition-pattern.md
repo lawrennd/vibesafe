@@ -1,3 +1,18 @@
+---
+id: "2025-05-08_goal-decomposition-pattern"
+title: "Implement Goal Decomposition Pattern"
+status: "proposed"
+priority: "high"
+effort: "medium"
+type: "feature"
+created: "2025-05-08"
+last_updated: "2025-05-12"
+owner: ""
+dependencies:
+  - "CIP-0009"
+  - "ai-requirements foundation"
+---
+
 # Task: Implement Goal Decomposition Pattern
 
 ## Metadata

@@ -1,3 +1,18 @@
+---
+id: "2025-05-08_ai-requirements-backlog-integration"
+title: "Implement Backlog Integration for AI-Requirements Framework"
+status: "in-progress"
+priority: "high"
+effort: "medium"
+type: "feature"
+created: "2025-05-08"
+last_updated: "2025-05-12"
+owner: ""
+dependencies:
+  - "CIP-0009"
+  - "ai-requirements foundation"
+---
+
 # Task: Implement Backlog Integration for AI-Requirements Framework
 
 ## Metadata
