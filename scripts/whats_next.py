@@ -318,9 +318,64 @@ def scan_backlog() -> Dict[str, Any]:
     
     return backlog_info
 
+def scan_requirements() -> Dict[str, Any]:
+    """Scan the AI-Requirements directory for requirement artifacts."""
+    requirements_info = {
+        'exists': os.path.exists('ai-requirements'),
+        'patterns': [],
+        'examples': [],
+        'prompts': [],
+        'integrations': []
+    }
+    
+    if not requirements_info['exists']:
+        return requirements_info
+    
+    # Scan patterns
+    if os.path.exists('ai-requirements/patterns'):
+        for pattern_file in glob.glob('ai-requirements/patterns/*.md'):
+            pattern_name = os.path.basename(pattern_file).replace('.md', '')
+            requirements_info['patterns'].append({
+                'name': pattern_name,
+                'path': pattern_file
+            })
+    
+    # Scan examples
+    if os.path.exists('ai-requirements/examples'):
+        for example_file in glob.glob('ai-requirements/examples/*.md'):
+            example_name = os.path.basename(example_file).replace('.md', '')
+            requirements_info['examples'].append({
+                'name': example_name,
+                'path': example_file
+            })
+    
+    # Scan prompts
+    if os.path.exists('ai-requirements/prompts'):
+        for prompt_dir in glob.glob('ai-requirements/prompts/*'):
+            if os.path.isdir(prompt_dir):
+                prompt_name = os.path.basename(prompt_dir)
+                requirements_info['prompts'].append({
+                    'name': prompt_name,
+                    'path': prompt_dir
+                })
+    
+    # Scan integrations
+    if os.path.exists('ai-requirements/integrations'):
+        for integration_file in glob.glob('ai-requirements/integrations/*.md'):
+            integration_name = os.path.basename(integration_file).replace('.md', '')
+            requirements_info['integrations'].append({
+                'name': integration_name,
+                'path': integration_file
+            })
+    
+    return requirements_info
+
 def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], backlog_info: Dict[str, Any]) -> List[str]:
     """Generate a list of recommended next steps based on project status."""
     next_steps = []
+    
+    # Check if the requirements framework exists
+    requirements_info = scan_requirements()
     
     # Check for missing frontmatter
     if cips_info and cips_info.get('without_frontmatter'):
@@ -329,9 +384,53 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], bac
     if backlog_info and backlog_info.get('without_frontmatter'):
         next_steps.append(f"Add YAML frontmatter to {len(backlog_info['without_frontmatter'])} backlog items")
     
+    # Requirements process recommendations
+    if requirements_info['exists']:
+        # Check for in-progress backlog items related to requirements
+        requirements_related_items = []
+        if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
+            for item in backlog_info['by_status']['in_progress']:
+                title = item.get('title', '').lower()
+                if any(keyword in title for keyword in ['requirement', 'goal decomposition', 'stakeholder']):
+                    requirements_related_items.append(item)
+                    
+        # If requirements-related items are in progress
+        if requirements_related_items:
+            next_steps.append(f"Continue implementation of requirements-related item: {requirements_related_items[0]['title']}")
+            next_steps.append("Verify requirements-related implementation against acceptance criteria")
+            
+        # Suggest requirements process for new features
+        # Check if there are proposed CIPs that might need requirements gathering
+        proposed_cips_needing_requirements = []
+        if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('proposed'):
+            for cip in cips_info['by_status']['proposed']:
+                # This is a simple heuristic - in a real implementation you might want to check
+                # if the CIP already has associated requirements documents
+                proposed_cips_needing_requirements.append(cip)
+        
+        if proposed_cips_needing_requirements:
+            cip = proposed_cips_needing_requirements[0]
+            next_steps.append(f"Start requirements gathering for proposed CIP: {cip['id']} - {cip['title']}")
+            next_steps.append("Use AI-Requirements framework prompts and patterns for structured requirements discovery")
+            
+        # Remind about checking for requirements drift for implemented CIPs
+        implemented_cips = []
+        if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('implemented'):
+            implemented_cips = cips_info['by_status']['implemented']
+            
+        if implemented_cips:
+            cip = implemented_cips[0]
+            next_steps.append(f"Verify implementation of {cip['id']} against original requirements")
+            next_steps.append("Check for requirements drift - ensure code aligns with specified requirements")
+    else:
+        # If requirements framework doesn't exist, suggest setting it up
+        next_steps.append("Set up AI-Requirements framework to improve requirements gathering")
+    
     # Check for accepted CIPs that need implementation
     if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('accepted'):
         next_steps.append(f"Implement accepted CIP: {cips_info['by_status']['accepted'][0]['id']} - {cips_info['by_status']['accepted'][0]['title']}")
+        # Add requirements reminder for implementation
+        next_steps.append("Start implementation by reviewing requirements from the AI-Requirements framework")
     
     # Check for in-progress backlog items
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
@@ -348,56 +447,67 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], bac
         total_changes = len(git_info.get('modified_files', [])) + len(git_info.get('untracked_files', []))
         next_steps.append(f"Commit {total_changes} pending changes to Git repository")
     
-    # If no specific tasks, suggest reviewing project status
+    # If no specific tasks, suggest requirements-related activities
     if not next_steps:
         next_steps.append("Review and update project roadmap")
         next_steps.append("Consider creating new CIPs for upcoming features")
+        if requirements_info['exists']:
+            # Suggest using specific patterns
+            if any('goal-decomposition' in pattern['name'] for pattern in requirements_info['patterns']):
+                next_steps.append("Use the Goal Decomposition Pattern to break down high-level goals into specific requirements")
+            if any('stakeholder-identification' in pattern['name'] for pattern in requirements_info['patterns']):
+                next_steps.append("Use the Stakeholder Identification Pattern to identify all stakeholders for upcoming features")
     
     return next_steps
 
 def main():
     """Main function to run the 'what's next' script."""
-    parser = argparse.ArgumentParser(description='Summarize the current project status and identify next steps.')
-    parser.add_argument('--no-git', action='store_true', help='Skip Git status information')
+    parser = argparse.ArgumentParser(description='Show what to work on next in the VibeSafe project.')
+    parser.add_argument('--no-git', action='store_true', help='Skip Git repository information')
     parser.add_argument('--no-color', action='store_true', help='Disable colored output')
     parser.add_argument('--cip-only', action='store_true', help='Only show CIP information')
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
-    parser.add_argument('--quiet', action='store_true', help='Suppress all output except next steps')
+    parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
+    parser.add_argument('--quiet', action='store_true', help='Only show next steps, no detailed status')
     args = parser.parse_args()
     
+    # Disable colors if requested
     if args.no_color:
         Colors.disable()
     
+    # Print header
     if not args.quiet:
-        print_section("VibeSafe Project Status")
-        print(f"{Colors.BOLD}Run Date:{Colors.ENDC} {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"\n{Colors.BOLD}VibeSafe Project Status - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.ENDC}\n")
     
-    # Get Git status if requested
+    # Get Git information if not using --no-git
     git_info = {}
-    if not args.no_git:
+    if not args.no_git and not args.requirements_only:
         if not args.quiet:
-            print_section("Git Status")
+            print_section("Git Repository Status")
         git_info = get_git_status()
         
         if not args.quiet:
-            print(f"{Colors.BOLD}Current Branch:{Colors.ENDC} {git_info['current_branch']}")
-            print(f"\n{Colors.BOLD}Recent Commits:{Colors.ENDC}")
-            for commit in git_info['recent_commits']:
-                print(f"  {Colors.YELLOW}{commit['hash']}{Colors.ENDC} {commit['message']}")
+            if git_info.get('current_branch'):
+                print(f"{Colors.BOLD}Current Branch:{Colors.ENDC} {git_info['current_branch']}")
             
-            if git_info['modified_files']:
+            if git_info.get('recent_commits'):
+                print(f"\n{Colors.BOLD}Recent Commits:{Colors.ENDC}")
+                for commit in git_info['recent_commits']:
+                    print(f"  {Colors.YELLOW}{commit['hash']}{Colors.ENDC} {commit['message']}")
+            
+            if git_info.get('modified_files'):
                 print(f"\n{Colors.BOLD}Modified Files:{Colors.ENDC}")
                 for file in git_info['modified_files']:
                     print(f"  {Colors.RED}{file['status']}{Colors.ENDC} {file['path']}")
             
-            if git_info['untracked_files']:
+            if git_info.get('untracked_files'):
                 print(f"\n{Colors.BOLD}Untracked Files:{Colors.ENDC}")
                 for file in git_info['untracked_files']:
                     print(f"  {Colors.RED}??{Colors.ENDC} {file}")
     
-    # Scan CIPs if not backlog-only
+    # Scan CIPs if not backlog-only and not requirements-only
     cips_info = {}
-    if not args.backlog_only:
+    if not args.backlog_only and not args.requirements_only:
         if not args.quiet:
             print_section("CIP Status")
         cips_info = scan_cips()
@@ -417,7 +527,7 @@ def main():
                 print(f"\n{Colors.BOLD}Accepted CIPs:{Colors.ENDC}")
                 for cip in cips_info['by_status']['accepted']:
                     frontmatter_indicator = f" {Colors.RED}(No Frontmatter){Colors.ENDC}" if cip.get('no_frontmatter') else ""
-                    print(f"  {Colors.GREEN}{cip['id']}{Colors.ENDC}: {cip['title']}{frontmatter_indicator}")
+                    print(f"  {Colors.YELLOW}{cip['id']}{Colors.ENDC}: {cip['title']}{frontmatter_indicator}")
             
             if cips_info['by_status']['implemented']:
                 print(f"\n{Colors.BOLD}Implemented CIPs:{Colors.ENDC}")
@@ -431,9 +541,9 @@ def main():
                     frontmatter_indicator = f" {Colors.RED}(No Frontmatter){Colors.ENDC}" if cip.get('no_frontmatter') else ""
                     print(f"  {Colors.GREEN}{cip['id']}{Colors.ENDC}: {cip['title']}{frontmatter_indicator}")
     
-    # Scan Backlog if not cip-only
+    # Scan Backlog if not cip-only and not requirements-only
     backlog_info = {}
-    if not args.cip_only:
+    if not args.cip_only and not args.requirements_only:
         if not args.quiet:
             print_section("Backlog Status")
         backlog_info = scan_backlog()
@@ -455,17 +565,62 @@ def main():
                     frontmatter_indicator = f" {Colors.RED}(No Frontmatter){Colors.ENDC}" if item.get('no_frontmatter') else ""
                     print(f"  {Colors.YELLOW}[IN PROGRESS]{Colors.ENDC} {item['title']}{frontmatter_indicator}")
     
+    # Print requirements info
+    requirements_info = scan_requirements()
+    if not args.quiet and (not args.cip_only and not args.backlog_only or args.requirements_only):
+        if requirements_info['exists']:
+            print_section("AI-Requirements Framework")
+            print(f"{Colors.BOLD}Available Patterns:{Colors.ENDC}")
+            if requirements_info['patterns']:
+                for pattern in requirements_info['patterns']:
+                    print(f"  - {pattern['name']}")
+            else:
+                print("  None found")
+                
+            print(f"\n{Colors.BOLD}Available Examples:{Colors.ENDC}")
+            if requirements_info['examples']:
+                for example in requirements_info['examples']:
+                    print(f"  - {example['name']}")
+            else:
+                print("  None found")
+                
+            print(f"\n{Colors.BOLD}Available Prompts:{Colors.ENDC}")
+            if requirements_info['prompts']:
+                for prompt in requirements_info['prompts']:
+                    print(f"  - {prompt['name']}")
+            else:
+                print("  None found")
+                
+            print(f"\n{Colors.BOLD}Available Integrations:{Colors.ENDC}")
+            if requirements_info['integrations']:
+                for integration in requirements_info['integrations']:
+                    print(f"  - {integration['name']}")
+            else:
+                print("  None found")
+        else:
+            print(f"\n{Colors.YELLOW}AI-Requirements Framework not found in this project.{Colors.ENDC}")
+            print("Consider implementing it to improve requirements gathering for new features.")
+    
     # Generate next steps
     if not args.quiet:
         print_section("Recommended Next Steps")
     
     next_steps = generate_next_steps(git_info, cips_info, backlog_info)
     
+    # Filter next steps based on command line options
+    if args.cip_only:
+        next_steps = [step for step in next_steps if "CIP" in step]
+    elif args.backlog_only:
+        next_steps = [step for step in next_steps if "backlog" in step.lower() or "high priority" in step.lower()]
+    elif args.requirements_only:
+        next_steps = [step for step in next_steps if any(term in step.lower() for term in 
+                                        ["requirements", "goal decomposition", "stakeholder", "drift", "acceptance criteria"])]
+    
     for i, step in enumerate(next_steps, 1):
         print(f"{Colors.BOLD}{i}.{Colors.ENDC} {step}")
     
     # Output files needing frontmatter
-    if not args.quiet and (cips_info.get('without_frontmatter') or backlog_info.get('without_frontmatter')):
+    if not args.quiet and not args.requirements_only and (cips_info.get('without_frontmatter') or backlog_info.get('without_frontmatter')):
         print_section("Files Needing YAML Frontmatter")
         
         if cips_info.get('without_frontmatter'):

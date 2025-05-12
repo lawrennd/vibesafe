@@ -19,6 +19,7 @@ from scripts.whats_next import (
     run_command,
     get_git_status,
     generate_next_steps,
+    scan_requirements,
 )
 
 
@@ -103,6 +104,63 @@ status: proposed
             # Clean up
             os.unlink(temp_path)
 
+    def test_scan_requirements(self):
+        """Test the scan_requirements function."""
+        # Create temporary directory structure
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create ai-requirements directory and subdirectories
+            os.makedirs(os.path.join(temp_dir, "ai-requirements/patterns"), exist_ok=True)
+            os.makedirs(os.path.join(temp_dir, "ai-requirements/examples"), exist_ok=True)
+            os.makedirs(os.path.join(temp_dir, "ai-requirements/prompts/discovery"), exist_ok=True)
+            os.makedirs(os.path.join(temp_dir, "ai-requirements/integrations"), exist_ok=True)
+            
+            # Create sample files
+            pattern_file = os.path.join(temp_dir, "ai-requirements/patterns/goal-decomposition.md")
+            example_file = os.path.join(temp_dir, "ai-requirements/examples/web-app-discovery.md")
+            integration_file = os.path.join(temp_dir, "ai-requirements/integrations/cip-integration.md")
+            
+            # Write some content to files
+            for file_path in [pattern_file, example_file, integration_file]:
+                with open(file_path, 'w') as f:
+                    f.write("# Test Content")
+            
+            # Change to the temporary directory to test
+            original_dir = os.getcwd()
+            os.chdir(temp_dir)
+            
+            try:
+                # Run the scan_requirements function
+                requirements_info = scan_requirements()
+                
+                # Verify the results
+                self.assertTrue(requirements_info['exists'])
+                self.assertEqual(len(requirements_info['patterns']), 1)
+                self.assertEqual(requirements_info['patterns'][0]['name'], 'goal-decomposition')
+                self.assertEqual(len(requirements_info['examples']), 1)
+                self.assertEqual(requirements_info['examples'][0]['name'], 'web-app-discovery')
+                self.assertEqual(len(requirements_info['prompts']), 1)
+                self.assertEqual(requirements_info['prompts'][0]['name'], 'discovery')
+                self.assertEqual(len(requirements_info['integrations']), 1)
+                self.assertEqual(requirements_info['integrations'][0]['name'], 'cip-integration')
+            finally:
+                # Change back to original directory
+                os.chdir(original_dir)
+        
+        # Test when ai-requirements directory doesn't exist
+        with tempfile.TemporaryDirectory() as temp_dir:
+            original_dir = os.getcwd()
+            os.chdir(temp_dir)
+            
+            try:
+                requirements_info = scan_requirements()
+                self.assertFalse(requirements_info['exists'])
+                self.assertEqual(len(requirements_info['patterns']), 0)
+                self.assertEqual(len(requirements_info['examples']), 0)
+                self.assertEqual(len(requirements_info['prompts']), 0)
+                self.assertEqual(len(requirements_info['integrations']), 0)
+            finally:
+                os.chdir(original_dir)
+
     def test_generate_next_steps(self):
         """Test the generate_next_steps function."""
         # Create test data
@@ -115,8 +173,8 @@ status: proposed
             "without_frontmatter": [{"id": "cip0001", "title": "Test CIP", "path": "cip/cip0001.md"}],
             "by_status": {
                 "proposed": [{"id": "cip0001", "title": "Test CIP"}],
-                "accepted": [],
-                "implemented": [],
+                "accepted": [{"id": "cip0002", "title": "Accepted CIP"}],
+                "implemented": [{"id": "cip0003", "title": "Implemented CIP"}],
                 "closed": [],
             },
         }
@@ -126,25 +184,58 @@ status: proposed
             "by_status": {
                 "proposed": [],
                 "ready": [],
-                "in_progress": [],
+                "in_progress": [{"title": "In Progress Item"}],
                 "completed": [],
                 "abandoned": [],
             },
             "by_priority": {
-                "high": [],
+                "high": [{"title": "High Priority Item"}],
                 "medium": [],
                 "low": [],
             },
         }
         
-        # Test generating next steps
-        next_steps = generate_next_steps(git_info, cips_info, backlog_info)
+        # Create a temporary directory with a mock ai-requirements structure
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create ai-requirements directory and pattern file
+            os.makedirs(os.path.join(temp_dir, "ai-requirements/patterns"), exist_ok=True)
+            pattern_file = os.path.join(temp_dir, "ai-requirements/patterns/goal-decomposition.md")
+            with open(pattern_file, 'w') as f:
+                f.write("# Test Content")
+            
+            # Change to the temporary directory
+            original_dir = os.getcwd()
+            os.chdir(temp_dir)
+            
+            try:
+                # Test generating next steps with requirements framework
+                next_steps = generate_next_steps(git_info, cips_info, backlog_info)
+                
+                # Check requirements-related recommendations
+                self.assertTrue(any("Start requirements gathering for proposed CIP" in step for step in next_steps))
+                self.assertTrue(any("AI-Requirements framework" in step for step in next_steps))
+                self.assertTrue(any("Implement accepted CIP" in step for step in next_steps))
+                self.assertTrue(any("Verify implementation" in step for step in next_steps))
+                self.assertTrue(any("Continue work on in-progress backlog item" in step for step in next_steps))
+                self.assertTrue(any("Address high priority backlog item" in step for step in next_steps))
+                self.assertTrue(any("Commit 2 pending changes" in step for step in next_steps))
+                self.assertTrue(any("Add YAML frontmatter to 1 CIP files" in step for step in next_steps))
+            finally:
+                os.chdir(original_dir)
         
-        # Check that it recommends adding frontmatter to CIPs
-        self.assertTrue(any("Add YAML frontmatter to 1 CIP files" in step for step in next_steps))
-        
-        # Check that it recommends committing changes
-        self.assertTrue(any("Commit 2 pending changes" in step for step in next_steps))
+        # Test without ai-requirements directory
+        with tempfile.TemporaryDirectory() as temp_dir:
+            original_dir = os.getcwd()
+            os.chdir(temp_dir)
+            
+            try:
+                # Test generating next steps without requirements framework
+                next_steps = generate_next_steps(git_info, cips_info, backlog_info)
+                
+                # Check that it recommends setting up requirements framework
+                self.assertTrue(any("Set up AI-Requirements framework" in step for step in next_steps))
+            finally:
+                os.chdir(original_dir)
 
 
 if __name__ == "__main__":
