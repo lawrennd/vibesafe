@@ -18,10 +18,10 @@ The framework consists of these key components:
 
 Carefully designed prompts for different stages of the requirements process:
 
-- Discovery: Initial exploration of user needs and project scope
-- Refinement: Detailed elaboration of specific requirements
-- Validation: Checking for completeness, consistency, and clarity
-- Testing: Creating validation criteria from requirements
+- *Discovery*: Initial exploration of user needs and project scope
+- *Refinement*: Detailed elaboration of specific requirements
+- *Validation*: Checking for completeness, consistency, and clarity
+- *Testing*: Creating validation criteria from requirements
 
 ### Patterns
 

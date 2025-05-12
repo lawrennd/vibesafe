@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
-Update the backlog index.md file based on the current task files.
+Update the backlog index file based on the current task files.
 
 This script scans all task files in the backlog directory structure,
 extracts their metadata, and generates an updated index.md file.
@@ -8,12 +8,25 @@ extracts their metadata, and generates an updated index.md file.
 
 import os
 import re
+import yaml
 from datetime import datetime
 from pathlib import Path
 
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
 STATUSES = ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned']
+
+def extract_yaml_frontmatter(content):
+    """Extract YAML frontmatter from content if present."""
+    frontmatter_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+    if frontmatter_match:
+        frontmatter_text = frontmatter_match.group(1)
+        try:
+            return yaml.safe_load(frontmatter_text)
+        except Exception as e:
+            print(f"Error parsing YAML frontmatter: {str(e)}")
+            return {}
+    return {}
 
 def extract_task_metadata(filepath):
     """Extract metadata from a task file."""
@@ -54,35 +67,60 @@ def extract_task_metadata(filepath):
         with open(filepath, 'r') as f:
             content = f.read()
             
-            # Extract title from the first line
-            title_match = re.search(r'# Task: (.*)', content)
-            if title_match:
-                metadata['title'] = title_match.group(1)
+            # First try to extract YAML frontmatter
+            frontmatter = extract_yaml_frontmatter(content)
+            if frontmatter:
+                # Map frontmatter fields to metadata
+                if 'id' in frontmatter:
+                    metadata['id'] = frontmatter['id']
+                if 'title' in frontmatter:
+                    metadata['title'] = frontmatter['title']
+                if 'status' in frontmatter:
+                    metadata['status'] = frontmatter['status']
+                if 'priority' in frontmatter:
+                    metadata['priority'] = frontmatter['priority']
+                if 'created' in frontmatter:
+                    metadata['created'] = frontmatter['created']
+                if 'last_updated' in frontmatter:
+                    metadata['updated'] = frontmatter['last_updated']
             
-            # Extract ID from content (overrides filename-based ID if found)
-            id_match = re.search(r'\*\*ID\*\*: (.*)', content)
-            if id_match:
-                metadata['id'] = id_match.group(1).strip()
+            # If YAML frontmatter didn't provide all metadata, try traditional format
             
-            # Extract status
-            status_match = re.search(r'\*\*Status\*\*: (.*)', content)
-            if status_match:
-                metadata['status'] = status_match.group(1).strip()
+            # Extract title from the first line if not already set
+            if not metadata['title']:
+                title_match = re.search(r'# Task: (.*)', content)
+                if title_match:
+                    metadata['title'] = title_match.group(1)
             
-            # Extract priority
-            priority_match = re.search(r'\*\*Priority\*\*: (.*)', content)
-            if priority_match:
-                metadata['priority'] = priority_match.group(1).strip()
+            # Extract ID from content if not already set
+            if not metadata['id'] and id_from_filename:
+                id_match = re.search(r'\*\*ID\*\*: (.*)', content)
+                if id_match:
+                    metadata['id'] = id_match.group(1).strip()
             
-            # Extract created date
-            created_match = re.search(r'\*\*Created\*\*: (.*)', content)
-            if created_match:
-                metadata['created'] = created_match.group(1).strip()
+            # Extract status if not already set
+            if not metadata['status']:
+                status_match = re.search(r'\*\*Status\*\*: (.*)', content)
+                if status_match:
+                    metadata['status'] = status_match.group(1).strip()
             
-            # Extract updated date
-            updated_match = re.search(r'\*\*Last Updated\*\*: (.*)', content)
-            if updated_match:
-                metadata['updated'] = updated_match.group(1).strip()
+            # Extract priority if not already set
+            if not metadata['priority']:
+                priority_match = re.search(r'\*\*Priority\*\*: (.*)', content)
+                if priority_match:
+                    metadata['priority'] = priority_match.group(1).strip()
+            
+            # Extract created date if not already set
+            if not metadata['created']:
+                created_match = re.search(r'\*\*Created\*\*: (.*)', content)
+                if created_match:
+                    metadata['created'] = created_match.group(1).strip()
+            
+            # Extract updated date if not already set
+            if not metadata['updated']:
+                updated_match = re.search(r'\*\*Last Updated\*\*: (.*)', content)
+                if updated_match:
+                    metadata['updated'] = updated_match.group(1).strip()
                 
         return metadata
     except Exception as e:
@@ -129,8 +167,15 @@ def generate_index_content(tasks):
         category = task['category']
         status = task['status'].strip()
         
-        if category in categorized_tasks and status in categorized_tasks[category]:
-            categorized_tasks[category][status].append(task)
+        # Ensure status is one of the valid statuses (case-insensitive)
+        matching_status = None
+        for valid_status in STATUSES:
+            if status.lower() == valid_status.lower():
+                matching_status = valid_status
+                break
+        
+        if matching_status and category in categorized_tasks and matching_status in categorized_tasks[category]:
+            categorized_tasks[category][matching_status].append(task)
         else:
             print(f"Skipping task with invalid category or status: {category}, {status}")
     
@@ -145,11 +190,14 @@ def generate_index_content(tasks):
             if tasks_with_status:
                 # Sort by created date
                 def sort_key(task):
-                    return task.get('created', '')
+                    # Return empty string if created is None to avoid comparison issues
+                    return task.get('created', '') or ''
                 
                 for task in sorted(tasks_with_status, key=sort_key, reverse=True):
                     relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
-                    content.append(f"- [{task['title']}]({relative_path})\n")
+                    # Use title if available, otherwise use ID
+                    title = task.get('title') or task.get('id', 'Untitled Task')
+                    content.append(f"- [{title}]({relative_path})\n")
             else:
                 content.append(f"*No tasks currently {status.lower()}.*\n")
             
@@ -161,16 +209,17 @@ def generate_index_content(tasks):
     
     completed_tasks = []
     for category in CATEGORIES:
-        if 'Completed' in categorized_tasks[category]:
-            completed_tasks.extend(categorized_tasks[category]['Completed'])
+        completed_tasks.extend(categorized_tasks[category]['Completed'])
     
     if completed_tasks:
         def sort_key(task):
-            return task.get('updated', '')
+            # Return empty string if updated is None to avoid comparison issues
+            return task.get('updated', '') or ''
         
         for task in sorted(completed_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
             relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
-            content.append(f"- [{task['title']}]({relative_path})\n")
+            title = task.get('title') or task.get('id', 'Untitled Task')
+            content.append(f"- [{title}]({relative_path})\n")
     else:
         content.append("*No tasks recently completed.*\n")
     
@@ -178,16 +227,17 @@ def generate_index_content(tasks):
     
     abandoned_tasks = []
     for category in CATEGORIES:
-        if 'Abandoned' in categorized_tasks[category]:
-            abandoned_tasks.extend(categorized_tasks[category]['Abandoned'])
+        abandoned_tasks.extend(categorized_tasks[category]['Abandoned'])
     
     if abandoned_tasks:
         def sort_key(task):
-            return task.get('updated', '')
+            # Return empty string if updated is None to avoid comparison issues
+            return task.get('updated', '') or ''
         
         for task in sorted(abandoned_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
             relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
-            content.append(f"- [{task['title']}]({relative_path})\n")
+            title = task.get('title') or task.get('id', 'Untitled Task')
+            content.append(f"- [{title}]({relative_path})\n")
     else:
         content.append("*No tasks recently abandoned.*\n")
     
