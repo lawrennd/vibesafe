@@ -1,9 +1,9 @@
 ---
 created: '2025-05-05'
 id: 2025-05-05_improved-installation-script
-last_updated: '2025-05-11'
+last_updated: '2025-05-12'
 owner: Neil Lawrence
-priority: high
+priority: completed
 status: completed
 tags:
 - bug
@@ -17,7 +17,7 @@ title: Improved Installation Script
 
 - **ID**: 2025-05-05_improved-installation-script
 - **Status**: Completed
-- **Priority**: High
+- **Priority**: Completed
 - **Created**: 2025-05-05
 - **Completed**: 2025-05-05
 - **Owner**: Neil Lawrence
