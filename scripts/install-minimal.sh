@@ -13,6 +13,7 @@ NC='\033[0m' # No Color
 : "${VIBESAFE_SKIP_CLONE:=false}"
 : "${VIBESAFE_TEMPLATES_DIR:=}"
 : "${VIBESAFE_DEBUG:=false}"
+: "${VIBESAFE_INSTALL_WHATS_NEXT:=true}"
 
 # Function to check if a command exists
 command_exists() {
@@ -223,6 +224,152 @@ copy_templates_from_repo() {
   fi
 }
 
+# Function to setup the "What's Next" script
+setup_whats_next() {
+  echo "Setting up 'What's Next' script..."
+  
+  # Check if Python 3 is available
+  if ! command_exists python3; then
+    echo -e "${YELLOW}Warning: Python 3 is required for the 'What's Next' script but not found.${NC}"
+    echo "The script will not be installed. You can install it later with ./install-whats-next.sh"
+    return 1
+  fi
+  
+  # Check if the whats_next.py script exists
+  if [ ! -f "scripts/whats_next.py" ]; then
+    echo -e "${YELLOW}Warning: scripts/whats_next.py not found. Skipping 'What's Next' setup.${NC}"
+    return 1
+  fi
+  
+  # Create and activate a virtual environment
+  local VENV_DIR=".venv"
+  echo "Creating Python virtual environment..."
+  
+  if ! python3 -m venv "$VENV_DIR"; then
+    echo -e "${YELLOW}Warning: Failed to create virtual environment. 'What's Next' script will not be installed.${NC}"
+    echo "You can try again later with ./install-whats-next.sh"
+    return 1
+  fi
+  
+  # Create the installation script for future use
+  if [ ! -f "install-whats-next.sh" ]; then
+    echo "Creating 'What's Next' installation script..."
+    cat > install-whats-next.sh << 'EOL'
+#!/bin/bash
+# Installation script for the VibeSafe "What's Next" script
+
+set -e
+
+echo "Installing 'What's Next' Script..."
+
+# Create and activate a virtual environment if it doesn't exist
+VENV_DIR=".venv"
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating virtual environment..."
+    python3 -m venv "$VENV_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to create virtual environment."
+        echo "Make sure python3-venv is installed on your system."
+        echo "  - Ubuntu/Debian: apt-get install python3-venv"
+        echo "  - macOS: Python 3 should include venv by default"
+        exit 1
+    fi
+fi
+
+# Activate the virtual environment
+echo "Activating virtual environment..."
+source "$VENV_DIR/bin/activate"
+
+# Install dependencies
+echo "Installing dependencies..."
+python3 -m pip install PyYAML
+
+# Make the script executable
+echo "Making script executable..."
+chmod +x scripts/whats_next.py
+
+# Create a convenience wrapper script
+echo "Creating convenience wrapper script..."
+cat > whats-next << 'EOF'
+#!/bin/bash
+# Wrapper script for running the What's Next script with the virtual environment
+
+# Determine directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Activate the virtual environment
+source "${SCRIPT_DIR}/.venv/bin/activate"
+
+# Run the actual script
+"${SCRIPT_DIR}/scripts/whats_next.py" "$@"
+
+# Deactivate the virtual environment
+deactivate
+EOF
+
+# Make the wrapper script executable
+chmod +x whats-next
+
+# Deactivate virtual environment
+deactivate
+
+echo ""
+echo "Installation complete!"
+echo "You can now run the 'What's Next' script using:"
+echo "  ./whats-next"
+echo ""
+echo "Or with options:"
+echo "  ./whats-next --no-git --no-color --cip-only --backlog-only --quiet"
+echo ""
+echo "For more information, see:"
+echo "  docs/whats_next_script.md"
+EOL
+    chmod +x install-whats-next.sh
+  fi
+  
+  # Execute the installation script we just created
+  echo "Installing 'What's Next' dependencies..."
+  
+  # Activate the virtual environment
+  source "$VENV_DIR/bin/activate"
+  
+  # Install dependencies
+  python3 -m pip install PyYAML
+  
+  # Make the script executable
+  chmod +x scripts/whats_next.py
+  
+  # Create a convenience wrapper script
+  echo "Creating convenience wrapper script..."
+  cat > whats-next << 'EOL'
+#!/bin/bash
+# Wrapper script for running the What's Next script with the virtual environment
+
+# Determine directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Activate the virtual environment
+source "${SCRIPT_DIR}/.venv/bin/activate"
+
+# Run the actual script
+"${SCRIPT_DIR}/scripts/whats_next.py" "$@"
+
+# Deactivate the virtual environment
+deactivate
+EOL
+
+  # Make the wrapper script executable
+  chmod +x whats-next
+  
+  # Deactivate virtual environment
+  deactivate
+  
+  echo -e "${GREEN}Successfully installed 'What's Next' script!${NC}"
+  echo "You can run it with ./whats-next"
+  
+  return 0
+}
+
 # Main installation function
 install_vibesafe() {
   local temp_dir=""
@@ -257,6 +404,22 @@ install_vibesafe() {
       debug "Successfully cloned repository from $VIBESAFE_REPO_URL"
       echo "Copying VibeSafe templates..."
       copy_templates_from_repo "$temp_dir"
+      
+      # Copy What's Next script if it exists
+      if [ -f "$temp_dir/scripts/whats_next.py" ]; then
+        debug "Found What's Next script in repository"
+        mkdir -p scripts
+        cp "$temp_dir/scripts/whats_next.py" "scripts/whats_next.py"
+        # Copy docs if they exist
+        if [ -f "$temp_dir/docs/whats_next_script.md" ]; then
+          mkdir -p docs
+          cp "$temp_dir/docs/whats_next_script.md" "docs/whats_next_script.md"
+        fi
+        if [ -f "$temp_dir/docs/yaml_frontmatter_examples.md" ]; then
+          mkdir -p docs
+          cp "$temp_dir/docs/yaml_frontmatter_examples.md" "docs/yaml_frontmatter_examples.md"
+        fi
+      fi
     else
       debug "Failed to clone repository, using default templates"
       echo "Warning: Failed to clone repository, using minimal templates instead."
@@ -271,6 +434,11 @@ install_vibesafe() {
   echo "Checking for existing README.md..."
   create_default_readme
   
+  # Setup What's Next script if requested
+  if [ "$VIBESAFE_INSTALL_WHATS_NEXT" = "true" ]; then
+    setup_whats_next
+  fi
+  
   # Clean up temporary directory if we created one
   if [ -n "$temp_dir" ]; then
     rm -rf "$temp_dir"
@@ -284,6 +452,9 @@ install_vibesafe() {
   echo "1. Define your project tenets in the tenets/ directory"
   echo "2. Use the backlog to track tasks"
   echo "3. Document code improvements using CIPs"
+  if [ "$VIBESAFE_INSTALL_WHATS_NEXT" = "true" ] && [ -f "whats-next" ]; then
+    echo "4. Run the 'What's Next' script to see project status: ./whats-next"
+  fi
   echo ""
   echo "For more information, visit: https://github.com/lawrennd/vibesafe"
   echo ""

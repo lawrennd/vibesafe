@@ -2,7 +2,7 @@
 
 ## Overview
 
-Code Improvement Proposals (CIPs) are documents that describe proposed changes to the VibeSafe codebase or project management approach. They serve as a way to document design decisions, track progress on implementation, and provide context for code changes.
+Code Improvement Proposals (CIPs) are documents that describe proposed changes to the referia codebase. They serve as a way to document design decisions, track progress on implementation, and provide context for code changes.
 
 ## Process
 
@@ -27,10 +27,11 @@ Code Improvement Proposals (CIPs) are documents that describe proposed changes t
 
 Each CIP can have one of the following statuses:
 
-- **Proposed**: Initial proposal, subject to review and feedback
+- **Draft**: Initial proposal, subject to change
 - **Accepted**: Proposal has been accepted and is ready for implementation
-- **Implemented**: Implementation is complete
-- **Closed**: CIP is finalized (either implemented or rejected)
+- **In Progress**: Implementation is underway
+- **Completed**: Implementation is complete
+- **Rejected**: Proposal has been rejected
 
 ## Current CIPs
 
@@ -43,6 +44,8 @@ Each CIP can have one of the following statuses:
 - [CIP-0007](./cip0007.md): New Tenet - Documentation and Implementation as a Unified Whole
 - [CIP-0008](./cip0008.md): Unified Philosophy Document and New Tenets for Human-LLM Collaboration
 - [CIP-0009](./cip0009.md): Requirements Conversation Framework
+- [CIP-000A](./cip000A.md): Project Status Summarizer ("What's Next" Script)
+- [CIP-000B](./cip000B.md): VibeSafe Update Script
 
 ## Creating a Good CIP
 

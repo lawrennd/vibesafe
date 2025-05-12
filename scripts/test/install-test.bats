@@ -202,4 +202,108 @@ teardown() {
   [ -d "backlog" ]
   [ -d "tenets" ]
   [ -f "README.md" ]
+}
+
+@test "What's Next installation can be skipped using environment variable" {
+  # Create scripts directory and add a mock whats_next.py
+  mkdir -p scripts
+  echo '#!/usr/bin/env python3' > scripts/whats_next.py
+  echo 'print("This is a mock whats_next.py")' >> scripts/whats_next.py
+  chmod +x scripts/whats_next.py
+  
+  # Run the installation with What's Next installation disabled
+  export VIBESAFE_SKIP_CLONE=true
+  export VIBESAFE_INSTALL_WHATS_NEXT=false
+  run bash "$INSTALL_SCRIPT"
+  
+  # Check that installation completed successfully
+  [ "$status" -eq 0 ]
+  
+  # Verify What's Next files were not created
+  [ ! -f "whats-next" ]
+  [ ! -f "install-whats-next.sh" ]
+  [ ! -d ".venv" ]
+}
+
+@test "What's Next script is properly installed when Python is available" {
+  # This test assumes Python 3 is available on the system running the tests
+  
+  # Create scripts directory and add a mock whats_next.py
+  mkdir -p scripts
+  echo '#!/usr/bin/env python3' > scripts/whats_next.py
+  echo 'print("This is a mock whats_next.py")' >> scripts/whats_next.py
+  chmod +x scripts/whats_next.py
+  
+  # Check if Python 3 is available, skip test if not
+  if ! command -v python3 >/dev/null 2>&1; then
+    skip "Python 3 is not available, skipping test"
+  fi
+  
+  # Run the installation with What's Next installation enabled
+  export VIBESAFE_SKIP_CLONE=true
+  export VIBESAFE_INSTALL_WHATS_NEXT=true
+  run bash "$INSTALL_SCRIPT"
+  
+  # Check that installation completed successfully
+  [ "$status" -eq 0 ]
+  
+  # Verify What's Next files were created
+  [ -f "whats-next" ]
+  [ -f "install-whats-next.sh" ]
+  [ -d ".venv" ]
+  
+  # Check that the wrapper script is executable
+  [ -x "whats-next" ]
+  
+  # Check that the installation script mentions "What's Next" in the next steps
+  [[ "$output" == *"Run the 'What's Next' script"* ]]
+}
+
+@test "What's Next installation handles missing python gracefully" {
+  # Create scripts directory and add a mock whats_next.py
+  mkdir -p scripts
+  echo '#!/usr/bin/env python3' > scripts/whats_next.py
+  echo 'print("This is a mock whats_next.py")' >> scripts/whats_next.py
+  chmod +x scripts/whats_next.py
+  
+  # Create a wrapper script that wraps the install script and overrides the python3 command
+  cat > "$TEST_DIR/mock_install.sh" << 'EOL'
+#!/bin/bash
+# Mock the python3 command to make it fail
+function python3() {
+  # This function will be called instead of the real python3
+  # Make it fail when attempting to create a virtual environment
+  if [[ "$*" == *"-m venv"* ]]; then
+    return 1
+  fi
+  # Otherwise delegate to the real python3
+  command python3 "$@"
+}
+
+# Export the function so it's available to the install script
+export -f python3
+
+# Run the original install script with our mocked python3
+bash "$1"
+EOL
+  chmod +x "$TEST_DIR/mock_install.sh"
+  
+  # Run the mock installation script
+  export VIBESAFE_SKIP_CLONE=true
+  export VIBESAFE_INSTALL_WHATS_NEXT=true
+  run bash "$TEST_DIR/mock_install.sh" "$INSTALL_SCRIPT"
+  
+  # Check that installation completed with a warning but still succeeded
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Warning: Failed to create virtual environment"* ]]
+  
+  # Verify basic installation still worked
+  [ -d "cip" ]
+  [ -d "backlog" ]
+  [ -d "tenets" ]
+  [ -f "README.md" ]
+  
+  # Verify What's Next files were not created due to the failure
+  [ ! -d ".venv" ]
+  [ ! -f "whats-next" ]
 } 

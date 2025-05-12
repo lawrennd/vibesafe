@@ -1,3 +1,20 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_documentation-system-evaluation
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: medium
+status: proposed
+tags:
+- documentation
+- feature
+- installation
+- tenets
+- cip
+- backlog
+title: Evaluate Documentation Systems Compatible with VibeSafe Tenets
+---
+
 # Task: Evaluate Documentation Systems Compatible with VibeSafe Tenets
 
 - **ID**: 2025-05-05_documentation-system-evaluation

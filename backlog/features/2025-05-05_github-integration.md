@@ -1,3 +1,18 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_github-integration
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: high
+status: ready
+tags:
+- documentation
+- feature
+- cip
+- backlog
+title: Implement GitHub Issue Integration
+---
+
 # Task: Implement GitHub Issue Integration
 
 - **ID**: 2025-05-05_github-integration

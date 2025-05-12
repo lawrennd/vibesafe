@@ -1,3 +1,18 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_breadcrumbs-pattern-tenet
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: medium
+status: proposed
+tags:
+- documentation
+- tenets
+- cip
+- backlog
+title: Evaluate Elevating "Breadcrumbs Pattern" to a Formal Tenet
+---
+
 # Task: Evaluate Elevating "Breadcrumbs Pattern" to a Formal Tenet
 
 - **ID**: 2025-05-05_breadcrumbs-pattern-tenet

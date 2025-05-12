@@ -1,3 +1,20 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_installation-testing-plan
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: high
+status: proposed
+tags:
+- documentation
+- feature
+- testing
+- installation
+- cip
+- backlog
+title: Develop Testing Framework for VibeSafe Installation Methods
+---
+
 # Task: Develop Testing Framework for VibeSafe Installation Methods
 
 - **ID**: 2025-05-05_installation-testing-plan

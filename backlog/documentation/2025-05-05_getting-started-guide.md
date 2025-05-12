@@ -1,3 +1,18 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_getting-started-guide
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: high
+status: proposed
+tags:
+- documentation
+- tenets
+- cip
+- backlog
+title: Create VibeSafe Getting Started Guide
+---
+
 # Task: Create VibeSafe Getting Started Guide
 
 - **ID**: 2025-05-05_getting-started-guide

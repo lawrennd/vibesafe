@@ -23,7 +23,7 @@ VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that sha
 1. *[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)*: *"We optimize for configurability over our own preferences."*
 2. *[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)*: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
 3. *[Documentation and Implementation as a Unified Whole](tenets/vibesafe/documentation-as-code.md)*: *"Document to guide implementation; implement to validate documentation."*
-4
+
 [View all tenets →](tenets/vibesafe-tenets.md)
 
 ## What's Inside
@@ -37,6 +37,8 @@ VibeSafe contains templates and configurations for three key project management 
 3. *Backlog System*: A systematic way to track tasks, issues, and improvements that need to be implemented.
 
 4. *Tenet System*: A framework for defining, managing, and sharing project guiding principles.
+
+5. *What's Next Script*: A project status summarizer that helps both humans and LLMs quickly understand the current state of the project and identify pending tasks.
 
 ## Quick Installation
 
@@ -54,8 +56,9 @@ This script will:
 - Create the basic VibeSafe directory structure
 - Copy template files for CIPs, backlog tasks, and tenets
 - Add a starter README.md to your project
+- Set up the "What's Next" script for project status tracking (if Python 3 is available)
 
-The installation requires only `bash` and `git`, with no additional dependencies. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
+The installation requires only `bash` and `git`, with no additional dependencies for the core features. The "What's Next" script requires Python 3 and will be installed automatically if available. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
 
 ### Customizing the Installation
 
@@ -70,6 +73,9 @@ VIBESAFE_TEMPLATES_DIR=/path/to/your/templates bash -c "$(curl -fsSL https://raw
 
 # Skip repository cloning (use default templates)
 VIBESAFE_SKIP_CLONE=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+
+# Skip installing the "What's Next" script
+VIBESAFE_INSTALL_WHATS_NEXT=false bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
 
 # Enable debug output
 VIBESAFE_DEBUG=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
@@ -88,7 +94,10 @@ vibesafe/
 ├── patterns/                 # Emerging patterns in VibeSafe practices
 │   └── breadcrumbs.md        # The Breadcrumbs Pattern documentation
 ├── scripts/                  # Installation scripts
-│   └── install-minimal.sh    # Minimal installation script
+│   ├── install-minimal.sh    # Minimal installation script
+│   └── whats_next.py         # Project status summarizer script
+├── docs/                     # Documentation files
+│   └── whats_next_script.md  # Documentation for the What's Next script
 ├── tenets/                   # Tenet system for VibeSafe itself
 │   ├── README.md             # Overview of the tenet system
 │   ├── tenet_template.md     # Template for creating new tenets
@@ -185,3 +194,50 @@ For more information about testing, see [scripts/test/README.md](scripts/test/RE
 ## License
 
 MIT
+
+## Productivity Tools
+
+VibeSafe includes several productivity tools to enhance your development workflow:
+
+### What's Next Script
+
+The [What's Next Script](docs/whats_next_script.md) helps you quickly understand the current state of your project and identify pending tasks. It provides a comprehensive overview of:
+
+- Git repository status
+- CIP (Code Improvement Proposal) status
+- Backlog item status
+- Recommended next steps
+- Files needing YAML frontmatter
+
+To install and use the script:
+
+```bash
+# Install the script and its dependencies (creates a virtual environment)
+./install-whats-next.sh
+
+# Run the script
+./whats-next
+
+# Show just the next steps
+./whats-next --quiet
+```
+
+The script is particularly useful for LLMs working on the VibeSafe project, as it provides quick context about the project's current state and priorities.
+
+For more information, see [docs/whats_next_script.md](docs/whats_next_script.md).
+
+### VibeSafe Update Script
+
+The `vibesafe-update` script ensures your VibeSafe installation has all the necessary components:
+
+```bash
+# Check for missing components
+./vibesafe-update --check
+
+# Install missing components
+./vibesafe-update
+```
+
+This script automatically detects and adds missing VibeSafe components to your installation, ensuring you have access to all the latest features and tools.
+
+For more information, see [VibeSafe Update Script Documentation](docs/vibesafe_update_script.md).

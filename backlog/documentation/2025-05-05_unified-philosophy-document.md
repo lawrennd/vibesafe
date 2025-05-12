@@ -1,3 +1,18 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_unified-philosophy-document
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: medium
+status: proposed
+tags:
+- documentation
+- tenets
+- cip
+- backlog
+title: Create Unified Philosophy Document Based on CIP-0008
+---
+
 # Task: Create Unified Philosophy Document Based on CIP-0008
 
 - **ID**: 2025-05-05_unified-philosophy-document
