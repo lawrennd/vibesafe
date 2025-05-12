@@ -10,6 +10,9 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
+import pytest
+from unittest import mock
+from pathlib import Path
 
 # Add the scripts directory to the path so we can import the module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -133,15 +136,14 @@ status: proposed
                 requirements_info = scan_requirements()
                 
                 # Verify the results
-                self.assertTrue(requirements_info['exists'])
+                self.assertTrue(requirements_info['has_framework'])
                 self.assertEqual(len(requirements_info['patterns']), 1)
-                self.assertEqual(requirements_info['patterns'][0]['name'], 'goal-decomposition')
+                self.assertEqual(requirements_info['patterns'][0], 'goal-decomposition')
                 self.assertEqual(len(requirements_info['examples']), 1)
-                self.assertEqual(requirements_info['examples'][0]['name'], 'web-app-discovery')
-                self.assertEqual(len(requirements_info['prompts']), 1)
-                self.assertEqual(requirements_info['prompts'][0]['name'], 'discovery')
+                self.assertEqual(requirements_info['examples'][0], 'web-app-discovery.md')
+                self.assertEqual(len(requirements_info['prompts']['discovery']), 0)
                 self.assertEqual(len(requirements_info['integrations']), 1)
-                self.assertEqual(requirements_info['integrations'][0]['name'], 'cip-integration')
+                self.assertEqual(requirements_info['integrations'][0], 'cip-integration')
             finally:
                 # Change back to original directory
                 os.chdir(original_dir)
@@ -153,10 +155,10 @@ status: proposed
             
             try:
                 requirements_info = scan_requirements()
-                self.assertFalse(requirements_info['exists'])
+                self.assertFalse(requirements_info['has_framework'])
                 self.assertEqual(len(requirements_info['patterns']), 0)
                 self.assertEqual(len(requirements_info['examples']), 0)
-                self.assertEqual(len(requirements_info['prompts']), 0)
+                self.assertEqual(sum(len(v) for v in requirements_info['prompts'].values()), 0)
                 self.assertEqual(len(requirements_info['integrations']), 0)
             finally:
                 os.chdir(original_dir)
@@ -208,8 +210,11 @@ status: proposed
             os.chdir(temp_dir)
             
             try:
+                # First get the requirements info
+                requirements_info = scan_requirements()
+                
                 # Test generating next steps with requirements framework
-                next_steps = generate_next_steps(git_info, cips_info, backlog_info)
+                next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
                 
                 # Check requirements-related recommendations
                 self.assertTrue(any("Start requirements gathering for proposed CIP" in step for step in next_steps))
@@ -229,13 +234,183 @@ status: proposed
             os.chdir(temp_dir)
             
             try:
+                # First get the requirements info (which will show no framework)
+                requirements_info = scan_requirements()
+                
                 # Test generating next steps without requirements framework
-                next_steps = generate_next_steps(git_info, cips_info, backlog_info)
+                next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
                 
                 # Check that it recommends setting up requirements framework
-                self.assertTrue(any("Set up AI-Requirements framework" in step for step in next_steps))
+                self.assertTrue(any("AI-Requirements framework" in step for step in next_steps))
             finally:
                 os.chdir(original_dir)
+
+
+def test_scan_requirements_with_framework():
+    """Test scanning requirements when the framework exists."""
+    with mock.patch('os.path.isdir', return_value=True), \
+         mock.patch('glob.glob') as mock_glob:
+        
+        # Mock the glob results for different directories
+        def mock_glob_side_effect(pattern):
+            if 'patterns' in pattern:
+                return ['ai-requirements/patterns/stakeholder-identification.md', 
+                        'ai-requirements/patterns/goal-decomposition.md']
+            elif 'prompts/discovery' in pattern:
+                return ['ai-requirements/prompts/discovery/discovery-prompt.md']
+            elif 'prompts/refinement' in pattern:
+                return ['ai-requirements/prompts/refinement/refinement-prompt.md']
+            elif 'prompts/validation' in pattern:
+                return ['ai-requirements/prompts/validation/validation-prompt.md']
+            elif 'prompts/testing' in pattern:
+                return ['ai-requirements/prompts/testing/testing-prompt.md']
+            elif 'integrations' in pattern:
+                return ['ai-requirements/integrations/backlog-integration.md',
+                        'ai-requirements/integrations/cip-integration.md']
+            elif 'examples' in pattern:
+                return ['ai-requirements/examples/example-conversation.md']
+            elif 'guidance' in pattern:
+                return ['ai-requirements/guidance/requirements-process.md']
+            else:
+                return []
+        
+        mock_glob.side_effect = mock_glob_side_effect
+        
+        result = scan_requirements()
+        
+        assert result['has_framework'] is True
+        assert len(result['patterns']) == 2
+        assert 'stakeholder-identification' in result['patterns']
+        assert 'goal-decomposition' in result['patterns']
+        
+        assert len(result['prompts']['discovery']) == 1
+        assert len(result['prompts']['refinement']) == 1
+        assert len(result['prompts']['validation']) == 1
+        assert len(result['prompts']['testing']) == 1
+        
+        assert len(result['integrations']) == 2
+        assert 'backlog-integration' in result['integrations']
+        assert 'cip-integration' in result['integrations']
+        
+        assert len(result['examples']) == 1
+        assert 'example-conversation.md' in result['examples']
+        
+        assert len(result['guidance']) == 1
+        assert 'requirements-process.md' in result['guidance']
+
+def test_scan_requirements_without_framework():
+    """Test scanning requirements when the framework doesn't exist."""
+    with mock.patch('os.path.isdir', return_value=False):
+        result = scan_requirements()
+        
+        assert result['has_framework'] is False
+        assert len(result['patterns']) == 0
+        assert all(len(prompts) == 0 for prompts in result['prompts'].values())
+        assert len(result['integrations']) == 0
+        assert len(result['examples']) == 0
+        assert len(result['guidance']) == 0
+
+def test_generate_next_steps_with_requirements():
+    """Test generating next steps when the requirements framework exists."""
+    git_info = {}
+    cips_info = {'by_status': {'proposed': [{'id': 'cip0001', 'title': 'Test CIP'}]}}
+    backlog_info = {'by_status': {'proposed': [{'id': '2025-01-01_test', 'title': 'Test Backlog'}]}}
+    requirements_info = {
+        'has_framework': True,
+        'patterns': ['stakeholder-identification', 'goal-decomposition'],
+        'prompts': {
+            'discovery': ['discovery-prompt.md'],
+            'refinement': ['refinement-prompt.md'],
+            'validation': [],
+            'testing': []
+        },
+        'integrations': ['backlog-integration', 'cip-integration'],
+        'examples': ['example-conversation.md'],
+        'guidance': ['requirements-process.md']
+    }
+    
+    next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+    
+    # Check that requirements-related steps are included
+    assert any("AI-Requirements" in step for step in next_steps)
+    assert any("requirements" in step.lower() for step in next_steps)
+
+def test_generate_next_steps_without_requirements():
+    """Test generating next steps when the requirements framework doesn't exist."""
+    git_info = {}
+    cips_info = {'by_status': {'proposed': []}}
+    backlog_info = {'by_status': {'proposed': []}}
+    requirements_info = {
+        'has_framework': False,
+        'patterns': [],
+        'prompts': {'discovery': [], 'refinement': [], 'validation': [], 'testing': []},
+        'integrations': [],
+        'examples': [],
+        'guidance': []
+    }
+    
+    next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+    
+    # Check that a step to create the requirements framework is included
+    assert any("Create AI-Requirements framework directory structure" in step for step in next_steps)
+
+def test_generate_next_steps_with_empty_requirements():
+    """Test generating next steps when the requirements framework exists but is empty."""
+    git_info = {}
+    cips_info = {'by_status': {'proposed': []}}
+    backlog_info = {'by_status': {'proposed': []}}
+    requirements_info = {
+        'has_framework': True,
+        'patterns': [],
+        'prompts': {'discovery': [], 'refinement': [], 'validation': [], 'testing': []},
+        'integrations': [],
+        'examples': [],
+        'guidance': []
+    }
+    
+    next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+    
+    # Check that a step to create patterns is included
+    assert any("Create requirements patterns" in step for step in next_steps)
+
+def test_cmd_args_requirements_only():
+    """Test that the --requirements-only flag works correctly."""
+    with mock.patch('argparse.ArgumentParser.parse_args') as mock_args, \
+         mock.patch('scripts.whats_next.scan_requirements') as mock_scan_req, \
+         mock.patch('scripts.whats_next.print_section'), \
+         mock.patch('scripts.whats_next.generate_next_steps') as mock_generate, \
+         mock.patch('builtins.print'):
+        
+        # Setup mock args with requirements_only=True
+        mock_args.return_value = mock.Mock(
+            no_git=False, 
+            no_color=False, 
+            cip_only=False, 
+            backlog_only=False, 
+            requirements_only=True
+        )
+        
+        # Setup mock scan_requirements to return a valid result
+        mock_scan_req.return_value = {
+            'has_framework': True,
+            'patterns': ['stakeholder-identification'],
+            'prompts': {'discovery': ['discovery-prompt.md'], 'refinement': [], 'validation': [], 'testing': []},
+            'integrations': ['backlog-integration'],
+            'examples': [],
+            'guidance': []
+        }
+        
+        # Run the main function
+        from scripts.whats_next import main
+        main()
+        
+        # Verify that generate_next_steps was called with empty dicts for cips_info and backlog_info
+        mock_generate.assert_called_once()
+        _, cips_arg, backlog_arg, req_arg = mock_generate.call_args[0]
+        assert 'by_status' in cips_arg
+        assert 'by_status' in backlog_arg
+        assert 'by_priority' in backlog_arg
+        assert req_arg == mock_scan_req.return_value
 
 
 if __name__ == "__main__":
