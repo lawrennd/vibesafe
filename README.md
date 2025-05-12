@@ -23,7 +23,7 @@ VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that sha
 1. *[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)*: *"We optimize for configurability over our own preferences."*
 2. *[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)*: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
 3. *[Documentation and Implementation as a Unified Whole](tenets/vibesafe/documentation-as-code.md)*: *"Document to guide implementation; implement to validate documentation."*
-4
+
 [View all tenets →](tenets/vibesafe-tenets.md)
 
 ## What's Inside
