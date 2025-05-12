@@ -12,6 +12,16 @@ import yaml
 from datetime import datetime
 from pathlib import Path
 
+__all__ = [
+    'extract_yaml_frontmatter',
+    'extract_task_metadata',
+    'find_all_task_files',
+    'generate_index_content',
+    'update_index',
+    'CATEGORIES',
+    'STATUSES'
+]
+
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
 STATUSES = ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned']
