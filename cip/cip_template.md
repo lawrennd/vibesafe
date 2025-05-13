@@ -1,3 +1,15 @@
+---
+author: "[Your Name]"
+created: "[YYYY-MM-DD]"
+id: "XXXX"
+last_updated: "[YYYY-MM-DD]"
+status: proposed
+tags:
+- cip
+- "[additional tags]"
+title: "[Title]"
+---
+
 # CIP-XXXX: [Title]
 
 ## Summary
