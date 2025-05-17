@@ -1,13 +1,13 @@
 ---
+title: "[Title]"
 author: "[Your Name]"
 created: "[YYYY-MM-DD]"
 id: "XXXX"
 last_updated: "[YYYY-MM-DD]"
-status: proposed
+status: [proposed|accepted|implemented|closed]
 tags:
 - cip
 - "[additional tags]"
-title: "[Title]"
 ---
 
 # CIP-XXXX: [Title]
