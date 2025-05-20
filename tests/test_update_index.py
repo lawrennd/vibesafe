@@ -8,22 +8,9 @@ import tempfile
 import unittest
 from pathlib import Path
 import shutil
-import sys
 
-# Add the project root to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Import functions from the backlog package
-from backlog import (
-    extract_yaml_frontmatter,
-    extract_task_metadata,
-    find_all_task_files,
-    generate_index_content,
-    update_index,
-    CATEGORIES,
-    STATUSES
-)
-
+# Import the module directly
+import backlog.update_index as update_index
 
 class TestUpdateIndex(unittest.TestCase):
     """Tests for the backlog/update_index.py script."""
@@ -33,7 +20,7 @@ class TestUpdateIndex(unittest.TestCase):
         self.test_dir = tempfile.mkdtemp()
         
         # Create a mock backlog structure
-        for category in CATEGORIES:
+        for category in update_index.CATEGORIES:
             os.makedirs(os.path.join(self.test_dir, category), exist_ok=True)
     
     def tearDown(self):
@@ -75,18 +62,18 @@ Content goes here.
 """
         
         # Test with valid frontmatter
-        frontmatter = extract_yaml_frontmatter(content_with_frontmatter)
+        frontmatter = update_index.extract_yaml_frontmatter(content_with_frontmatter)
         self.assertEqual(frontmatter['id'], '2025-05-12_test-task')
         self.assertEqual(frontmatter['title'], 'Test Task')
         self.assertEqual(frontmatter['status'], 'Ready')
         self.assertEqual(frontmatter['priority'], 'high')
         
         # Test without frontmatter
-        frontmatter = extract_yaml_frontmatter(content_without_frontmatter)
+        frontmatter = update_index.extract_yaml_frontmatter(content_without_frontmatter)
         self.assertEqual(frontmatter, {})
         
         # Test with invalid frontmatter
-        frontmatter = extract_yaml_frontmatter(content_with_invalid_frontmatter)
+        frontmatter = update_index.extract_yaml_frontmatter(content_with_invalid_frontmatter)
         self.assertEqual(frontmatter, {})
     
     def test_extract_task_metadata_yaml_frontmatter(self):
@@ -111,7 +98,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
@@ -142,7 +129,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
@@ -182,7 +169,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check that YAML frontmatter takes precedence
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
@@ -281,7 +268,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
         self.assertEqual(metadata['status'], 'ready')  # Should be preserved as lowercase
@@ -294,9 +281,9 @@ Content goes here.
         # Create a minimal version of generate_index_content for testing status matching
         def test_status_matching(tasks):
             categorized_tasks = {}
-            for category in CATEGORIES:
+            for category in update_index.CATEGORIES:
                 categorized_tasks[category] = {}
-                for status in STATUSES:
+                for status in update_index.STATUSES:
                     categorized_tasks[category][status] = []
             
             for task in tasks:
@@ -308,7 +295,7 @@ Content goes here.
                 
                 # Ensure status is one of the valid statuses (case-insensitive)
                 matching_status = None
-                for valid_status in STATUSES:
+                for valid_status in update_index.STATUSES:
                     if status.lower() == valid_status.lower():
                         matching_status = valid_status
                         break
