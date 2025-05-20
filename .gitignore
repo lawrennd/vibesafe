@@ -46,4 +46,9 @@ htmlcov/
 .pytest_cache/
 
 # Generated files
-whats-next 
+whats-next
+
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/ 
