@@ -1,7 +1,7 @@
 Welcome to VibeSafe's documentation!
-===================================
+====================================
 
-VibeSafe is a standardized project management framework that promotes consistent development practices through a set of well-defined tenets, patterns, and tools.
+VibeSafe is a project management framework that supports consistent development practices through a set of tenets, patterns, and tools.
 
 .. toctree::
    :maxdepth: 2
