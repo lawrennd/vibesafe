@@ -13,8 +13,8 @@ import sys
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Import functions from the update_index script
-from backlog.update_index import (
+# Import functions from the backlog package
+from backlog import (
     extract_yaml_frontmatter,
     extract_task_metadata,
     find_all_task_files,
