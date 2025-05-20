@@ -1,3 +1,14 @@
+---
+id: "[id]"
+title: "[Short, descriptive title]"
+created: "[YYYY-MM-DD]"
+last_updated: "[YYYY-MM-DD]"
+version: "[version number]"
+tags:
+- tenet
+- "[additional tags]"
+---
+
 # Tenet Template
 
 Use this template to create new tenets for your project.

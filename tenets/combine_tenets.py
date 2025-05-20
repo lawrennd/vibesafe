@@ -71,9 +71,9 @@ if __name__ == "__main__":
     
     # Combine VibeSafe tenets
     combine_tenets(
-        'tenets/vibesafe',
-        'tenets/vibesafe-tenets.md',
-        'tenets/vibesafe-tenets.yaml'
+        'vibesafe',
+        'vibesafe-tenets.md',
+        'vibesafe-tenets.yaml'
     )
     
     print("Tenets combined successfully!") 

@@ -1,3 +1,18 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_system-specific-guides
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: medium
+status: proposed
+tags:
+- documentation
+- tenets
+- cip
+- backlog
+title: Create System-Specific Documentation Guides
+---
+
 # Task: Create System-Specific Documentation Guides
 
 - **ID**: 2025-05-05_system-specific-guides

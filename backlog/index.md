@@ -35,7 +35,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-*No tasks currently ready.*
+- [Integrate AI-Requirements Framework into Installation Script](infrastructure/2025-05-12_ai-requirements-integration.md)
 
 
 ### In Progress
@@ -61,7 +61,9 @@ This file provides an overview of all current backlog items organized by categor
 
 ### In Progress
 
-*No tasks currently in progress.*
+- [Implement Goal Decomposition Pattern](features/2025-05-08_goal-decomposition-pattern.md)
+
+- [Implement Backlog Integration for AI-Requirements Framework](features/2025-05-08_ai-requirements-backlog-integration.md)
 
 
 ### Proposed
@@ -90,9 +92,9 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
-- [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
-
 - [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
+
+- [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
 
 
 ## Recently Abandoned Tasks

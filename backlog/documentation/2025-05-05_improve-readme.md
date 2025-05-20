@@ -1,3 +1,16 @@
+---
+created: '2025-05-05'
+id: 2025-05-05_improve-readme
+last_updated: '2025-05-11'
+owner: lawrennd
+priority: medium
+status: proposed
+tags:
+- cip
+- backlog
+title: Improve VibeSafe README with Examples
+---
+
 # Task: Improve VibeSafe README with Examples
 
 - **ID**: 2025-05-05_improve-readme
