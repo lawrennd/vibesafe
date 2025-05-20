@@ -13,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 
 __all__ = [
-    'extract_yaml_frontmatter',
     'extract_task_metadata',
     'find_all_task_files',
     'generate_index_content',
@@ -25,18 +24,6 @@ __all__ = [
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
 STATUSES = ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned']
-
-def extract_yaml_frontmatter(content):
-    """Extract YAML frontmatter from content if present."""
-    frontmatter_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
-    if frontmatter_match:
-        frontmatter_text = frontmatter_match.group(1)
-        try:
-            return yaml.safe_load(frontmatter_text)
-        except Exception as e:
-            print(f"Error parsing YAML frontmatter: {str(e)}")
-            return {}
-    return {}
 
 def extract_task_metadata(filepath):
     """Extract metadata from a task file."""
@@ -78,21 +65,26 @@ def extract_task_metadata(filepath):
             content = f.read()
             
             # First try to extract YAML frontmatter
-            frontmatter = extract_yaml_frontmatter(content)
-            if frontmatter:
-                # Map frontmatter fields to metadata
-                if 'id' in frontmatter:
-                    metadata['id'] = frontmatter['id']
-                if 'title' in frontmatter:
-                    metadata['title'] = frontmatter['title']
-                if 'status' in frontmatter:
-                    metadata['status'] = frontmatter['status']
-                if 'priority' in frontmatter:
-                    metadata['priority'] = frontmatter['priority']
-                if 'created' in frontmatter:
-                    metadata['created'] = frontmatter['created']
-                if 'last_updated' in frontmatter:
-                    metadata['updated'] = frontmatter['last_updated']
+            frontmatter_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+            if frontmatter_match:
+                frontmatter_text = frontmatter_match.group(1)
+                try:
+                    frontmatter = yaml.safe_load(frontmatter_text)
+                    # Map frontmatter fields to metadata
+                    if 'id' in frontmatter:
+                        metadata['id'] = frontmatter['id']
+                    if 'title' in frontmatter:
+                        metadata['title'] = frontmatter['title']
+                    if 'status' in frontmatter:
+                        metadata['status'] = frontmatter['status']
+                    if 'priority' in frontmatter:
+                        metadata['priority'] = frontmatter['priority']
+                    if 'created' in frontmatter:
+                        metadata['created'] = frontmatter['created']
+                    if 'last_updated' in frontmatter:
+                        metadata['updated'] = frontmatter['last_updated']
+                except Exception as e:
+                    print(f"Error parsing YAML frontmatter: {str(e)}")
             
             # If YAML frontmatter didn't provide all metadata, try traditional format
             
