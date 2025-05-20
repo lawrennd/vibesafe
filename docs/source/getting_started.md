@@ -40,7 +40,6 @@ The backlog contains all planned work items for your project. It's organized in 
 
 ## Next Steps
 
-1. Review the :doc:`tenets` to understand the core principles
-2. Explore the :doc:`patterns` for common development practices
-3. Check out the :doc:`cips` to see how changes are proposed and implemented
-4. Read the :doc:`api` documentation for technical details 
+1. Review the project structure and key concepts above
+2. Check out the :doc:`whats_next_script` documentation to learn about the project management tools
+3. Start using the tools to manage your project's development 
