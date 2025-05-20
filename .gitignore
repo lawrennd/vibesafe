@@ -44,6 +44,12 @@ wheels/
 .coverage
 htmlcov/
 .pytest_cache/
+poetry.lock
 
 # Generated files
-whats-next 
+whats-next
+
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/ 

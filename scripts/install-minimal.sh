@@ -58,7 +58,7 @@ create_default_template() {
 # Only used when we can't get the structure from the repo
 create_default_directory_structure() {
   debug "Creating default directory structure"
-  mkdir -p cip backlog/documentation backlog/features backlog/infrastructure backlog/bugs tenets
+  mkdir -p cip backlog/documentation backlog/features backlog/infrastructure backlog/bugs tenets ai-requirements/{patterns,prompts/{discovery,refinement,validation,testing},integrations,examples,guidance}
 }
 
 # Function to create default backlog files
@@ -85,6 +85,36 @@ create_default_tenet_files() {
   create_default_template "tenets" "tenet_template.md" "## Tenet: [id]\n\n**Title**: [Concise Title]\n\n**Description**: [Description of the tenet]"
 }
 
+# Function to create default AI-Requirements files
+create_default_requirements_files() {
+  debug "Creating default AI-Requirements files"
+  
+  # Create the main README.md
+  create_default_template "ai-requirements" "README.md" "# AI-Assisted Requirements Framework\n\nThis directory contains the framework for AI-assisted requirements gathering and management.\n\n## Structure\n\n- patterns/: Reusable conversation patterns\n- prompts/: Prompts for different stages of requirements\n- integrations/: Integrations with other VibeSafe components\n- examples/: Example requirements conversations\n- guidance/: Guidance for requirements gathering"
+  
+  # Create default pattern templates
+  mkdir -p ai-requirements/patterns
+  create_default_template "ai-requirements/patterns" "stakeholder-identification.md" "# Stakeholder Identification Pattern\n\n## Purpose\n\nThis pattern helps identify and analyze all stakeholders for a software project.\n\n## When to Use\n\n- At the beginning of a project\n- When planning a major new feature\n- When evaluating project impact"
+  create_default_template "ai-requirements/patterns" "goal-decomposition.md" "# Goal Decomposition Pattern\n\n## Purpose\n\nThis pattern helps break down high-level goals into specific, actionable requirements.\n\n## When to Use\n\n- When starting with broad project goals\n- When refining feature requirements\n- When prioritizing development work"
+  
+  # Create default prompt directories and templates
+  mkdir -p ai-requirements/prompts/{discovery,refinement,validation,testing}
+  create_default_template "ai-requirements/prompts/discovery" "discovery-prompt.md" "# Requirements Discovery Prompt\n\n## Purpose\n\nThis prompt guides the initial exploration of user needs and project scope.\n\n## Prompt\n\nLet's explore the requirements for this project:\n\n1. What problem are you trying to solve?\n2. Who are the main users or stakeholders?\n3. What are the key goals for this system?\n4. What constraints or limitations should we be aware of?"
+  create_default_template "ai-requirements/prompts/refinement" "refinement-prompt.md" "# Requirements Refinement Prompt\n\n## Purpose\n\nThis prompt helps refine and clarify initial requirements.\n\n## Prompt\n\nLet's refine the requirements we've gathered:\n\n1. Are there any requirements that seem unclear or ambiguous?\n2. Are there potential conflicts between requirements?\n3. How should we prioritize these requirements?\n4. What acceptance criteria would validate these requirements?"
+  create_default_template "ai-requirements/prompts/validation" "validation-prompt.md" "# Requirements Validation Prompt\n\n## Purpose\n\nThis prompt helps validate requirements with stakeholders.\n\n## Prompt\n\nLet's validate the requirements we've defined:\n\n1. Do these requirements fully address the problem we're trying to solve?\n2. Are there any perspectives or use cases we haven't considered?\n3. Are the requirements feasible given our constraints?\n4. How will we know when each requirement has been successfully implemented?"
+  create_default_template "ai-requirements/prompts/testing" "testing-prompt.md" "# Requirements Testing Prompt\n\n## Purpose\n\nThis prompt helps design tests to verify requirements implementation.\n\n## Prompt\n\nLet's design tests for our requirements:\n\n1. What are the key scenarios we need to test?\n2. What edge cases might challenge our implementation?\n3. How can we verify that the requirements have been correctly implemented?\n4. What automated tests would be most valuable for these requirements?"
+  
+  # Create default integration templates
+  mkdir -p ai-requirements/integrations
+  create_default_template "ai-requirements/integrations" "backlog-integration.md" "# Backlog Integration\n\n## Purpose\n\nThis document explains how to connect requirements to the backlog system.\n\n## Process\n\n1. Translate requirements into specific backlog items\n2. Link backlog items to requirements documents\n3. Ensure acceptance criteria match requirements"
+  create_default_template "ai-requirements/integrations" "cip-integration.md" "# CIP Integration\n\n## Purpose\n\nThis document explains how to connect requirements to the CIP system.\n\n## Process\n\n1. Reference requirements in CIP documentation\n2. Ensure CIP implementations satisfy requirements\n3. Update requirements as CIPs evolve"
+  
+  # Create directories for examples and guidance
+  mkdir -p ai-requirements/examples ai-requirements/guidance
+  create_default_template "ai-requirements/examples" "example-conversation.md" "# Example Requirements Conversation\n\n## Context\n\nThis is an example conversation using the AI-Requirements framework to gather requirements for a feature.\n\n## Conversation\n\n**User**: I need to add a user authentication system to my application.\n\n**Assistant**: Let's explore the requirements for this authentication system:\n\n1. What types of users will you need to authenticate?\n2. What authentication methods do you want to support?\n3. What security requirements do you have?\n4. Are there any compliance requirements for your application?"
+  create_default_template "ai-requirements/guidance" "requirements-process.md" "# Requirements Process Guide\n\n## Process Overview\n\n1. **Discovery**: Identify stakeholders and initial requirements\n2. **Refinement**: Clarify and detail requirements\n3. **Validation**: Confirm requirements with stakeholders\n4. **Integration**: Connect requirements to implementation\n5. **Testing**: Verify implementation matches requirements"
+}
+
 # Function to create default README.md
 create_default_readme() {
   if [ ! -f "README.md" ]; then
@@ -105,16 +135,23 @@ project/
 ├── backlog/                  # Task tracking system
 │   ├── README.md             # Overview of the backlog system
 │   └── task_template.md      # Template for creating new tasks
-└── cip/                      # Code Improvement Plans
-    ├── README.md             # Overview of the CIP process
-    └── cip_template.md       # Template for creating new CIPs
+├── cip/                      # Code Improvement Plans
+│   ├── README.md             # Overview of the CIP process
+│   └── cip_template.md       # Template for creating new CIPs
+└── ai-requirements/          # AI-Assisted Requirements Framework
+    ├── README.md             # Framework overview
+    ├── patterns/             # Reusable conversation patterns
+    ├── prompts/              # Prompts for requirements gathering
+    ├── integrations/         # Integration with other components
+    └── examples/             # Example requirements conversations
 ```
 
 ## Getting Started
 
 1. Define your project tenets in the `tenets/` directory
-2. Use the backlog to track tasks
-3. Document code improvements using CIPs
+2. Gather requirements using the AI-Requirements framework
+3. Use the backlog to track tasks
+4. Document code improvements using CIPs
 EOL
     debug "Created default README.md"
   else
@@ -135,7 +172,7 @@ copy_templates_from_repo() {
     debug "Found templates directory, copying directory structure"
     
     # Create base directories first (in case the structure is partial)
-    mkdir -p cip backlog tenets
+    mkdir -p cip backlog tenets ai-requirements
     
     # Copy backlog directory structure if it exists
     if [ -d "$templates_dir/templates/backlog" ]; then
@@ -209,6 +246,30 @@ copy_templates_from_repo() {
       create_default_tenet_files
     fi
     
+    # Copy AI-Requirements directory structure if it exists
+    if [ -d "$templates_dir/templates/ai-requirements" ]; then
+      debug "Copying AI-Requirements directory structure"
+      
+      # First create the directory structure
+      find "$templates_dir/templates/ai-requirements" -type d | while read -r dir; do
+        # Create the equivalent directory in the target
+        target_dir="${dir#$templates_dir/templates/}"
+        debug "Creating directory: $target_dir"
+        mkdir -p "$target_dir"
+      done
+      
+      # Then copy the files
+      find "$templates_dir/templates/ai-requirements" -type f | while read -r file; do
+        # Determine the target file path
+        target_file="${file#$templates_dir/templates/}"
+        debug "Copying file: $file to $target_file"
+        cp -f "$file" "$target_file"
+      done
+    else
+      debug "No AI-Requirements directory structure found, creating defaults"
+      create_default_requirements_files
+    fi
+    
     # Copy any cursor rules if they exist
     if [ -d "$templates_dir/templates/.cursor" ]; then
       debug "Found cursor templates in repository"
@@ -221,6 +282,7 @@ copy_templates_from_repo() {
     create_default_backlog_files
     create_default_cip_files
     create_default_tenet_files
+    create_default_requirements_files
   fi
 }
 
