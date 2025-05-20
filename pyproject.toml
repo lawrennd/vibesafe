@@ -5,7 +5,10 @@ description = "Standardized project management practices for consistent developm
 authors = ["Neil Lawrence <example@example.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "scripts"}]
+packages = [
+    {include = "scripts"},
+    {include = "backlog"}
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
