@@ -13,9 +13,7 @@ tags:
 
 Use this template to create new tenets for your project.
 
-## Tenet: [id]
-
-**Title**: [Short, descriptive title]
+## Tenet
 
 **Description**: [1-2 paragraphs explaining the principle, its importance, and how it guides decisions]
 
@@ -35,6 +33,4 @@ Use this template to create new tenets for your project.
 - [Potential conflict with another tenet]
 - Resolution: [How to resolve the conflict]
 - [Another potential conflict]
-- Resolution: [Another resolution approach]
-
-**Version**: [version number] ([date]) 
+- Resolution: [Another resolution approach] 
