@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "scripts"}]
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = ">=3.10"
 pyyaml = ">=6.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -30,7 +30,7 @@ testpaths = ["tests"]
 line-length = 88
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 
