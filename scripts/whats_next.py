@@ -322,6 +322,7 @@ def scan_requirements() -> Dict[str, Any]:
     """Scan the AI-Requirements directory and collect information."""
     requirements_info = {
         'has_framework': os.path.isdir('ai-requirements'),
+        'has_template': os.path.exists('ai-requirements/requirement_template.md'),
         'patterns': [],
         'prompts': {
             'discovery': [],
@@ -377,6 +378,11 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         next_steps.append(
             "Create AI-Requirements framework directory structure: "
             "mkdir -p ai-requirements/{patterns,prompts/{discovery,refinement,validation,testing},integrations,examples,guidance}"
+        )
+    # Check if requirement template exists
+    elif not requirements_info.get('has_template'):
+        next_steps.append(
+            "Create requirements template: cp templates/ai-requirements/requirement_template.md ai-requirements/"
         )
     # Add suggestion if no patterns exist
     elif not requirements_info['patterns']:

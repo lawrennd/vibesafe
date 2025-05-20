@@ -53,6 +53,16 @@ EOF
 # Make the wrapper script executable
 chmod +x whats-next
 
+# Install requirements cursor rule
+echo "Installing requirements cursor rule..."
+mkdir -p .cursor/rules
+if [ -f "templates/cursor_rules/requirements_rule.md" ]; then
+    cp templates/cursor_rules/requirements_rule.md .cursor/rules/
+    echo "Requirements cursor rule installed."
+else
+    echo "Warning: Requirements cursor rule template not found."
+fi
+
 # Deactivate virtual environment
 deactivate
 
