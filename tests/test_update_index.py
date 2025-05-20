@@ -193,44 +193,6 @@ Content goes here.
         self.assertEqual(metadata['updated'], '2025-05-13')
         self.assertEqual(metadata['category'], category)
     
-    def test_find_all_task_files(self):
-        """Test finding all task files in the backlog directory."""
-        # Replace the original function temporarily to use our test directory
-        original_parent = Path.parent.fget
-        
-        try:
-            # Mock Path.parent to return our test directory
-            def mock_parent(self):
-                if str(self).endswith('update_index.py'):
-                    return Path(self.test_dir)
-                return original_parent(self)
-            
-            Path.parent = property(mock_parent.__get__(None, Path))
-            
-            # Create some test files
-            for category in CATEGORIES:
-                # Create README and index files (should be ignored)
-                with open(os.path.join(self.test_dir, category, "README.md"), 'w') as f:
-                    f.write("# README")
-                
-                with open(os.path.join(self.test_dir, category, "index.md"), 'w') as f:
-                    f.write("# Index")
-                
-                # Create task files (should be found)
-                with open(os.path.join(self.test_dir, category, "2025-05-12_task1.md"), 'w') as f:
-                    f.write("# Task 1")
-                
-                with open(os.path.join(self.test_dir, category, "2025-05-13_task2.md"), 'w') as f:
-                    f.write("# Task 2")
-            
-            # This is not a proper test because we can't monkey-patch Path.parent easily
-            # But the function is straightforward enough that we trust it works
-            self.assertTrue(True)
-            
-        finally:
-            # Restore the original function
-            Path.parent = property(original_parent)
-    
     def test_generate_index_content(self):
         """Test generating index content from task metadata."""
         # Create mock task metadata
