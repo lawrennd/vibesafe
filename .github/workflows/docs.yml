@@ -26,12 +26,10 @@ jobs:
           poetry install --with docs
       - name: Test documentation build
         run: |
-          cd docs
-          poetry run python test_build.py
+          poetry run python docs/test_build.py
       - name: Build documentation
         run: |
-          cd docs
-          poetry run sphinx-build -b html . _build/html
+          poetry run sphinx-build -b html docs/source docs/_build/html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
