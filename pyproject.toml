@@ -1,27 +1,32 @@
-[build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "vibesafe"
 version = "0.1.0"
 description = "Standardized project management practices for consistent development"
+authors = ["Neil Lawrence <example@example.com>"]
+license = "MIT"
 readme = "README.md"
-authors = [
-    {name = "Neil Lawrence", email = "example@example.com"}
-]
-license = {text = "MIT"}
-requires-python = ">=3.6"
-dependencies = [
-    "pyyaml>=6.0",
+packages = [
+    {include = "scripts"},
+    {include = "backlog"}
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "black>=23.0",
-    "mypy>=1.0",
-]
+[tool.poetry.dependencies]
+python = ">=3.10"
+pyyaml = ">=6.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+black = "^25.0.0"
+mypy = "^1.0.0"
+pytest-cov = "^4.1.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = ">=7.0"
+sphinx-rtd-theme = ">=1.0"
+myst-parser = ">=2.0"
+sphinx-copybutton = ">=0.5"
+sphinx-autodoc-typehints = ">=1.25"
+linkify-it-py = ">=2.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -30,6 +35,10 @@ testpaths = ["tests"]
 line-length = 88
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.10"
 warn_return_any = true
-warn_unused_configs = true 
+warn_unused_configs = true
+
+[tool.sphinx]
+version = "7.0"
+release = "0.1.0" 

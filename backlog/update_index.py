@@ -13,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 
 __all__ = [
-    'extract_yaml_frontmatter',
     'extract_task_metadata',
     'find_all_task_files',
     'generate_index_content',
@@ -28,15 +27,16 @@ STATUSES = ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned']
 
 def extract_yaml_frontmatter(content):
     """Extract YAML frontmatter from content if present."""
-    frontmatter_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+    frontmatter_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL | re.MULTILINE)
     if frontmatter_match:
         frontmatter_text = frontmatter_match.group(1)
         try:
+            # Remove any leading/trailing whitespace from each line
+            frontmatter_text = '\n'.join(line.strip() for line in frontmatter_text.split('\n'))
             return yaml.safe_load(frontmatter_text)
         except Exception as e:
             print(f"Error parsing YAML frontmatter: {str(e)}")
-            return {}
-    return {}
+    return None
 
 def extract_task_metadata(filepath):
     """Extract metadata from a task file."""

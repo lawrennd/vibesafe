@@ -1,0 +1,38 @@
+name: Documentation Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+      - name: Install dependencies
+        run: |
+          # Install all dependencies including docs group
+          poetry install --with docs
+      - name: Test documentation build
+        run: |
+          poetry run python docs/test_build.py
+      - name: Build documentation
+        run: |
+          poetry run sphinx-build -b html docs/source docs/_build/html
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+        if: github.ref == 'refs/heads/main' 
