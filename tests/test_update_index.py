@@ -8,22 +8,9 @@ import tempfile
 import unittest
 from pathlib import Path
 import shutil
-import sys
 
-# Add the project root to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Import functions from the update_index script
-from backlog.update_index import (
-    extract_yaml_frontmatter,
-    extract_task_metadata,
-    find_all_task_files,
-    generate_index_content,
-    update_index,
-    CATEGORIES,
-    STATUSES
-)
-
+# Import the module
+import backlog.update_index as update_index
 
 class TestUpdateIndex(unittest.TestCase):
     """Tests for the backlog/update_index.py script."""
@@ -33,7 +20,7 @@ class TestUpdateIndex(unittest.TestCase):
         self.test_dir = tempfile.mkdtemp()
         
         # Create a mock backlog structure
-        for category in CATEGORIES:
+        for category in update_index.CATEGORIES:
             os.makedirs(os.path.join(self.test_dir, category), exist_ok=True)
     
     def tearDown(self):
@@ -42,8 +29,12 @@ class TestUpdateIndex(unittest.TestCase):
     
     def test_extract_yaml_frontmatter(self):
         """Test extraction of YAML frontmatter from task content."""
-        # Content with valid YAML frontmatter
-        content_with_frontmatter = """---
+        # Create a test file with valid YAML frontmatter
+        category = "features"
+        test_file_path = os.path.join(self.test_dir, category, "2025-05-12_test-task.md")
+        
+        with open(test_file_path, 'w') as f:
+            f.write("""---
 id: "2025-05-12_test-task"
 title: "Test Task"
 status: "Ready"
@@ -53,16 +44,33 @@ priority: "high"
 # Task: Test Task
 
 Content goes here.
-"""
+""")
         
-        # Content without YAML frontmatter
-        content_without_frontmatter = """# Task: Test Task
+        # Extract metadata
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        
+        # Check metadata
+        self.assertEqual(metadata['id'], '2025-05-12_test-task')
+        self.assertEqual(metadata['title'], 'Test Task')
+        self.assertEqual(metadata['status'], 'Ready')
+        self.assertEqual(metadata['priority'], 'high')
+        
+        # Test without frontmatter
+        with open(test_file_path, 'w') as f:
+            f.write("""# Task: Test Task
 
 Content goes here.
-"""
+""")
         
-        # Content with invalid YAML frontmatter - truly invalid with syntax error
-        content_with_invalid_frontmatter = """---
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertEqual(metadata['id'], '2025-05-12_test-task')  # ID from filename
+        self.assertEqual(metadata['title'], 'Test Task')
+        self.assertIsNone(metadata['status'])
+        self.assertIsNone(metadata['priority'])
+        
+        # Test with invalid frontmatter
+        with open(test_file_path, 'w') as f:
+            f.write("""---
 id: "2025-05-12_test-task"
 title: "Test Task
 status: "Ready"  # Missing closing quote on previous line
@@ -72,22 +80,13 @@ priority: "high"
 # Task: Test Task
 
 Content goes here.
-"""
+""")
         
-        # Test with valid frontmatter
-        frontmatter = extract_yaml_frontmatter(content_with_frontmatter)
-        self.assertEqual(frontmatter['id'], '2025-05-12_test-task')
-        self.assertEqual(frontmatter['title'], 'Test Task')
-        self.assertEqual(frontmatter['status'], 'Ready')
-        self.assertEqual(frontmatter['priority'], 'high')
-        
-        # Test without frontmatter
-        frontmatter = extract_yaml_frontmatter(content_without_frontmatter)
-        self.assertEqual(frontmatter, {})
-        
-        # Test with invalid frontmatter
-        frontmatter = extract_yaml_frontmatter(content_with_invalid_frontmatter)
-        self.assertEqual(frontmatter, {})
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertEqual(metadata['id'], '2025-05-12_test-task')  # ID from filename
+        self.assertEqual(metadata['title'], 'Test Task')
+        self.assertIsNone(metadata['status'])
+        self.assertIsNone(metadata['priority'])
     
     def test_extract_task_metadata_yaml_frontmatter(self):
         """Test extraction of task metadata from files with YAML frontmatter."""
@@ -111,7 +110,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
@@ -142,7 +141,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
@@ -182,7 +181,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check that YAML frontmatter takes precedence
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
@@ -192,44 +191,6 @@ Content goes here.
         self.assertEqual(metadata['created'], '2025-05-12')
         self.assertEqual(metadata['updated'], '2025-05-13')
         self.assertEqual(metadata['category'], category)
-    
-    def test_find_all_task_files(self):
-        """Test finding all task files in the backlog directory."""
-        # Replace the original function temporarily to use our test directory
-        original_parent = Path.parent.fget
-        
-        try:
-            # Mock Path.parent to return our test directory
-            def mock_parent(self):
-                if str(self).endswith('update_index.py'):
-                    return Path(self.test_dir)
-                return original_parent(self)
-            
-            Path.parent = property(mock_parent.__get__(None, Path))
-            
-            # Create some test files
-            for category in CATEGORIES:
-                # Create README and index files (should be ignored)
-                with open(os.path.join(self.test_dir, category, "README.md"), 'w') as f:
-                    f.write("# README")
-                
-                with open(os.path.join(self.test_dir, category, "index.md"), 'w') as f:
-                    f.write("# Index")
-                
-                # Create task files (should be found)
-                with open(os.path.join(self.test_dir, category, "2025-05-12_task1.md"), 'w') as f:
-                    f.write("# Task 1")
-                
-                with open(os.path.join(self.test_dir, category, "2025-05-13_task2.md"), 'w') as f:
-                    f.write("# Task 2")
-            
-            # This is not a proper test because we can't monkey-patch Path.parent easily
-            # But the function is straightforward enough that we trust it works
-            self.assertTrue(True)
-            
-        finally:
-            # Restore the original function
-            Path.parent = property(original_parent)
     
     def test_generate_index_content(self):
         """Test generating index content from task metadata."""
@@ -319,7 +280,7 @@ Content goes here.
 """)
         
         # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
         self.assertEqual(metadata['status'], 'ready')  # Should be preserved as lowercase
@@ -332,9 +293,9 @@ Content goes here.
         # Create a minimal version of generate_index_content for testing status matching
         def test_status_matching(tasks):
             categorized_tasks = {}
-            for category in CATEGORIES:
+            for category in update_index.CATEGORIES:
                 categorized_tasks[category] = {}
-                for status in STATUSES:
+                for status in update_index.STATUSES:
                     categorized_tasks[category][status] = []
             
             for task in tasks:
@@ -346,7 +307,7 @@ Content goes here.
                 
                 # Ensure status is one of the valid statuses (case-insensitive)
                 matching_status = None
-                for valid_status in STATUSES:
+                for valid_status in update_index.STATUSES:
                     if status.lower() == valid_status.lower():
                         matching_status = valid_status
                         break

@@ -1,12 +1,27 @@
 #!/usr/bin/env python3
-"""
-What's Next Script for VibeSafe
+"""What's Next Script for VibeSafe.
 
 This script summarizes the current project status and identifies pending tasks,
 helping LLMs quickly understand project context and prioritize future work.
 
+The script provides a comprehensive overview of:
+- Git repository status
+- CIP (Change Implementation Proposal) status
+- Backlog item status
+- Requirements status
+
 Usage:
-  python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
+    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
+
+Options:
+    --no-git              Skip Git status information
+    --no-color           Disable colored output
+    --cip-only           Show only CIP status
+    --backlog-only       Show only backlog status
+    --requirements-only  Show only requirements status
+
+Returns:
+    None. Outputs formatted status information to stdout.
 """
 
 import os
@@ -22,6 +37,12 @@ from typing import Dict, List, Any, Optional, Tuple
 
 # ANSI color codes for terminal output
 class Colors:
+    """ANSI color codes for terminal output.
+    
+    This class provides color constants for terminal output formatting.
+    Colors can be disabled using the disable() class method.
+    """
+    
     HEADER = '\033[95m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
@@ -33,7 +54,7 @@ class Colors:
 
     @classmethod
     def disable(cls):
-        """Disable all colors."""
+        """Disable all colors by setting them to empty strings."""
         cls.HEADER = ''
         cls.BLUE = ''
         cls.GREEN = ''
@@ -44,13 +65,26 @@ class Colors:
         cls.UNDERLINE = ''
 
 def print_section(title: str):
-    """Print a formatted section header."""
+    """Print a formatted section header.
+    
+    Args:
+        title: The title text to display in the section header.
+    """
     print(f"\n{Colors.HEADER}{Colors.BOLD}{'=' * 80}{Colors.ENDC}")
     print(f"{Colors.HEADER}{Colors.BOLD}{title.center(80)}{Colors.ENDC}")
     print(f"{Colors.HEADER}{Colors.BOLD}{'=' * 80}{Colors.ENDC}\n")
 
 def run_command(command: List[str]) -> Tuple[str, int]:
-    """Run a shell command and return its output and exit code."""
+    """Run a shell command and return its output and exit code.
+    
+    Args:
+        command: List of command and arguments to run.
+        
+    Returns:
+        Tuple containing:
+            - Command output as string
+            - Exit code as integer
+    """
     try:
         result = subprocess.run(
             command, 
@@ -63,7 +97,17 @@ def run_command(command: List[str]) -> Tuple[str, int]:
         return f"Error executing command: {e}", 1
 
 def get_git_status() -> Dict[str, Any]:
-    """Get Git repository status information."""
+    """Get Git repository status information.
+    
+    Collects information about:
+    - Current branch
+    - Recent commits (last 5)
+    - Modified files
+    - Untracked files
+    
+    Returns:
+        Dictionary containing Git status information.
+    """
     git_info = {}
     
     # Get current branch
@@ -102,7 +146,14 @@ def get_git_status() -> Dict[str, Any]:
     return git_info
 
 def extract_frontmatter(file_path: str) -> Optional[Dict[str, Any]]:
-    """Extract YAML frontmatter from a markdown file if it exists."""
+    """Extract YAML frontmatter from a markdown file if it exists.
+    
+    Args:
+        file_path: Path to the markdown file.
+        
+    Returns:
+        Dictionary containing frontmatter data if found, None otherwise.
+    """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -118,7 +169,15 @@ def extract_frontmatter(file_path: str) -> Optional[Dict[str, Any]]:
     return None
 
 def has_expected_frontmatter(file_path: str, expected_keys: List[str]) -> bool:
-    """Check if a file has all the expected frontmatter keys."""
+    """Check if a file has all the expected frontmatter keys.
+    
+    Args:
+        file_path: Path to the markdown file.
+        expected_keys: List of required frontmatter keys.
+        
+    Returns:
+        True if all expected keys are present, False otherwise.
+    """
     frontmatter = extract_frontmatter(file_path)
     if not frontmatter:
         return False
@@ -130,7 +189,17 @@ def has_expected_frontmatter(file_path: str, expected_keys: List[str]) -> bool:
     return True
 
 def scan_cips() -> Dict[str, Any]:
-    """Scan all CIP files and collect their status."""
+    """Scan all CIP files and collect their status.
+    
+    Collects information about:
+    - Total number of CIPs
+    - CIPs with/without frontmatter
+    - CIPs by status (proposed, accepted, implemented, closed)
+    - CIP details including title and dates
+    
+    Returns:
+        Dictionary containing CIP status information.
+    """
     cips_info = {
         'total': 0,
         'with_frontmatter': 0,
