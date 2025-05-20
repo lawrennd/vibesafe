@@ -9,8 +9,15 @@ import unittest
 from pathlib import Path
 import shutil
 
-# Import the module directly
-import backlog.update_index as update_index
+# Import the module and its constants
+from backlog.update_index import (
+    extract_task_metadata,
+    find_all_task_files,
+    generate_index_content,
+    update_index,
+    CATEGORIES,
+    STATUSES
+)
 
 class TestUpdateIndex(unittest.TestCase):
     """Tests for the backlog/update_index.py script."""
@@ -20,7 +27,7 @@ class TestUpdateIndex(unittest.TestCase):
         self.test_dir = tempfile.mkdtemp()
         
         # Create a mock backlog structure
-        for category in update_index.CATEGORIES:
+        for category in CATEGORIES:
             os.makedirs(os.path.join(self.test_dir, category), exist_ok=True)
     
     def tearDown(self):
@@ -281,9 +288,9 @@ Content goes here.
         # Create a minimal version of generate_index_content for testing status matching
         def test_status_matching(tasks):
             categorized_tasks = {}
-            for category in update_index.CATEGORIES:
+            for category in CATEGORIES:
                 categorized_tasks[category] = {}
-                for status in update_index.STATUSES:
+                for status in STATUSES:
                     categorized_tasks[category][status] = []
             
             for task in tasks:
@@ -295,7 +302,7 @@ Content goes here.
                 
                 # Ensure status is one of the valid statuses (case-insensitive)
                 matching_status = None
-                for valid_status in update_index.STATUSES:
+                for valid_status in STATUSES:
                     if status.lower() == valid_status.lower():
                         matching_status = valid_status
                         break
