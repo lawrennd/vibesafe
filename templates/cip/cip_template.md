@@ -24,11 +24,11 @@ More detailed explanation of the proposed improvement, including technical detai
 ## Implementation Plan
 Step-by-step plan for implementing the improvement:
 
-1. **Step 1**:
+1. *Step 1*:
    - Sub-task 1
    - Sub-task 2
 
-2. **Step 2**:
+2. *Step 2*:
    - Sub-task 1
    - Sub-task 2
 
