@@ -553,6 +553,29 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     
     return next_steps
 
+def run_update_scripts() -> List[str]:
+    """Run all update scripts to ensure registries are up to date."""
+    update_scripts = [
+        'backlog/update_index.py',
+        'cip/update_index.py',
+        'tenets/update_index.py',
+        'ai-requirements/update_index.py'
+    ]
+    
+    results = []
+    for script in update_scripts:
+        if os.path.exists(script):
+            try:
+                output, exit_code = run_command(['python3', script])
+                if exit_code == 0:
+                    results.append(f"✓ Updated {script}")
+                else:
+                    results.append(f"✗ Failed to update {script}: {output}")
+            except Exception as e:
+                results.append(f"✗ Error running {script}: {str(e)}")
+    
+    return results
+
 def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(description="What's Next for VibeSafe projects")
@@ -561,12 +584,19 @@ def main():
     parser.add_argument('--cip-only', action='store_true', help='Only show CIP information')
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
+    parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
     args = parser.parse_args()
     
     if args.no_color:
         Colors.disable()
-    
-    print_section("VibeSafe Project Status")
+
+    # Run update scripts first if not disabled
+    if not args.no_update:
+        print_section("Updating Registries")
+        update_results = run_update_scripts()
+        for result in update_results:
+            print(result)
+        print()  # Add a blank line for spacing
     
     # Get Git info if requested
     git_info = {}

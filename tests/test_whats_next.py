@@ -361,6 +361,7 @@ def test_generate_next_steps_with_empty_requirements():
     backlog_info = {'by_status': {'proposed': []}}
     requirements_info = {
         'has_framework': True,
+        'has_template': True,  # Template exists, so we can suggest creating patterns
         'patterns': [],
         'prompts': {'discovery': [], 'refinement': [], 'validation': [], 'testing': []},
         'integrations': [],
