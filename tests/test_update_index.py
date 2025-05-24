@@ -123,11 +123,11 @@ Content goes here.
         self.assertEqual(metadata['category'], category)
     
     def test_extract_task_metadata_traditional(self):
-        """Test extraction of task metadata from files with traditional format."""
+        """Test extraction of task metadata from files with traditional format (should raise ValueError if YAML frontmatter is missing)."""
         # Create a test file with traditional format
         category = "infrastructure"
         test_file_path = os.path.join(self.test_dir, category, "2025-05-12_test-task.md")
-        
+
         with open(test_file_path, 'w') as f:
             f.write("""# Task: Test Task Traditional
 
@@ -140,18 +140,10 @@ Content goes here.
 
 Content goes here.
 """)
-        
-        # Extract metadata
-        metadata = extract_task_metadata(Path(test_file_path))
-        
-        # Check metadata
-        self.assertEqual(metadata['id'], '2025-05-12_test-task')
-        self.assertEqual(metadata['title'], 'Test Task Traditional')
-        self.assertEqual(metadata['status'], 'In Progress')
-        self.assertEqual(metadata['priority'], 'Medium')
-        self.assertEqual(metadata['created'], '2025-05-12')
-        self.assertEqual(metadata['updated'], '2025-05-13')
-        self.assertEqual(metadata['category'], category)
+
+        # Extract metadata should raise ValueError
+        with self.assertRaises(ValueError):
+            extract_task_metadata(Path(test_file_path))
     
     def test_extract_task_metadata_both_formats(self):
         """Test extraction of task metadata from files with both YAML frontmatter and traditional format."""
