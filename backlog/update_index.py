@@ -31,8 +31,8 @@ def extract_yaml_frontmatter(content):
     if frontmatter_match:
         frontmatter_text = frontmatter_match.group(1)
         try:
-            # Remove any leading/trailing whitespace from each line
-            frontmatter_text = '\n'.join(line.strip() for line in frontmatter_text.split('\n'))
+            # Preserve indentation but normalize line endings
+            frontmatter_text = '\n'.join(line.rstrip() for line in frontmatter_text.split('\n'))
             return yaml.safe_load(frontmatter_text)
         except Exception as e:
             print(f"Error parsing YAML frontmatter: {str(e)}")
@@ -80,14 +80,26 @@ def extract_task_metadata(filepath):
             # Extract YAML frontmatter
             frontmatter = extract_yaml_frontmatter(content)
             if not frontmatter:
+                # Check for traditional format
+                if re.search(r'^\s*-\s*\*\*ID\*\*:', content, re.MULTILINE):
+                    raise ValueError(f"Traditional format detected but YAML frontmatter required: {filepath}")
                 raise ValueError(f"Missing YAML frontmatter in file: {filepath}")
+                
             # Map frontmatter fields to metadata
             if 'id' in frontmatter:
                 metadata['id'] = frontmatter['id']
             if 'title' in frontmatter:
                 metadata['title'] = frontmatter['title']
             if 'status' in frontmatter:
-                metadata['status'] = frontmatter['status']
+                # Ensure status is one of the valid statuses (case-insensitive)
+                status = frontmatter['status']
+                # Keep original case, just validate against valid statuses
+                for valid_status in STATUSES:
+                    if status.lower() == valid_status.lower():
+                        metadata['status'] = status  # Keep original case
+                        break
+                if metadata['status'] is None:
+                    metadata['status'] = status  # Keep original if no match found
             if 'priority' in frontmatter:
                 metadata['priority'] = frontmatter['priority']
             if 'created' in frontmatter:
