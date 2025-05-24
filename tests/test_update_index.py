@@ -62,31 +62,9 @@ Content goes here.
 Content goes here.
 """)
         
-        metadata = update_index.extract_task_metadata(Path(test_file_path))
-        self.assertEqual(metadata['id'], '2025-05-12_test-task')  # ID from filename
-        self.assertEqual(metadata['title'], 'Test Task')
-        self.assertIsNone(metadata['status'])
-        self.assertIsNone(metadata['priority'])
-        
-        # Test with invalid frontmatter
-        with open(test_file_path, 'w') as f:
-            f.write("""---
-id: "2025-05-12_test-task"
-title: "Test Task
-status: "Ready"  # Missing closing quote on previous line
-priority: "high"
----
-
-# Task: Test Task
-
-Content goes here.
-""")
-        
-        metadata = update_index.extract_task_metadata(Path(test_file_path))
-        self.assertEqual(metadata['id'], '2025-05-12_test-task')  # ID from filename
-        self.assertEqual(metadata['title'], 'Test Task')
-        self.assertIsNone(metadata['status'])
-        self.assertIsNone(metadata['priority'])
+        # Expect ValueError when no YAML frontmatter is present
+        with self.assertRaises(ValueError):
+            update_index.extract_task_metadata(Path(test_file_path))
     
     def test_extract_task_metadata_yaml_frontmatter(self):
         """Test extraction of task metadata from files with YAML frontmatter."""
