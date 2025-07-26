@@ -78,6 +78,10 @@ ai-requirements/guidance/
 tenets/README.md
 tenets/tenet_template.md
 tenets/combine_tenets.py
+
+# VibeSafe documentation (system files)
+docs/whats_next_script.md
+docs/yaml_frontmatter_examples.md
 ```
 
 *2. Update Installation Script*

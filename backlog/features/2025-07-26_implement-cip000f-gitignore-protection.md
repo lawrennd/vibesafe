@@ -106,6 +106,10 @@ ai-requirements/guidance/
 tenets/README.md
 tenets/tenet_template.md
 tenets/combine_tenets.py
+
+# VibeSafe documentation (system files)
+docs/whats_next_script.md
+docs/yaml_frontmatter_examples.md
 EOF
 }
 ```
@@ -136,5 +140,8 @@ Task created with Ready status. CIP-000F has been approved and documented. Ready
 - ✅ Comprehensive testing verified all functionality works correctly
 
 **UPDATE**: CIP-000B (vibesafe-update) has been superseded by CIP-000E. No longer need vibesafe-update integration.
+
+**UPDATE**: Added VibeSafe documentation files to gitignore protection:
+- ✅ `docs/whats_next_script.md`, `docs/yaml_frontmatter_examples.md` (VibeSafe system documentation)
 
 Next: Complete Phase 2 (installation testing) and Phase 3 (documentation updates). 
