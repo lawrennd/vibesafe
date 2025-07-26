@@ -1,9 +1,9 @@
 ---
 id: "000B"
 title: "VibeSafe Update Script"
-status: "implemented"
+status: "superseded"
 created: "2025-05-11"
-last_updated: "2025-05-11"
+last_updated: "2025-07-26"
 author: "Neil Lawrence"
 tags:
   - "automation"
@@ -19,11 +19,13 @@ tags:
 - [x] Proposed: [2025-05-11]
 - [x] Accepted: [2025-05-11]
 - [x] Implemented: [2025-05-11]
-- [ ] Closed
+- [x] Superseded by CIP-000E: [2025-07-26]
 
 ## Description
 
 This CIP proposes the creation of an update script for VibeSafe that automatically checks for and adds missing components, keeping a VibeSafe installation up-to-date with the latest features and tools as they become available.
+
+**⚠️ SUPERSEDED**: This CIP has been superseded by CIP-000E (Clean Installation Philosophy). With the "Install = Reinstall" approach, users can simply re-run `scripts/install-minimal.sh` to get the latest VibeSafe components, eliminating the need for a separate update script.
 
 ## Motivation
 

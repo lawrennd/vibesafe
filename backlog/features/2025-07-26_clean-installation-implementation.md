@@ -26,29 +26,29 @@ CIP-000E defines a simple approach: always overwrite VibeSafe system files, alwa
 
 ## Acceptance Criteria
 
-1. **Update Installation Script**
+1. *Update Installation Script*
    - [x] Simplify `scripts/install-minimal.sh` to remove selective installation logic
    - [x] Implement clear overwrite/preserve rules from CIP-000E
    - [x] Remove update mode complexity
    - [x] Always overwrite: templates, system READMEs, cursor rules, scripts
    - [x] Always preserve: project README, user tasks/CIPs/tenets, .venv
 
-2. **Update Installation Tests**
+2. *Update Installation Tests*
    - [x] Remove tests for selective installation (no longer supported)
    - [x] Add tests verifying system files are always overwritten
    - [x] Add tests verifying user content is always preserved
    - [x] Simplify test matrix to focus on preserve/overwrite behavior
 
-3. **Update Documentation**
+3. *Update Documentation*
    - [x] Update main README with simple installation instructions
    - [x] Remove complex selective installation documentation
    - [x] Document clear preserve/overwrite rules for users
    - [x] Add examples showing what happens on reinstall
 
-4. **Mark Related Items**
+4. *Mark Related Items*
    - [x] Update `2025-05-05_easy-installation-method.md` to reference CIP-000E
    - [x] Simplify `2025-05-05_installation-testing-plan.md` scope
-   - [ ] Evaluate if CIP-000B (update script) is still needed
+   - [x] Evaluate if CIP-000B (update script) is still needed
 
 ## Implementation Notes
 
@@ -79,7 +79,7 @@ install_vibesafe() {
 
 ### File Classification (from CIP-000E)
 
-**Always Overwrite:**
+*Always Overwrite:*
 - `cip/README.md`, `cip/cip_template.md`
 - `backlog/README.md`, `backlog/task_template.md`, `backlog/update_index.py`
 - `tenets/README.md`, `tenets/tenet_template.md`
@@ -87,7 +87,7 @@ install_vibesafe() {
 - `whats-next`, `install-whats-next.sh`
 - All `ai-requirements/` templates and system files
 
-**Always Preserve:**
+*Always Preserve:*
 - `README.md` (project root)
 - `backlog/features/`, `backlog/bugs/`, etc. (user tasks)
 - `cip0001.md`, `cip0002.md`, etc. (user CIPs)
@@ -119,7 +119,7 @@ Focus on core behavior:
 
 ## Estimated Effort
 
-**1-2 days** - Simplification should reduce complexity significantly compared to current approach.
+*1-2 days* - Simplification should reduce complexity significantly compared to current approach.
 
 ## Success Criteria
 
@@ -159,7 +159,7 @@ Focus on core behavior:
 
 ## Related Items
 
-- **Implements**: CIP-000E (Clean Installation Philosophy)
-- **Supersedes**: `2025-05-05_easy-installation-method.md`
-- **Updates**: `2025-05-05_installation-testing-plan.md`
-- **Evaluates**: CIP-000B (VibeSafe Update Script - may no longer be needed) 
+- *Implements*: CIP-000E (Clean Installation Philosophy)
+- *Supersedes*: `2025-05-05_easy-installation-method.md`
+- *Updates*: `2025-05-05_installation-testing-plan.md`
+- *Supersedes*: CIP-000B (VibeSafe Update Script - redundant with "Install = Reinstall" philosophy) 

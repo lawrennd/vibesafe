@@ -61,7 +61,6 @@ cip/cip_template.md
 # VibeSafe scripts and tools
 scripts/whats_next.py
 install-whats-next.sh
-vibesafe-update
 
 # VibeSafe templates directory
 templates/
@@ -86,9 +85,9 @@ tenets/combine_tenets.py
 - Handle existing .gitignore files gracefully (merge, don't overwrite)
 - Add section headers and comments for clarity
 
-*3. Update vibesafe-update Script*
-- Add gitignore management as a new component
-- Allow checking/updating gitignore entries for existing installations
+*3. ~~Update vibesafe-update Script~~ (superseded by CIP-000E)*
+- ~~Add gitignore management as a new component~~ (no longer needed)
+- ~~Allow checking/updating gitignore entries~~ (install-minimal.sh handles this)
 
 ### Phase 2: Documentation and Workflow Updates
 
@@ -123,7 +122,7 @@ tenets/combine_tenets.py
 
 - [ ] Create VibeSafe gitignore template
 - [ ] Update `install-minimal.sh` with gitignore management
-- [ ] Update `vibesafe-update` script
+- [x] ~~Update `vibesafe-update` script~~ (superseded by CIP-000E)
 - [ ] Test installation with existing .gitignore files
 - [ ] Test installation without existing .gitignore files
 - [ ] Update Cursor rules to remove surgical git warnings
