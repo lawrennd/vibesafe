@@ -43,6 +43,31 @@ backlog/
 └── bugs/                     # Bug-related tasks
 ```
 
+## VibeSafe File Classification
+
+**⚠️ IMPORTANT: VibeSafe System vs User Files**
+
+When working with VibeSafe projects, be aware of the distinction between system files and user content:
+
+### 🔧 VibeSafe System Files (Don't commit these unless updating VibeSafe itself)
+- `backlog/README.md` - System documentation 
+- `backlog/task_template.md` - Template file
+- `backlog/update_index.py` - Index generation script
+- `backlog/index.md` - Auto-generated index (updates frequently)
+- `.cursor/rules/*` - Cursor AI rules (all files)
+- `scripts/whats_next.py` - Status script
+- `install-whats-next.sh` - Installation script
+- `whats-next` - Wrapper script
+
+### 📝 User Content (Always commit these)
+- `backlog/features/*.md` - User-created feature tasks
+- `backlog/bugs/*.md` - User-created bug tasks  
+- `backlog/documentation/*.md` - User-created documentation tasks
+- `backlog/infrastructure/*.md` - User-created infrastructure tasks
+- Any task files following the `YYYY-MM-DD_description.md` pattern
+
+**Tip**: Focus on committing your actual work (tasks you create) rather than VibeSafe infrastructure files.
+
 ## Task Naming Convention
 
 Task files follow one of these naming conventions:
