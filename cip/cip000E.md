@@ -13,8 +13,8 @@ supersedes: ["CIP-0002"]
 ## Status
 
 - [x] Proposed: 2025-07-26
-- [ ] Accepted
-- [ ] Implemented
+- [x] Accepted: 2025-07-26
+- [x] Implemented: 2025-07-26
 - [ ] Closed
 
 ## Description
@@ -140,11 +140,11 @@ install_vibesafe() {
 
 ## Implementation Status
 
-- [ ] Update `scripts/install-minimal.sh` with new philosophy
-- [ ] Simplify installation tests
-- [ ] Update documentation 
-- [ ] Mark CIP-0002 as superseded
-- [ ] Update related backlog items
+- [x] Update `scripts/install-minimal.sh` with new philosophy
+- [x] Simplify installation tests  
+- [x] Update documentation
+- [x] Mark CIP-0002 as superseded
+- [x] Update related backlog items
 
 ## References
 

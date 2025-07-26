@@ -40,48 +40,62 @@ VibeSafe contains templates and configurations for three key project management 
 
 5. *What's Next Script*: A project status summarizer that helps both humans and LLMs quickly understand the current state of the project and identify pending tasks.
 
-## Quick Installation
+## Simple Installation
 
-VibeSafe is designed to be simple to install and use across all major platforms (Linux, macOS, and Windows). The quickest way to get started is with our one-line installation script:
+VibeSafe follows the *Clean Installation Philosophy* (CIP-000E): simple, predictable installation that always works the same way.
+
+### One-Line Installation
 
 ```bash
-# Create a new directory for your project (if needed)
-mkdir my-project && cd my-project
-
-# Install VibeSafe with the minimal installation script
+# Install VibeSafe in your project directory
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
 ```
 
-This script will:
-- Create the basic VibeSafe directory structure
-- Copy template files for CIPs, backlog tasks, and tenets
-- Add a starter README.md to your project
-- Set up the "What's Next" script for project status tracking (if Python 3 is available)
+### What Happens During Installation
 
-The installation requires only `bash` and `git`, with no additional dependencies for the core features. The "What's Next" script requires Python 3 and will be installed automatically if available. Our automated testing ensures the installation works reliably across Linux, macOS, and Windows environments.
+*🔄 Install = Reinstall*  
+Every installation is treated as a clean reinstall with predictable behavior:
 
-### Customizing the Installation
+*✅ Always Updated (VibeSafe System Files):*
+- Templates: `task_template.md`, `cip_template.md`, `tenet_template.md`
+- System documentation: `backlog/README.md`, `cip/README.md`, etc.
+- Scripts: `whats-next`, `update_index.py`, installation scripts
+- Cursor rules: `.cursor/rules/*`
+- AI-Requirements framework templates
 
-The installation script supports several environment variables for customization:
+*🛡️ Always Preserved (Your Content):*
+- Project README: `README.md` (root level)
+- Your tasks: `backlog/features/your-task.md`, etc.
+- Your CIPs: `cip0001.md`, `cip0002.md`, etc.
+- Your tenets: Actual project tenet files
+- Virtual environment: `.venv`
+- Your requirements documents
+
+### Requirements
+
+- *Required*: `bash` and `git`
+- *Optional*: Python 3 (for What's Next script)
+- *Platforms*: Linux, macOS, Windows (Git Bash/WSL)
+
+### Advanced Usage
 
 ```bash
-# Use a custom repository URL
-VIBESAFE_REPO_URL=https://github.com/your-fork/vibesafe.git bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+# Use custom templates from your fork
+VIBESAFE_REPO_URL=https://github.com/your-fork/vibesafe.git bash install-script.sh
 
 # Use local templates directory
-VIBESAFE_TEMPLATES_DIR=/path/to/your/templates bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+VIBESAFE_TEMPLATES_DIR=/path/to/templates bash install-script.sh
 
-# Skip repository cloning (use default templates)
-VIBESAFE_SKIP_CLONE=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
-
-# Skip installing the "What's Next" script
-VIBESAFE_INSTALL_WHATS_NEXT=false bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
-
-# Enable debug output
-VIBESAFE_DEBUG=true bash -c "$(curl -fsSL https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)"
+# Skip What's Next script installation
+VIBESAFE_INSTALL_WHATS_NEXT=false bash install-script.sh
 ```
 
-The script is designed to be self-documenting, with the template structure defined by the repository rather than hard-coded in the script itself. This approach makes it easy to customize and extend the template system.
+### Why This Approach?
+
+- *Predictable*: You always know exactly what will happen
+- *Safe*: Your content is never touched
+- *Simple*: No complex options or modes
+- *Always Current*: System files stay up-to-date with latest VibeSafe
 
 ## Repository Structure
 

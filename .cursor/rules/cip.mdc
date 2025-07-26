@@ -40,6 +40,26 @@ cip/
 └── ...                       # Additional CIPs
 ```
 
+## VibeSafe File Classification
+
+**⚠️ IMPORTANT: VibeSafe System vs User Files**
+
+When working with VibeSafe projects, be aware of the distinction between system files and user content:
+
+### 🔧 VibeSafe System Files (Don't commit these unless updating VibeSafe itself)
+- `cip/README.md` - System documentation 
+- `cip/cip_template.md` - Template file
+- `.cursor/rules/*` - Cursor AI rules (all files)
+- `scripts/whats_next.py` - Status script
+- `install-whats-next.sh` - Installation script
+- `whats-next` - Wrapper script
+
+### 📝 User Content (Always commit these)
+- `cip0001.md`, `cip0002.md`, etc. - User-created CIPs
+- Any CIP files following the `cip[XXXX].md` pattern (hexadecimal numbering)
+
+**Tip**: Focus on committing your actual CIPs rather than VibeSafe infrastructure files.
+
 ### Numbering System
 
 CIPs use a hexadecimal numbering system:

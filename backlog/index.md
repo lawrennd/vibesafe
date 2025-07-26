@@ -54,8 +54,6 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-- [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
-
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)
@@ -92,6 +90,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
+
 - [What's Next Script Status Normalization Enhancement](features/2025-07-26_whats-next-status-normalization.md)
 
 - [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
@@ -99,8 +99,6 @@ This file provides an overview of all current backlog items organized by categor
 - [Update Tests for Status Normalization in update_index.py](features/2025-07-26_update-index-tests.md)
 
 - [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
-
-- [Integrate AI-Requirements Framework into Installation Script](infrastructure/2025-05-12_ai-requirements-integration.md)
 
 
 ## Recently Abandoned Tasks

@@ -37,6 +37,25 @@ ai-requirements/
 └── guidance/                    # Best practices and tips
 ```
 
+## VibeSafe File Classification
+
+**⚠️ IMPORTANT: VibeSafe System vs User Files**
+
+When working with AI-Requirements, distinguish between framework files and your actual requirements:
+
+### 🔧 VibeSafe System Files (Don't commit these unless updating VibeSafe itself)
+- `ai-requirements/README.md` - Framework documentation
+- `ai-requirements/requirement_template.md` - Template file
+- All files in `prompts/`, `patterns/`, `integrations/`, `examples/`, `guidance/` - Framework templates
+- `.cursor/rules/*` - Cursor AI rules
+
+### 📝 User Content (Always commit these - your actual requirements)
+- **Your Requirements**: Actual requirement documents you create
+- **Project-Specific**: Requirements following your project's naming convention
+- **Requirements Analysis**: Your analysis and refinement of requirements
+
+**Tip**: Focus on committing your actual requirements documents, not the AI-Requirements framework files.
+
 ## Requirements Status
 
 Requirements can have the following statuses:
