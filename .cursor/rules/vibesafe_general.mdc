@@ -52,10 +52,22 @@ python scripts/whats_next.py    # Direct execution
 
 **📅 ALWAYS verify today's date before creating:**
 
+**✅ Check date automatically with shell commands:**
+```bash
+# Get today's date in YYYY-MM-DD format
+date +%Y-%m-%d
+
+# Alternative formats if needed
+date +%Y%m%d           # 20250726 format
+date "+%B %d, %Y"      # July 26, 2025 format
+```
+
 **For Backlog Tasks:**
 ```bash
 # Task naming: YYYY-MM-DD_description.md
 # Example: 2025-07-26_implement-feature.md
+TODAY=$(date +%Y-%m-%d)
+echo "Today: $TODAY"
 ```
 
 **For CIPs:**
@@ -65,9 +77,10 @@ created: "2025-07-26"
 last_updated: "2025-07-26"
 ```
 
-**🗓️ Before creating tasks/CIPs, confirm:**
-- "Today's date is [DATE], correct?"
-- "Should I use today's date (YYYY-MM-DD) for this task/CIP?"
+**🗓️ Process:**
+- ✅ **Run `date +%Y-%m-%d`** to get today's date automatically
+- ✅ **Use in file naming** and YAML frontmatter
+- 🤔 **Only ask user** if date seems wrong or if creating retroactive entries
 
 ### 4. VibeSafe File Classification Awareness
 
