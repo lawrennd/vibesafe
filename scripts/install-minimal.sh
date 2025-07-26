@@ -353,6 +353,7 @@ cip/cip_template.md
 # VibeSafe scripts and tools
 scripts/whats_next.py
 install-whats-next.sh
+whats-next
 
 # VibeSafe templates directory
 templates/

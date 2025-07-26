@@ -44,10 +44,10 @@ Implement the VibeSafe Auto-Gitignore Protection system as defined in CIP-000F. 
 ### Technical Approach
 Start with structured gitignore management functions that can:
 
-1. **Parse existing .gitignore**: Check what patterns already exist
-2. **Detect coverage**: Determine if VibeSafe files are already protected
-3. **Add entries safely**: Only add what's needed, with clear sectioning
-4. **Be idempotent**: Safe to run multiple times without duplication
+1. *Parse existing .gitignore*: Check what patterns already exist
+2. *Detect coverage*: Determine if VibeSafe files are already protected
+3. *Add entries safely*: Only add what's needed, with clear sectioning
+4. *Be idempotent*: Safe to run multiple times without duplication
 
 ### Suggested Function Structure
 ```bash
@@ -89,6 +89,7 @@ cip/cip_template.md
 # VibeSafe scripts and tools
 scripts/whats_next.py
 install-whats-next.sh
+whats-next
 
 # VibeSafe templates directory
 templates/
@@ -123,25 +124,25 @@ EOF
 
 ## Related
 
-- **CIP**: 000F (VibeSafe Auto-Gitignore Protection)
-- **Extends**: CIP-000E (Clean Installation Philosophy)
-- **Updates**: VibeSafe General Development Guidelines
+- *CIP*: 000F (VibeSafe Auto-Gitignore Protection)
+- *Extends*: CIP-000E (Clean Installation Philosophy)
+- *Updates*: VibeSafe General Development Guidelines
 
 ## Progress Updates
 
 ### 2025-07-26
 Task created with Ready status. CIP-000F has been approved and documented. Ready to begin implementation starting with structured gitignore management functions.
 
-**UPDATE**: Phase 1 completed! Successfully implemented:
+*UPDATE*: Phase 1 completed! Successfully implemented:
 - ✅ `get_vibesafe_gitignore_entries()` - Complete VibeSafe gitignore template
 - ✅ `check_gitignore_coverage()` - Smart pattern detection with parent directory awareness
 - ✅ `add_vibesafe_gitignore()` - Idempotent, non-destructive gitignore management
 - ✅ Integrated into `scripts/install-minimal.sh` main installation flow
 - ✅ Comprehensive testing verified all functionality works correctly
 
-**UPDATE**: CIP-000B (vibesafe-update) has been superseded by CIP-000E. No longer need vibesafe-update integration.
+*UPDATE*: CIP-000B (vibesafe-update) has been superseded by CIP-000E. No longer need vibesafe-update integration.
 
-**UPDATE**: Added VibeSafe documentation files to gitignore protection:
+*UPDATE*: Added VibeSafe documentation files to gitignore protection:
 - ✅ `docs/whats_next_script.md`, `docs/yaml_frontmatter_examples.md` (VibeSafe system documentation)
 
 Next: Complete Phase 2 (installation testing) and Phase 3 (documentation updates). 
