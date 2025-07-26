@@ -1,7 +1,7 @@
 ---
 id: "2025-07-26_update-index-status-normalization"
 title: "Update Index Script Status Normalization Enhancement"
-status: "Proposed"
+status: "Completed"
 priority: "Medium"
 created: "2025-07-26"
 last_updated: "2025-07-26"
@@ -21,32 +21,32 @@ Currently, the script expects status values in a specific format (capitalized wi
 ## Acceptance Criteria
 
 1. **Status Normalization Function**
-   - [ ] Add `normalize_status()` function that converts status values to lowercase with underscores
-   - [ ] Handle conversion of spaces to underscores and hyphens to underscores
-   - [ ] Return None for empty/invalid status values
+   - [x] Add `normalize_status()` function that converts status values to lowercase with underscores
+   - [x] Handle conversion of spaces to underscores and hyphens to underscores
+   - [x] Return None for empty/invalid status values
 
 2. **Constants Update**
-   - [ ] Change `STATUSES` constant to use lowercase with underscores format: `['proposed', 'ready', 'in_progress', 'completed', 'abandoned']`
+   - [x] Change `STATUSES` constant to use lowercase with underscores format: `['proposed', 'ready', 'in_progress', 'completed', 'abandoned']`
 
 3. **Documentation Enhancement**
-   - [ ] Update module docstring to explain that the script accepts status values in multiple formats
-   - [ ] Document the normalization behavior (lowercase with underscores, spaces/hyphens converted)
-   - [ ] Provide examples of accepted formats
+   - [x] Update module docstring to explain that the script accepts status values in multiple formats
+   - [x] Document the normalization behavior (lowercase with underscores, spaces/hyphens converted)
+   - [x] Provide examples of accepted formats
 
 4. **Metadata Extraction Improvements**
-   - [ ] Apply `normalize_status()` when extracting status from YAML frontmatter
-   - [ ] Handle both 'updated' and 'last_updated' field names in frontmatter parsing
-   - [ ] Rename `frontmatter` variable to `front_matter` for consistency
+   - [x] Apply `normalize_status()` when extracting status from YAML frontmatter
+   - [x] Handle both 'updated' and 'last_updated' field names in frontmatter parsing
+   - [x] Rename `frontmatter` variable to `front_matter` for consistency
 
 5. **Index Generation Updates**
-   - [ ] Use normalized status values throughout the `generate_index_content()` function
-   - [ ] Apply normalization when checking task status validity
-   - [ ] Update status references in completed/abandoned task sections
-   - [ ] Improve sort key function to handle empty strings properly (`return task.get('updated', '') or ''`)
+   - [x] Use normalized status values throughout the `generate_index_content()` function
+   - [x] Apply normalization when checking task status validity
+   - [x] Update status references in completed/abandoned task sections
+   - [x] Improve sort key function to handle empty strings properly (`return task.get('updated', '') or ''`)
 
 6. **Backward Compatibility**
-   - [ ] Ensure existing task files with current status formats continue to work
-   - [ ] Maintain existing index.md output format with proper status display
+   - [x] Ensure existing task files with current status formats continue to work
+   - [x] Maintain existing index.md output format with proper status display
 
 ## Implementation Notes
 
@@ -104,6 +104,15 @@ Currently, the script expects status values in a specific format (capitalized wi
 
 **1 day** - This is a focused enhancement to an existing script with clear requirements.
 
+## Progress Updates
+
+### 2025-07-26
+- Task created with Proposed status
+- All acceptance criteria implemented and verified
+- Status changed to Completed
+- Implementation tested successfully with 19 backlog tasks
+
 ## Related Items
 
+- **Follow-up**: `2025-07-26_whats-next-status-normalization` (apply same improvements to whats_next.py)
 - None currently identified 

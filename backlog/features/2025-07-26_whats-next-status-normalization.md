@@ -1,0 +1,124 @@
+---
+id: "2025-07-26_whats-next-status-normalization"
+title: "What's Next Script Status Normalization Enhancement"
+status: "Proposed"
+priority: "Medium"
+created: "2025-07-26"
+last_updated: "2025-07-26"
+category: "features"
+---
+
+# Task: What's Next Script Status Normalization Enhancement
+
+## Description
+
+Apply the same status normalization improvements to the `whats_next.py` script that were implemented in `update_index.py`. This will ensure consistent status handling across both scripts when processing backlog items with different status formatting conventions.
+
+## Motivation
+
+The `whats_next.py` script currently has similar status handling logic to the old `update_index.py` but doesn't benefit from the status normalization improvements. This could lead to:
+- Inconsistent behavior between the two scripts
+- Tasks being incorrectly categorized or missed in the what's next analysis
+- Confusion when using different status formats across task files
+
+## Acceptance Criteria
+
+1. **Status Normalization Function**
+   - [ ] Add `normalize_status()` function matching the implementation in `update_index.py`
+   - [ ] Handle conversion of spaces to underscores and hyphens to underscores
+   - [ ] Return None for empty/invalid status values
+
+2. **Backlog Status Processing**
+   - [ ] Apply `normalize_status()` when extracting status from YAML frontmatter in `scan_backlog()`
+   - [ ] Apply normalization when extracting status from old format parsing
+   - [ ] Update status checking logic to use normalized values
+
+3. **Constants Consistency**
+   - [ ] Ensure status constants in `scan_backlog()` match the normalized format: `['proposed', 'ready', 'in_progress', 'completed', 'abandoned']`
+
+4. **Documentation Enhancement**
+   - [ ] Update module docstring to mention multi-format status support
+   - [ ] Add comments explaining status normalization behavior
+
+5. **Output Consistency**
+   - [ ] Maintain existing display format for status names in output
+   - [ ] Ensure backward compatibility with current output format
+
+6. **Testing Compatibility**
+   - [ ] Verify that both scripts handle the same task files consistently
+   - [ ] Test with mixed status formats to ensure both scripts agree
+
+## Implementation Notes
+
+### Key Changes Required
+
+1. **Add normalize_status function** (same as update_index.py):
+   ```python
+   def normalize_status(status):
+       """Normalize status to lowercase with underscores."""
+       if not status:
+           return None
+       # Convert to lowercase and replace spaces with underscores
+       return status.lower().replace(' ', '_').replace('-', '_')
+   ```
+
+2. **Update scan_backlog() function**:
+   - Apply normalization: `status = normalize_status(frontmatter.get('status', 'unknown'))`
+   - Apply normalization in old format parsing: `status = normalize_status(status_match.group(1)) if status_match else "unknown"`
+
+3. **Ensure consistency with update_index.py**:
+   - Use the same status constants
+   - Apply the same normalization logic
+   - Handle edge cases similarly
+
+### Files to Modify
+
+- `scripts/whats_next.py` - Main implementation
+
+### Areas of Focus
+
+1. **scan_backlog() function** (lines ~351-434):
+   - Line ~365: `status = frontmatter.get('status', 'unknown').lower()`
+   - Line ~406: `status = status_match.group(1).lower() if status_match else "unknown"`
+   - Status checking logic throughout the function
+
+2. **Status constants in backlog_info structure** (lines ~354-361):
+   - Ensure consistency with normalized format
+
+## Testing Requirements
+
+1. **Cross-script consistency**:
+   - Run both `update_index.py` and `whats_next.py` on the same backlog
+   - Verify they categorize tasks consistently
+   - Test with various status formats
+
+2. **Status format compatibility**:
+   - "Proposed", "In Progress", "Completed" (current format)
+   - "proposed", "in_progress", "completed" (normalized format)
+   - "Ready", "abandoned" (mixed case)
+
+3. **Output verification**:
+   - Ensure output formatting remains user-friendly
+   - Verify no regression in displayed information
+
+## Dependencies
+
+- Completion of `2025-07-26_update-index-status-normalization` task
+- No new external dependencies required
+- Existing: PyYAML, pathlib, re, os, subprocess
+
+## Estimated Effort
+
+**4 hours** - Similar changes to update_index.py but in a different script with additional output formatting considerations.
+
+## Related Items
+
+- **Depends on**: `2025-07-26_update-index-status-normalization` (completed)
+- **Related**: Status normalization consistency across VibeSafe scripts
+
+## Success Criteria
+
+1. Both `update_index.py` and `whats_next.py` handle status formats consistently
+2. No regression in existing functionality or output format
+3. All status formats are correctly normalized and processed
+4. Cross-script compatibility verified through testing 

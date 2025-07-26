@@ -4,6 +4,12 @@ Update the backlog index.md file based on the current task files.
 
 This script scans all task files in the backlog directory structure,
 extracts their metadata, and generates an updated index.md file.
+
+The script accepts status values in multiple formats:
+- Lowercase with underscores: "proposed", "in_progress", "completed"
+- Capitalized with spaces: "Proposed", "In Progress", "Completed"  
+- Mixed case: "Ready", "abandoned", etc.
+All formats are normalized internally to lowercase with underscores.
 """
 
 import os
@@ -14,7 +20,15 @@ from pathlib import Path
 
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
-STATUSES = ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned']
+# Use lowercase internally but accept both formats
+STATUSES = ['proposed', 'ready', 'in_progress', 'completed', 'abandoned']
+
+def normalize_status(status):
+    """Normalize status to lowercase with underscores."""
+    if not status:
+        return None
+    # Convert to lowercase and replace spaces with underscores
+    return status.lower().replace(' ', '_').replace('-', '_')
 
 def extract_task_metadata(filepath):
     """Extract metadata from a task file."""
@@ -65,14 +79,16 @@ def extract_task_metadata(filepath):
                     
                     # Parse YAML frontmatter
                     try:
-                        frontmatter = yaml.safe_load(frontmatter_text)
-                        if frontmatter:
-                            metadata['id'] = frontmatter.get('id', id_from_filename)
-                            metadata['title'] = frontmatter.get('title')
-                            metadata['status'] = frontmatter.get('status')
-                            metadata['priority'] = frontmatter.get('priority')
-                            metadata['created'] = frontmatter.get('created')
-                            metadata['updated'] = frontmatter.get('last_updated')
+                        front_matter = yaml.safe_load(frontmatter_text)
+                        if front_matter:
+                            metadata['id'] = front_matter.get('id', id_from_filename)
+                            metadata['title'] = front_matter.get('title', None)
+                            metadata['status'] = normalize_status(front_matter.get('status', None))
+                            metadata['priority'] = front_matter.get('priority', None)
+                            metadata['created'] = front_matter.get('created', None)
+                            # Handle both 'updated' and 'last_updated' field names
+                            metadata['updated'] = front_matter.get('updated', front_matter.get('last_updated', None))
+                            metadata['category'] = front_matter.get('category', category)
                     except yaml.YAMLError as e:
                         print(f"Error parsing YAML in {filepath}: {e}")
                     
@@ -163,7 +179,7 @@ def generate_index_content(tasks):
             continue
         
         category = task['category']
-        status = task['status'].strip()
+        status = normalize_status(task['status'])
         
         if category in categorized_tasks and status in categorized_tasks[category]:
             categorized_tasks[category][status].append(task)
@@ -174,8 +190,8 @@ def generate_index_content(tasks):
     for category in CATEGORIES:
         content.append(f"## {category.title()}\n")
         
-        for status in ['Ready', 'In Progress', 'Proposed']:
-            content.append(f"### {status}\n")
+        for status in ['ready', 'in_progress', 'proposed']:
+            content.append(f"### {status.replace('_', ' ').title()}\n")
             
             tasks_with_status = categorized_tasks[category][status]
             if tasks_with_status:
@@ -197,12 +213,12 @@ def generate_index_content(tasks):
     
     completed_tasks = []
     for category in CATEGORIES:
-        if 'Completed' in categorized_tasks[category]:
-            completed_tasks.extend(categorized_tasks[category]['Completed'])
+        if 'completed' in categorized_tasks[category]:
+            completed_tasks.extend(categorized_tasks[category]['completed'])
     
     if completed_tasks:
         def sort_key(task):
-            return task.get('updated', '')
+            return task.get('updated', '') or ''
         
         for task in sorted(completed_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
             relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
@@ -214,12 +230,12 @@ def generate_index_content(tasks):
     
     abandoned_tasks = []
     for category in CATEGORIES:
-        if 'Abandoned' in categorized_tasks[category]:
-            abandoned_tasks.extend(categorized_tasks[category]['Abandoned'])
+        if 'abandoned' in categorized_tasks[category]:
+            abandoned_tasks.extend(categorized_tasks[category]['abandoned'])
     
     if abandoned_tasks:
         def sort_key(task):
-            return task.get('updated', '')
+            return task.get('updated', '') or ''
         
         for task in sorted(abandoned_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
             relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)

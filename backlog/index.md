@@ -11,7 +11,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### In Progress
 
-*No tasks currently in progress.*
+*No tasks currently in_progress.*
 
 
 ### Proposed
@@ -35,12 +35,12 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-- [Integrate AI-Requirements Framework into Installation Script](infrastructure/2025-05-12_ai-requirements-integration.md)
+*No tasks currently ready.*
 
 
 ### In Progress
 
-*No tasks currently in progress.*
+*No tasks currently in_progress.*
 
 
 ### Proposed
@@ -54,6 +54,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
+- [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
+
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)
 
 - [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)
@@ -63,10 +65,10 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Implement Goal Decomposition Pattern](features/2025-05-08_goal-decomposition-pattern.md)
 
-- [Implement Backlog Integration for AI-Requirements Framework](features/2025-05-08_ai-requirements-backlog-integration.md)
-
 
 ### Proposed
+
+- [What's Next Script Status Normalization Enhancement](features/2025-07-26_whats-next-status-normalization.md)
 
 - [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
@@ -80,7 +82,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### In Progress
 
-*No tasks currently in progress.*
+*No tasks currently in_progress.*
 
 
 ### Proposed
@@ -92,9 +94,15 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
+
 - [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
 
+- [Integrate AI-Requirements Framework into Installation Script](infrastructure/2025-05-12_ai-requirements-integration.md)
+
 - [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
+
+- [Implement Backlog Integration for AI-Requirements Framework](features/2025-05-08_ai-requirements-backlog-integration.md)
 
 
 ## Recently Abandoned Tasks
