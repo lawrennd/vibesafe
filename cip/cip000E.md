@@ -5,7 +5,7 @@ status: "Proposed"
 created: "2025-07-26"
 last_updated: "2025-07-26"
 author: "VibeSafe Team"
-supersedes: ["CIP-0002"]
+supersedes: ["CIP-0002", "CIP-000B"]
 ---
 
 # CIP-000E: Clean Installation Philosophy for VibeSafe
@@ -144,11 +144,13 @@ install_vibesafe() {
 - [x] Simplify installation tests  
 - [x] Update documentation
 - [x] Mark CIP-0002 as superseded
+- [x] Mark CIP-000B as superseded (update script no longer needed)
 - [x] Update related backlog items
 
 ## References
 
 - CIP-0002: VibeSafe Local Installation Method (superseded)
+- CIP-000B: VibeSafe Update Script (superseded - redundant with Install = Reinstall)
 - Current `scripts/install-minimal.sh` implementation
 
 ## Author and Date
