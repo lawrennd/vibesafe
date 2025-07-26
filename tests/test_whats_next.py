@@ -426,6 +426,8 @@ class TestStatusNormalization(unittest.TestCase):
         self.assertEqual(normalize_status('Proposed'), 'proposed')
         self.assertEqual(normalize_status('completed'), 'completed')
         self.assertEqual(normalize_status('ABANDONED'), 'abandoned')
+        self.assertEqual(normalize_status('Superseded'), 'superseded')
+        self.assertEqual(normalize_status('SUPERSEDED'), 'superseded')
         
         # Test edge cases
         self.assertIsNone(normalize_status(''))
@@ -483,6 +485,19 @@ priority: "Low"
 # Task: Test Lowercase Task
 ''',
                     'expected_status': 'proposed'
+                },
+                {
+                    'name': '2025-07-26_test-superseded.md',
+                    'content': '''---
+id: "2025-07-26_test-superseded"
+title: "Test Superseded Task"
+status: "Superseded"
+priority: "Medium"
+---
+
+# Task: Test Superseded Task
+''',
+                    'expected_status': 'superseded'
                 }
             ]
             
@@ -501,13 +516,14 @@ priority: "Low"
                 backlog_info = scan_backlog()
                 
                 # Verify that all files were processed
-                self.assertEqual(backlog_info['total'], 3)
-                self.assertEqual(backlog_info['with_frontmatter'], 3)
+                self.assertEqual(backlog_info['total'], 4)
+                self.assertEqual(backlog_info['with_frontmatter'], 4)
                 
                 # Verify that status values were normalized correctly
                 ready_tasks = backlog_info['by_status']['ready']
                 in_progress_tasks = backlog_info['by_status']['in_progress']
                 proposed_tasks = backlog_info['by_status']['proposed']
+                superseded_tasks = backlog_info['by_status']['superseded']
                 
                 self.assertEqual(len(ready_tasks), 1)
                 self.assertEqual(ready_tasks[0]['title'], 'Test Ready Task')
@@ -517,6 +533,9 @@ priority: "Low"
                 
                 self.assertEqual(len(proposed_tasks), 1)
                 self.assertEqual(proposed_tasks[0]['title'], 'Test Lowercase Task')
+                
+                self.assertEqual(len(superseded_tasks), 1)
+                self.assertEqual(superseded_tasks[0]['title'], 'Test Superseded Task')
                 
             finally:
                 os.chdir(original_cwd)
@@ -572,6 +591,8 @@ Content goes here.
             'Proposed',
             'completed',
             'ABANDONED',
+            'Superseded',
+            'SUPERSEDED',
             'in-progress',
             '',
             None

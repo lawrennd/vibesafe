@@ -39,6 +39,8 @@ class TestUpdateIndex(unittest.TestCase):
         self.assertEqual(update_index.normalize_status('Proposed'), 'proposed')
         self.assertEqual(update_index.normalize_status('completed'), 'completed')
         self.assertEqual(update_index.normalize_status('ABANDONED'), 'abandoned')
+        self.assertEqual(update_index.normalize_status('Superseded'), 'superseded')
+        self.assertEqual(update_index.normalize_status('SUPERSEDED'), 'superseded')
         
         # Test edge cases
         self.assertIsNone(update_index.normalize_status(''))
@@ -270,6 +272,16 @@ last_updated: "2025-05-14"
                 'created': '2025-05-15',
                 'updated': '2025-05-16',
                 'category': 'documentation'
+            },
+            {
+                'filepath': Path(os.path.join(self.test_dir, "features", "2025-05-16_task5.md")),
+                'id': '2025-05-16_task5',
+                'title': 'Superseded Feature Task',
+                'status': 'superseded',  # use normalized status
+                'priority': 'High',
+                'created': '2025-05-16',
+                'updated': '2025-05-17',
+                'category': 'features'
             }
         ]
         
@@ -348,6 +360,57 @@ Content goes here.
         # Check that the task was categorized correctly with normalized status
         self.assertEqual(len(categorized['bugs']['ready']), 1)
         self.assertEqual(categorized['bugs']['ready'][0]['id'], '2025-05-12_test-task')
+
+    def test_superseded_status_handling(self):
+        """Test that superseded status is handled correctly."""
+        # Create a test file with superseded status
+        category = "features"
+        test_file_path = os.path.join(self.test_dir, category, "2025-07-26_superseded-task.md")
+        
+        with open(test_file_path, 'w') as f:
+            f.write("""---
+id: "2025-07-26_superseded-task"
+title: "Superseded Task"
+status: "Superseded"
+priority: "medium"
+created: "2025-07-26"
+last_updated: "2025-07-26"
+---
+
+# Task: Superseded Task
+
+This task has been superseded by a newer approach.
+""")
+        
+        # Extract metadata
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        
+        # Check that metadata was extracted correctly
+        self.assertIsNotNone(metadata)
+        self.assertEqual(metadata['status'], 'superseded')  # should be normalized
+        self.assertEqual(metadata['title'], 'Superseded Task')
+        
+        # Test that superseded is in valid statuses
+        self.assertIn('superseded', update_index.STATUSES)
+        
+        # Test categorization
+        tasks = [metadata]
+        categorized_tasks = {}
+        for cat in update_index.CATEGORIES:
+            categorized_tasks[cat] = {}
+            for status in update_index.STATUSES:
+                categorized_tasks[cat][status] = []
+        
+        for task in tasks:
+            if task and 'category' in task and 'status' in task:
+                cat = task['category']
+                status = update_index.normalize_status(task['status'])
+                if status and cat in categorized_tasks and status in categorized_tasks[cat]:
+                    categorized_tasks[cat][status].append(task)
+        
+        # Verify superseded task is categorized correctly
+        self.assertEqual(len(categorized_tasks['features']['superseded']), 1)
+        self.assertEqual(categorized_tasks['features']['superseded'][0]['id'], '2025-07-26_superseded-task')
 
 
 if __name__ == '__main__':
