@@ -1,0 +1,130 @@
+---
+id: "2025-07-26_implement-cip000f-gitignore-protection"
+title: "Implement CIP-000F: VibeSafe Auto-Gitignore Protection"
+status: "Ready"
+priority: "High"
+created: "2025-07-26"
+last_updated: "2025-07-26"
+category: "features"
+related_cip: "000F"
+---
+
+# Task: Implement CIP-000F: VibeSafe Auto-Gitignore Protection
+
+## Description
+
+Implement the VibeSafe Auto-Gitignore Protection system as defined in CIP-000F. This will enable users to safely use `git add .` by automatically protecting VibeSafe system files through .gitignore entries during installation.
+
+## Acceptance Criteria
+
+### Phase 1: Core Gitignore Management Infrastructure
+- [ ] Create structured gitignore management functions
+- [ ] Implement `check_gitignore_coverage()` to detect existing patterns
+- [ ] Implement `add_vibesafe_gitignore()` with idempotent behavior  
+- [ ] Create VibeSafe gitignore template with all system files
+- [ ] Test gitignore management with existing .gitignore files
+- [ ] Test gitignore management without existing .gitignore files
+
+### Phase 2: Installation Integration
+- [ ] Integrate gitignore management into `scripts/install-minimal.sh`
+- [ ] Update `vibesafe-update` script to include gitignore component
+- [ ] Ensure non-destructive behavior (never overwrite existing content)
+- [ ] Add clear section headers and comments for VibeSafe entries
+- [ ] Test installation with various .gitignore scenarios
+
+### Phase 3: Documentation and Workflow Updates
+- [ ] Update CIP-000F status to "In Progress" then "Implemented"
+- [ ] Update `vibesafe_general.mdc` to remove surgical git warnings
+- [ ] Add new guidance about safe generic git operations
+- [ ] Update README.md installation documentation
+- [ ] Create tests for gitignore management functionality
+
+## Implementation Notes
+
+### Technical Approach
+Start with structured gitignore management functions that can:
+
+1. **Parse existing .gitignore**: Check what patterns already exist
+2. **Detect coverage**: Determine if VibeSafe files are already protected
+3. **Add entries safely**: Only add what's needed, with clear sectioning
+4. **Be idempotent**: Safe to run multiple times without duplication
+
+### Suggested Function Structure
+```bash
+# Core gitignore management functions
+check_gitignore_coverage() {
+    # Check if specific patterns already exist
+    local pattern="$1"
+    local gitignore_file="${2:-.gitignore}"
+    # Return 0 if covered, 1 if not covered
+}
+
+add_vibesafe_gitignore() {
+    # Add VibeSafe section to .gitignore if not already present
+    local gitignore_file="${1:-.gitignore}"
+    # Handle existing files gracefully
+    # Add clear section headers
+    # Only add uncovered entries
+}
+
+get_vibesafe_gitignore_entries() {
+    # Return list of VibeSafe files/patterns to protect
+    cat << 'EOF'
+# VibeSafe System Files (Auto-added during installation)
+# These are VibeSafe infrastructure - not your project content
+
+# Backlog system files
+backlog/README.md
+backlog/task_template.md
+backlog/update_index.py
+backlog/index.md
+
+# CIP system files  
+cip/README.md
+cip/cip_template.md
+
+# Cursor AI rules (VibeSafe-managed)
+.cursor/rules/
+
+# VibeSafe scripts and tools
+scripts/whats_next.py
+install-whats-next.sh
+vibesafe-update
+
+# VibeSafe templates directory
+templates/
+
+# AI-Requirements framework (VibeSafe-managed)
+ai-requirements/README.md
+ai-requirements/requirement_template.md
+ai-requirements/prompts/
+ai-requirements/patterns/
+ai-requirements/integrations/
+ai-requirements/examples/
+ai-requirements/guidance/
+
+# Tenets system files
+tenets/README.md
+tenets/tenet_template.md
+tenets/combine_tenets.py
+EOF
+}
+```
+
+### Edge Cases to Handle
+- Existing .gitignore with conflicting patterns
+- No existing .gitignore file
+- VibeSafe section already exists (partial or complete)
+- Different line ending formats
+- Comments and whitespace preservation
+
+## Related
+
+- **CIP**: 000F (VibeSafe Auto-Gitignore Protection)
+- **Extends**: CIP-000E (Clean Installation Philosophy)
+- **Updates**: VibeSafe General Development Guidelines
+
+## Progress Updates
+
+### 2025-07-26
+Task created with Ready status. CIP-000F has been approved and documented. Ready to begin implementation starting with structured gitignore management functions. 
