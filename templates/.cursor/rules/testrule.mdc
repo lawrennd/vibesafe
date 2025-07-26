@@ -1,7 +1,0 @@
----
-description: This is a test rule
-globs: *.md
-alwaysApply: false
----
-
-This is a cursor rule prompt.
