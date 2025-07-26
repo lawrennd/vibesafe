@@ -1,0 +1,111 @@
+---
+description: VibeSafe General Development Guidelines - Best practices for working with VibeSafe projects
+globs: "**/*"
+alwaysApply: true
+---
+
+# VibeSafe General Development Guidelines
+
+## 🔧 Essential Development Practices
+
+### 1. Git Operations - Surgical Precision Required
+
+**❌ NEVER use generic git adds:**
+```bash
+git add .          # ❌ Too broad, commits unintended files
+git add -A         # ❌ Too broad, commits unintended files  
+git add *          # ❌ Too broad, commits unintended files
+```
+
+**✅ ALWAYS add files surgically:**
+```bash
+git add specific-file.md                    # ✅ Targeted
+git add backlog/features/my-task.md         # ✅ Specific user content
+git add cip/cip0001.md scripts/my-script.py # ✅ Multiple specific files
+```
+
+**Why:** VibeSafe projects contain both system files (templates, generated files) and user content. Generic adds can accidentally commit VibeSafe infrastructure files that shouldn't be in your project repository.
+
+### 2. Python Environment Awareness
+
+**⚠️ ALWAYS verify Python environment before running scripts:**
+
+```bash
+# Check current Python and environment
+which python3
+python3 --version
+
+# Check if you're in a virtual environment
+echo $VIRTUAL_ENV
+
+# For VibeSafe scripts, usually run from project root:
+./whats-next                    # Uses project's .venv
+python scripts/whats_next.py    # Direct execution
+```
+
+**🤔 When in doubt, ASK THE USER:**
+- "Should I run this in the current environment or activate a virtual environment?"
+- "Which Python environment would you like me to use?"
+- "Should I use the project's .venv or system Python?"
+
+### 3. Date Accuracy for VibeSafe Components
+
+**📅 ALWAYS verify today's date before creating:**
+
+**For Backlog Tasks:**
+```bash
+# Task naming: YYYY-MM-DD_description.md
+# Example: 2025-07-26_implement-feature.md
+```
+
+**For CIPs:**
+```yaml
+# YAML frontmatter requires accurate dates
+created: "2025-07-26"
+last_updated: "2025-07-26"
+```
+
+**🗓️ Before creating tasks/CIPs, confirm:**
+- "Today's date is [DATE], correct?"
+- "Should I use today's date (YYYY-MM-DD) for this task/CIP?"
+
+### 4. VibeSafe File Classification Awareness
+
+**Always distinguish between:**
+
+**🔧 System Files (Don't commit to user projects):**
+- `backlog/README.md`, `cip/README.md` - VibeSafe documentation
+- `task_template.md`, `cip_template.md` - VibeSafe templates  
+- `.cursor/rules/*` - VibeSafe cursor rules
+- `scripts/whats_next.py`, `update_index.py` - VibeSafe tools
+
+**📝 User Content (Always commit):**
+- `README.md` (project root) - User's project documentation
+- `backlog/features/YYYY-MM-DD_task.md` - User's tasks
+- `cip0001.md`, `cip0002.md` - User's CIPs
+- User's actual requirements and project files
+
+### 5. Before Making Changes
+
+**✅ ALWAYS:**
+- Check current working directory (`pwd`)
+- Verify you're in the right branch (`git branch`)
+- Understand what type of files you're working with (system vs user)
+- Ask for clarification if unsure about environment or scope
+
+**❌ NEVER:**
+- Make assumptions about the current environment
+- Commit files without understanding their purpose
+- Use broad git operations without explicit permission
+- Create dated files without confirming the date
+
+## 🎯 Quick Reference
+
+| Action | Rule | Example |
+|--------|------|---------|
+| **Git Add** | Always surgical | `git add backlog/features/task.md` |
+| **Python Exec** | Verify environment first | `which python3` then ask if unsure |
+| **Create Task** | Confirm date | "Today is 2025-07-26, correct?" |
+| **File Changes** | Know system vs user | Check file classification guides |
+
+These guidelines help ensure clean, predictable, and professional VibeSafe development practices.
