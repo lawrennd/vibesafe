@@ -112,11 +112,60 @@ last_updated: "2025-07-26"
 - Use broad git operations without explicit permission
 - Create dated files without confirming the date
 
+### 6. Git Workflow and Regular Commits
+
+**🔄 COMMIT EARLY AND OFTEN:**
+
+**✅ Required Commit Points:**
+```bash
+# After creating documentation
+git add backlog/features/2025-07-26_my-task.md
+git commit -m "Add backlog task for feature implementation"
+
+# After creating CIPs
+git add cip/cip000F.md cip/README.md
+git commit -m "Add CIP-000F for new feature architecture"
+
+# Before major structural changes
+git add src/module.py tests/test_module.py
+git commit -m "Checkpoint before refactoring module structure"
+
+# After completing implementation
+git add src/ tests/ docs/
+git commit -m "Complete feature implementation with tests"
+```
+
+**📅 Natural Commit Rhythm:**
+- ✅ **After planning**: Create backlog/CIP → commit
+- ✅ **Before refactoring**: Save current state → commit  
+- ✅ **After implementation**: Complete feature → commit
+- ✅ **After testing**: Fix tests and bugs → commit
+- ✅ **Before major changes**: Create checkpoint → commit
+
+**🎯 Commit Message Format:**
+```bash
+# Good commit messages
+git commit -m "Add normalize_status() function to update_index.py"
+git commit -m "Fix test failures for status normalization"
+git commit -m "Update backlog task status to completed"
+
+# Reference related items when appropriate
+git commit -m "Implement CIP-000E clean installation philosophy"
+git commit -m "Complete backlog task: 2025-07-26_feature-name"
+```
+
+**⚠️ Why Regular Commits Matter:**
+- **Safety**: Easy to revert problematic changes
+- **Progress**: Clear development history and milestones
+- **Collaboration**: Others can follow your progress
+- **Documentation**: Commit messages tell the story of development
+
 ## 🎯 Quick Reference
 
 | Action | Rule | Example |
 |--------|------|---------|
 | **Git Add** | Always surgical | `git add backlog/features/task.md` |
+| **Git Commit** | Regular checkpoints | After backlogs, CIPs, before refactoring |
 | **Python Exec** | Verify environment first | `which python3` then ask if unsure |
 | **Create Task** | Confirm date | "Today is 2025-07-26, correct?" |
 | **File Changes** | Know system vs user | Check file classification guides |
