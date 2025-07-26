@@ -1,11 +1,6 @@
 ---
-description: 
-globs: 
-alwaysApply: false
----
-# vibesafe_update
-
-vibesafe_update
+description: VibeSafe Update Script - Tool for maintaining VibeSafe installations and understanding system vs user files
+globs: vibesafe-update
 alwaysApply: true
 ---
 

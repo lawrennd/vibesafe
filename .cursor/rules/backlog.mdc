@@ -1,12 +1,10 @@
 ---
-description: 
-globs: 
-alwaysApply: true
----
+description: VibeSafe Backlog System - Task tracking and project management guidelines
+globs: backlog/**/*.md
 alwaysApply: true
 ---
 
-# Lynguine Project Backlog System
+# VibeSafe Project Backlog System
 
 ## What is the Backlog System?
 

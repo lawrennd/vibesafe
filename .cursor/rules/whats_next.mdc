@@ -1,7 +1,7 @@
 ---
-description: 
-globs: 
-alwaysApply: false
+description: VibeSafe What's Next Script - Project status summarizer for understanding project state and identifying pending tasks
+globs: whats-next
+alwaysApply: true
 ---
 # VibeSafe Project Status Summarizer ("What's Next" Script)
 

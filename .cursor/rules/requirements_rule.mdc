@@ -1,5 +1,6 @@
-# Requirements Process Rule
-
+---
+description: AI-Assisted Requirements Process - Structured approach to gathering, documenting, and managing software requirements with AI assistance
+globs: ai-requirements/**/*.md
 alwaysApply: true
 ---
 

@@ -1,8 +1,6 @@
 ---
-title: Code Improvement Plans (CIPs)
-description: A structured process for planning and implementing significant code changes
-author: Neil Lawrence
-date: 2025-05-05
+description: Code Improvement Plans (CIPs) - Structured process for planning and implementing significant code changes
+globs: cip/**/*.md
 alwaysApply: true
 ---
 
