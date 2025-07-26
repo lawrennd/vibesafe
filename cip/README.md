@@ -48,6 +48,8 @@ Each CIP can have one of the following statuses:
 - [CIP-000B](./cip000B.md): VibeSafe Update Script
 - [CIP-000C](./cip000C.md): Backlog Integration with GitHub Issues
 - [CIP-000D](./cip000D.md): Backlog Module Refactor
+- [CIP-000E](./cip000E.md): Clean Installation Philosophy
+- [CIP-000F](./cip000F.md): VibeSafe Auto-Gitignore Protection
 
 ## Creating a Good CIP
 
