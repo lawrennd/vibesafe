@@ -10,6 +10,12 @@ The script provides a comprehensive overview of:
 - Backlog item status
 - Requirements status
 
+The script accepts status values in multiple formats for backlog items:
+- Lowercase with underscores: "proposed", "in_progress", "completed"
+- Capitalized with spaces: "Proposed", "In Progress", "Completed"  
+- Mixed case: "Ready", "abandoned", etc.
+All formats are normalized internally to lowercase with underscores.
+
 Usage:
     python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
 
@@ -63,6 +69,13 @@ class Colors:
         cls.ENDC = ''
         cls.BOLD = ''
         cls.UNDERLINE = ''
+
+def normalize_status(status):
+    """Normalize status to lowercase with underscores."""
+    if not status:
+        return None
+    # Convert to lowercase and replace spaces with underscores
+    return status.lower().replace(' ', '_').replace('-', '_')
 
 def print_section(title: str):
     """Print a formatted section header.
@@ -338,7 +351,7 @@ def scan_backlog() -> Dict[str, Any]:
             frontmatter = extract_frontmatter(backlog_file)
             if frontmatter:
                 backlog_info['with_frontmatter'] += 1
-                status = frontmatter.get('status', 'unknown').lower()
+                status = normalize_status(frontmatter.get('status', 'unknown'))
                 priority = frontmatter.get('priority', 'unknown').lower()
                 
                 item_info = {
@@ -363,7 +376,7 @@ def scan_backlog() -> Dict[str, Any]:
                 title = title_match.group(1) if title_match else "Untitled"
                 
                 status_match = re.search(r'- \*\*Status\*\*:\s*(\w+)', content)
-                status = status_match.group(1).lower() if status_match else "unknown"
+                status = normalize_status(status_match.group(1)) if status_match else "unknown"
                 
                 priority_match = re.search(r'- \*\*Priority\*\*:\s*(\w+)', content)
                 priority = priority_match.group(1).lower() if priority_match else "unknown"

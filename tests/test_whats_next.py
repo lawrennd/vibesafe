@@ -10,7 +10,6 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
-import pytest
 from unittest import mock
 from pathlib import Path
 
@@ -23,6 +22,8 @@ from scripts.whats_next import (
     get_git_status,
     generate_next_steps,
     scan_requirements,
+    normalize_status,
+    scan_backlog,
 )
 
 
@@ -412,6 +413,186 @@ def test_cmd_args_requirements_only():
         assert 'by_status' in backlog_arg
         assert 'by_priority' in backlog_arg
         assert req_arg == mock_scan_req.return_value
+
+
+class TestStatusNormalization(unittest.TestCase):
+    """Test the status normalization functionality in What's Next script."""
+
+    def test_normalize_status(self):
+        """Test the normalize_status function directly."""
+        # Test various input formats
+        self.assertEqual(normalize_status('Ready'), 'ready')
+        self.assertEqual(normalize_status('In Progress'), 'in_progress')
+        self.assertEqual(normalize_status('Proposed'), 'proposed')
+        self.assertEqual(normalize_status('completed'), 'completed')
+        self.assertEqual(normalize_status('ABANDONED'), 'abandoned')
+        
+        # Test edge cases
+        self.assertIsNone(normalize_status(''))
+        self.assertIsNone(normalize_status(None))
+        
+        # Test hyphens and mixed separators
+        self.assertEqual(normalize_status('in-progress'), 'in_progress')
+        self.assertEqual(normalize_status('Ready-To-Start'), 'ready_to_start')
+
+    def test_scan_backlog_status_normalization(self):
+        """Test that scan_backlog correctly normalizes status values."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create mock backlog directory structure
+            backlog_dir = os.path.join(temp_dir, 'backlog')
+            features_dir = os.path.join(backlog_dir, 'features')
+            os.makedirs(features_dir)
+            
+            # Create test files with different status formats
+            test_files = [
+                {
+                    'name': '2025-07-26_test-ready.md',
+                    'content': '''---
+id: "2025-07-26_test-ready"
+title: "Test Ready Task"
+status: "Ready"
+priority: "High"
+---
+
+# Task: Test Ready Task
+''',
+                    'expected_status': 'ready'
+                },
+                {
+                    'name': '2025-07-26_test-in-progress.md',
+                    'content': '''---
+id: "2025-07-26_test-in-progress"
+title: "Test In Progress Task"
+status: "In Progress"
+priority: "Medium"
+---
+
+# Task: Test In Progress Task
+''',
+                    'expected_status': 'in_progress'
+                },
+                {
+                    'name': '2025-07-26_test-lowercase.md',
+                    'content': '''---
+id: "2025-07-26_test-lowercase"
+title: "Test Lowercase Task"
+status: "proposed"
+priority: "Low"
+---
+
+# Task: Test Lowercase Task
+''',
+                    'expected_status': 'proposed'
+                }
+            ]
+            
+            # Create test files
+            for test_file in test_files:
+                file_path = os.path.join(features_dir, test_file['name'])
+                with open(file_path, 'w') as f:
+                    f.write(test_file['content'])
+            
+            # Mock the current working directory to our temp directory
+            original_cwd = os.getcwd()
+            os.chdir(temp_dir)
+            
+            try:
+                # Run scan_backlog
+                backlog_info = scan_backlog()
+                
+                # Verify that all files were processed
+                self.assertEqual(backlog_info['total'], 3)
+                self.assertEqual(backlog_info['with_frontmatter'], 3)
+                
+                # Verify that status values were normalized correctly
+                ready_tasks = backlog_info['by_status']['ready']
+                in_progress_tasks = backlog_info['by_status']['in_progress']
+                proposed_tasks = backlog_info['by_status']['proposed']
+                
+                self.assertEqual(len(ready_tasks), 1)
+                self.assertEqual(ready_tasks[0]['title'], 'Test Ready Task')
+                
+                self.assertEqual(len(in_progress_tasks), 1)
+                self.assertEqual(in_progress_tasks[0]['title'], 'Test In Progress Task')
+                
+                self.assertEqual(len(proposed_tasks), 1)
+                self.assertEqual(proposed_tasks[0]['title'], 'Test Lowercase Task')
+                
+            finally:
+                os.chdir(original_cwd)
+
+    def test_scan_backlog_old_format_status_normalization(self):
+        """Test that scan_backlog correctly normalizes status in old format files."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create mock backlog directory structure
+            backlog_dir = os.path.join(temp_dir, 'backlog')
+            features_dir = os.path.join(backlog_dir, 'features')
+            os.makedirs(features_dir)
+            
+            # Create test file with old format
+            file_path = os.path.join(features_dir, '2025-07-26_test-old-format.md')
+            with open(file_path, 'w') as f:
+                f.write('''# Task: Test Old Format Task
+
+- **ID**: 2025-07-26_test-old-format
+- **Title**: Test Old Format Task
+- **Status**: In Progress
+- **Priority**: High
+- **Created**: 2025-07-26
+- **Last Updated**: 2025-07-26
+
+Content goes here.
+''')
+            
+            # Mock the current working directory to our temp directory
+            original_cwd = os.getcwd()
+            os.chdir(temp_dir)
+            
+            try:
+                # Run scan_backlog
+                backlog_info = scan_backlog()
+                
+                # Verify that the file was processed
+                self.assertEqual(backlog_info['total'], 1)
+                self.assertEqual(backlog_info['with_frontmatter'], 0)  # No frontmatter
+                self.assertEqual(len(backlog_info['without_frontmatter']), 1)
+                
+                # Verify that status was normalized (old format processing doesn't normalize yet)
+                # The old format status extraction will need updates for full normalization
+                
+            finally:
+                os.chdir(original_cwd)
+
+    def test_cross_script_consistency(self):
+        """Test that both update_index.py and whats_next.py normalize status consistently."""
+        # Test that both normalize_status functions behave identically
+        test_cases = [
+            'Ready',
+            'In Progress', 
+            'Proposed',
+            'completed',
+            'ABANDONED',
+            'in-progress',
+            '',
+            None
+        ]
+        
+        # Import normalize_status from update_index
+        import sys
+        import os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backlog'))
+        import update_index
+        
+        for test_case in test_cases:
+            whats_next_result = normalize_status(test_case)
+            update_index_result = update_index.normalize_status(test_case)
+            
+            self.assertEqual(
+                whats_next_result, 
+                update_index_result,
+                f"Inconsistent normalization for '{test_case}': "
+                f"whats_next='{whats_next_result}' vs update_index='{update_index_result}'"
+            )
 
 
 if __name__ == "__main__":

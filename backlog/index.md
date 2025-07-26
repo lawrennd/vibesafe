@@ -68,8 +68,6 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-- [What's Next Script Status Normalization Enhancement](features/2025-07-26_whats-next-status-normalization.md)
-
 - [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
 
@@ -94,6 +92,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [What's Next Script Status Normalization Enhancement](features/2025-07-26_whats-next-status-normalization.md)
+
 - [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
 
 - [Update Tests for Status Normalization in update_index.py](features/2025-07-26_update-index-tests.md)
@@ -101,8 +101,6 @@ This file provides an overview of all current backlog items organized by categor
 - [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
 
 - [Integrate AI-Requirements Framework into Installation Script](infrastructure/2025-05-12_ai-requirements-integration.md)
-
-- [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
 
 
 ## Recently Abandoned Tasks
