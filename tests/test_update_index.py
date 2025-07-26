@@ -4,10 +4,14 @@ Tests for the backlog/update_index.py script
 """
 
 import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 import shutil
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Import the module
 import backlog.update_index as update_index
@@ -26,6 +30,23 @@ class TestUpdateIndex(unittest.TestCase):
     def tearDown(self):
         """Clean up temporary test environment."""
         shutil.rmtree(self.test_dir)
+    
+    def test_normalize_status(self):
+        """Test the normalize_status function directly."""
+        # Test various input formats
+        self.assertEqual(update_index.normalize_status('Ready'), 'ready')
+        self.assertEqual(update_index.normalize_status('In Progress'), 'in_progress')
+        self.assertEqual(update_index.normalize_status('Proposed'), 'proposed')
+        self.assertEqual(update_index.normalize_status('completed'), 'completed')
+        self.assertEqual(update_index.normalize_status('ABANDONED'), 'abandoned')
+        
+        # Test edge cases
+        self.assertIsNone(update_index.normalize_status(''))
+        self.assertIsNone(update_index.normalize_status(None))
+        
+        # Test hyphens and mixed separators
+        self.assertEqual(update_index.normalize_status('in-progress'), 'in_progress')
+        self.assertEqual(update_index.normalize_status('Ready-To-Start'), 'ready_to_start')
     
     def test_extract_yaml_frontmatter(self):
         """Test extraction of YAML frontmatter from task content."""
@@ -49,22 +70,23 @@ Content goes here.
         # Extract metadata
         metadata = update_index.extract_task_metadata(Path(test_file_path))
         
-        # Check metadata
+        # Check metadata - status should be normalized
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
         self.assertEqual(metadata['title'], 'Test Task')
-        self.assertEqual(metadata['status'], 'Ready')
+        self.assertEqual(metadata['status'], 'ready')  # normalized from 'Ready'
         self.assertEqual(metadata['priority'], 'high')
         
-        # Test without frontmatter
+        # Test without frontmatter - should now work, not raise ValueError
         with open(test_file_path, 'w') as f:
             f.write("""# Task: Test Task
 
 Content goes here.
 """)
         
-        # Expect ValueError when no YAML frontmatter is present
-        with self.assertRaises(ValueError):
-            update_index.extract_task_metadata(Path(test_file_path))
+        # Should work now (no longer raises ValueError)
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertIsNotNone(metadata)
+        self.assertEqual(metadata['title'], 'Test Task')
     
     def test_extract_task_metadata_yaml_frontmatter(self):
         """Test extraction of task metadata from files with YAML frontmatter."""
@@ -90,17 +112,17 @@ Content goes here.
         # Extract metadata
         metadata = update_index.extract_task_metadata(Path(test_file_path))
         
-        # Check metadata
+        # Check metadata - status should be normalized
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
         self.assertEqual(metadata['title'], 'Test Task with YAML')
-        self.assertEqual(metadata['status'], 'Ready')
+        self.assertEqual(metadata['status'], 'ready')  # normalized from 'Ready'
         self.assertEqual(metadata['priority'], 'high')
         self.assertEqual(metadata['created'], '2025-05-12')
         self.assertEqual(metadata['updated'], '2025-05-13')
         self.assertEqual(metadata['category'], category)
     
     def test_extract_task_metadata_traditional(self):
-        """Test extraction of task metadata from files with traditional format (should raise ValueError if YAML frontmatter is missing)."""
+        """Test extraction of task metadata from files with traditional format (should work now)."""
         # Create a test file with traditional format
         category = "infrastructure"
         test_file_path = os.path.join(self.test_dir, category, "2025-05-12_test-task.md")
@@ -118,9 +140,17 @@ Content goes here.
 Content goes here.
 """)
         
-        # Extract metadata should raise ValueError
-        with self.assertRaises(ValueError):
-            update_index.extract_task_metadata(Path(test_file_path))
+        # Extract metadata should work now (no longer raises ValueError)
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertIsNotNone(metadata)
+        
+        # Check that old format parsing works
+        self.assertEqual(metadata['id'], '2025-05-12_test-task')
+        self.assertEqual(metadata['title'], 'Test Task Traditional')
+        self.assertEqual(metadata['status'], 'In Progress')  # old format doesn't normalize
+        self.assertEqual(metadata['priority'], 'Medium')
+        self.assertEqual(metadata['created'], '2025-05-12')
+        self.assertEqual(metadata['updated'], '2025-05-13')
     
     def test_extract_task_metadata_both_formats(self):
         """Test extraction of task metadata from files with both YAML frontmatter and traditional format."""
@@ -156,11 +186,46 @@ Content goes here.
         # Check that YAML frontmatter takes precedence
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
         self.assertEqual(metadata['title'], 'Test Task YAML')
-        self.assertEqual(metadata['status'], 'Ready')
+        self.assertEqual(metadata['status'], 'ready')  # normalized from 'Ready'
         self.assertEqual(metadata['priority'], 'High')
         self.assertEqual(metadata['created'], '2025-05-12')
         self.assertEqual(metadata['updated'], '2025-05-13')
         self.assertEqual(metadata['category'], category)
+    
+    def test_extract_task_metadata_updated_field_variants(self):
+        """Test that both 'updated' and 'last_updated' field names work."""
+        category = "features"
+        test_file_path = os.path.join(self.test_dir, category, "2025-05-12_test-task.md")
+        
+        # Test with 'updated' field
+        with open(test_file_path, 'w') as f:
+            f.write("""---
+id: "2025-05-12_test-task"
+title: "Test Task"
+status: "Ready"
+updated: "2025-05-13"
+---
+
+# Task: Test Task
+""")
+        
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertEqual(metadata['updated'], '2025-05-13')
+        
+        # Test with 'last_updated' field (should also work)
+        with open(test_file_path, 'w') as f:
+            f.write("""---
+id: "2025-05-12_test-task"  
+title: "Test Task"
+status: "Ready"
+last_updated: "2025-05-14"
+---
+
+# Task: Test Task
+""")
+        
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertEqual(metadata['updated'], '2025-05-14')
     
     def test_generate_index_content(self):
         """Test generating index content from task metadata."""
@@ -170,7 +235,7 @@ Content goes here.
                 'filepath': Path(os.path.join(self.test_dir, "features", "2025-05-12_task1.md")),
                 'id': '2025-05-12_task1',
                 'title': 'Feature Task 1',
-                'status': 'Ready',
+                'status': 'ready',  # use normalized status
                 'priority': 'High',
                 'created': '2025-05-12',
                 'updated': '2025-05-13',
@@ -180,7 +245,7 @@ Content goes here.
                 'filepath': Path(os.path.join(self.test_dir, "features", "2025-05-13_task2.md")),
                 'id': '2025-05-13_task2',
                 'title': 'Feature Task 2',
-                'status': 'In Progress',
+                'status': 'in_progress',  # use normalized status
                 'priority': 'Medium',
                 'created': '2025-05-13',
                 'updated': '2025-05-14',
@@ -190,7 +255,7 @@ Content goes here.
                 'filepath': Path(os.path.join(self.test_dir, "infrastructure", "2025-05-14_task3.md")),
                 'id': '2025-05-14_task3',
                 'title': 'Infrastructure Task',
-                'status': 'Completed',
+                'status': 'completed',  # use normalized status
                 'priority': 'Low',
                 'created': '2025-05-14',
                 'updated': '2025-05-15',
@@ -200,7 +265,7 @@ Content goes here.
                 'filepath': Path(os.path.join(self.test_dir, "documentation", "2025-05-15_task4.md")),
                 'id': '2025-05-15_task4',
                 'title': 'Documentation Task',
-                'status': 'Abandoned',
+                'status': 'abandoned',  # use normalized status
                 'priority': 'Medium',
                 'created': '2025-05-15',
                 'updated': '2025-05-16',
@@ -231,7 +296,7 @@ Content goes here.
             Path.parent = property(original_parent)
     
     def test_case_insensitive_status_matching(self):
-        """Test that status values are matched case-insensitively."""
+        """Test that status values are normalized correctly."""
         # Create a test file with lowercase status
         category = "bugs"
         test_file_path = os.path.join(self.test_dir, category, "2025-05-12_test-task.md")
@@ -253,11 +318,9 @@ Content goes here.
         metadata = update_index.extract_task_metadata(Path(test_file_path))
         
         # Check metadata
-        self.assertEqual(metadata['status'], 'ready')  # Should be preserved as lowercase
+        self.assertEqual(metadata['status'], 'ready')  # Should remain as normalized lowercase
         
-        # When the index is generated, the lowercase 'ready' should match with 'Ready'
-        # We'll mock generate_index_content to test this
-        
+        # Test that different case inputs normalize correctly
         tasks = [metadata]
         
         # Create a minimal version of generate_index_content for testing status matching
@@ -273,25 +336,18 @@ Content goes here.
                     continue
                 
                 category = task['category']
-                status = task['status'].strip()
+                status = update_index.normalize_status(task['status'])  # normalize status
                 
-                # Ensure status is one of the valid statuses (case-insensitive)
-                matching_status = None
-                for valid_status in update_index.STATUSES:
-                    if status.lower() == valid_status.lower():
-                        matching_status = valid_status
-                        break
-                
-                if matching_status and category in categorized_tasks and matching_status in categorized_tasks[category]:
-                    categorized_tasks[category][matching_status].append(task)
+                if status and category in categorized_tasks and status in categorized_tasks[category]:
+                    categorized_tasks[category][status].append(task)
             
             return categorized_tasks
         
         categorized = test_status_matching(tasks)
         
-        # Check that the task was categorized correctly despite having lowercase status
-        self.assertEqual(len(categorized['bugs']['Ready']), 1)
-        self.assertEqual(categorized['bugs']['Ready'][0]['id'], '2025-05-12_test-task')
+        # Check that the task was categorized correctly with normalized status
+        self.assertEqual(len(categorized['bugs']['ready']), 1)
+        self.assertEqual(categorized['bugs']['ready'][0]['id'], '2025-05-12_test-task')
 
 
 if __name__ == '__main__':

@@ -96,13 +96,13 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
 
+- [Update Tests for Status Normalization in update_index.py](features/2025-07-26_update-index-tests.md)
+
 - [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
 
 - [Integrate AI-Requirements Framework into Installation Script](infrastructure/2025-05-12_ai-requirements-integration.md)
 
 - [Set Up GitHub Repository for VibeSafe](infrastructure/2025-05-05_github-repository-setup.md)
-
-- [Implement Backlog Integration for AI-Requirements Framework](features/2025-05-08_ai-requirements-backlog-integration.md)
 
 
 ## Recently Abandoned Tasks
