@@ -240,18 +240,13 @@ The script is particularly useful for LLMs working on the VibeSafe project, as i
 
 For more information, see [docs/whats_next_script.md](docs/whats_next_script.md).
 
-### VibeSafe Update Script
+### Updating VibeSafe
 
-The `vibesafe-update` script ensures your VibeSafe installation has all the necessary components:
+With VibeSafe's Clean Installation Philosophy, updating is simple - just reinstall:
 
 ```bash
-# Check for missing components
-./vibesafe-update --check
-
-# Install missing components
-./vibesafe-update
+# Get the latest VibeSafe components (preserves your content)
+bash <(curl -s https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)
 ```
 
-This script automatically detects and adds missing VibeSafe components to your installation, ensuring you have access to all the latest features and tools.
-
-For more information, see [VibeSafe Update Script Documentation](docs/vibesafe_update_script.md).
+This automatically updates all VibeSafe system files while preserving your project content (tasks, CIPs, project README, etc.).

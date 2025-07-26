@@ -54,6 +54,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
+- [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
+
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)

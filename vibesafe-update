@@ -1,8 +1,0 @@
-#!/bin/sh
-# Wrapper script for the VibeSafe Update script
-
-# Determine the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-# Run the Python script
-python "$SCRIPT_DIR/scripts/vibesafe_update.py" "$@" 

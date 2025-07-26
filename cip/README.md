@@ -45,7 +45,7 @@ Each CIP can have one of the following statuses:
 - [CIP-0008](./cip0008.md): Unified Philosophy Document and New Tenets for Human-LLM Collaboration
 - [CIP-0009](./cip0009.md): Requirements Conversation Framework
 - [CIP-000A](./cip000A.md): Project Status Summarizer ("What's Next" Script)
-- [CIP-000B](./cip000B.md): VibeSafe Update Script
+- [CIP-000B](./cip000B.md): VibeSafe Update Script (superseded)
 - [CIP-000C](./cip000C.md): Backlog Integration with GitHub Issues
 - [CIP-000D](./cip000D.md): Backlog Module Refactor
 - [CIP-000E](./cip000E.md): Clean Installation Philosophy

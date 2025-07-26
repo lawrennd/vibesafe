@@ -89,7 +89,6 @@ cip/cip_template.md
 # VibeSafe scripts and tools
 scripts/whats_next.py
 install-whats-next.sh
-vibesafe-update
 
 # VibeSafe templates directory
 templates/

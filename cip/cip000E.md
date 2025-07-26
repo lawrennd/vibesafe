@@ -25,10 +25,10 @@ This CIP establishes a simple, predictable installation philosophy for VibeSafe 
 
 The current installation approach (CIP-0002) has several problems:
 
-1. **Inconsistent preservation logic** - Some files preserved, others overwritten
-2. **Complex selective installation** - Users must choose components
-3. **Confusing update behavior** - Unclear what gets updated vs preserved
-4. **Maintenance burden** - Complex logic is hard to test and maintain
+1. *Inconsistent preservation logic* - Some files preserved, others overwritten
+2. *Complex selective installation* - Users must choose components
+3. *Confusing update behavior* - Unclear what gets updated vs preserved
+4. *Maintenance burden* - Complex logic is hard to test and maintain
 
 This creates confusion and makes VibeSafe installations unpredictable. Users don't know what will happen when they run the installer.
 
@@ -38,7 +38,7 @@ This creates confusion and makes VibeSafe installations unpredictable. Users don
 
 Every VibeSafe installation should be treated as a complete reinstall of the VibeSafe system, with clear rules:
 
-**✅ ALWAYS OVERWRITE (VibeSafe System Files):**
+*✅ ALWAYS OVERWRITE (VibeSafe System Files):*
 - Templates: `cip_template.md`, `task_template.md`, `tenet_template.md`
 - System READMEs: `cip/README.md`, `backlog/README.md`, `tenets/README.md`
 - Cursor rules: `.cursor/rules/*` 
@@ -46,7 +46,7 @@ Every VibeSafe installation should be treated as a complete reinstall of the Vib
 - AI-Requirements framework: All template and system files
 - Index scripts: `update_index.py`, helper scripts
 
-**✅ ALWAYS PRESERVE (User Content):**
+*✅ ALWAYS PRESERVE (User Content):*
 - Project README: `README.md` (root level)
 - User tasks: Files in `backlog/features/`, `backlog/bugs/`, etc.
 - User CIPs: `cip0001.md`, `cip0002.md`, etc.
@@ -56,11 +56,11 @@ Every VibeSafe installation should be treated as a complete reinstall of the Vib
 
 ### Benefits
 
-1. **Predictable** - Users know exactly what will happen
-2. **Simple** - No complex detection or selective logic
-3. **Always up-to-date** - System files always match latest VibeSafe
-4. **Safe** - User content is never touched
-5. **Easy to test** - Clear, simple behavior to verify
+1. *Predictable* - Users know exactly what will happen
+2. *Simple* - No complex detection or selective logic
+3. *Always up-to-date* - System files always match latest VibeSafe
+4. *Safe* - User content is never touched
+5. *Easy to test* - Clear, simple behavior to verify
 
 ### Installation Behavior
 
@@ -78,12 +78,12 @@ Every VibeSafe installation should be treated as a complete reinstall of the Vib
 
 | File Type | Action | Example |
 |-----------|--------|---------|
-| **System Templates** | Overwrite | `task_template.md`, `cip_template.md` |
-| **System Documentation** | Overwrite | `backlog/README.md`, `cip/README.md` |
-| **Tool Configuration** | Overwrite | `.cursor/rules/*`, `update_index.py` |
-| **Installation Scripts** | Overwrite | `whats-next`, `install-whats-next.sh` |
-| **Project Documentation** | Preserve | `README.md` (root) |
-| **User Content** | Preserve | `cip0001.md`, `backlog/features/task1.md` |
+| *System Templates* | Overwrite | `task_template.md`, `cip_template.md` |
+| *System Documentation* | Overwrite | `backlog/README.md`, `cip/README.md` |
+| *Tool Configuration* | Overwrite | `.cursor/rules/*`, `update_index.py` |
+| *Installation Scripts* | Overwrite | `whats-next`, `install-whats-next.sh` |
+| *Project Documentation* | Preserve | `README.md` (root) |
+| *User Content* | Preserve | `cip0001.md`, `backlog/features/task1.md` |
 
 ## Implementation
 
@@ -128,15 +128,15 @@ install_vibesafe() {
 
 ### Superseded Features
 
-- **Selective installation** - Removed (install everything)
-- **Update mode** - Removed (install = reinstall) 
-- **Preserve customizations** - Clarified (only user content)
+- *Selective installation* - Removed (install everything)
+- *Update mode* - Removed (install = reinstall) 
+- *Preserve customizations* - Clarified (only user content)
 
 ### Maintained Features
 
-- **Cross-platform support** - Keep
-- **Minimal dependencies** - Keep
-- **Error handling** - Keep and simplify
+- *Cross-platform support* - Keep
+- *Minimal dependencies* - Keep
+- *Error handling* - Keep and simplify
 
 ## Implementation Status
 
