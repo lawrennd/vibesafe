@@ -21,7 +21,7 @@ from pathlib import Path
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
 # Use lowercase internally but accept both formats
-STATUSES = ['proposed', 'ready', 'in_progress', 'completed', 'abandoned']
+STATUSES = ['proposed', 'ready', 'in_progress', 'completed', 'abandoned', 'superseded']
 
 def normalize_status(status):
     """Normalize status to lowercase with underscores."""
@@ -242,6 +242,23 @@ def generate_index_content(tasks):
             content.append(f"- [{task['title']}]({relative_path})\n")
     else:
         content.append("*No tasks recently abandoned.*\n")
+    
+    content.append("\n## Recently Superseded Tasks\n")
+    
+    superseded_tasks = []
+    for category in CATEGORIES:
+        if 'superseded' in categorized_tasks[category]:
+            superseded_tasks.extend(categorized_tasks[category]['superseded'])
+    
+    if superseded_tasks:
+        def sort_key(task):
+            return task.get('updated', '') or ''
+        
+        for task in sorted(superseded_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
+            relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
+            content.append(f"- [{task['title']}]({relative_path})\n")
+    else:
+        content.append("*No tasks recently superseded.*\n")
     
     return "\n".join(content)
 

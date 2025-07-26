@@ -29,22 +29,26 @@ title: Develop Testing Framework for VibeSafe Installation Methods
 
 ## Description
 
-To ensure the reliability of VibeSafe installation methods across different environments, we need a comprehensive testing framework. This task involves creating automated tests for both the minimal shell script installation and the more functional Python installation, as well as defining a testing schedule and methodology.
+**📝 SCOPE UPDATED for CIP-000E Clean Installation Philosophy**
+
+To ensure the reliability of VibeSafe installation methods across different environments, we need a simplified testing framework that focuses on the core preserve/overwrite behavior defined in CIP-000E.
 
 ## Acceptance Criteria
 
-- [ ] Design a test matrix covering different operating systems, environments, and scenarios
-- [ ] Create automated tests for the shell script installation method
-- [ ] Create automated tests for the Python installation method
-- [ ] Implement test cases for selective component installation (backlog, CIP, cursor rules)
-- [ ] Test update functionality on repositories with existing installations
+**Updated for CIP-000E simplified approach:**
+
+- [ ] Design simplified test matrix for core preserve/overwrite behavior
+- [ ] Create automated tests for installation script on different OS
+- [ ] ~~Create automated tests for Python installation method~~ (removed - shell script only)
+- [ ] ~~Implement test cases for selective component installation~~ (removed - always install everything)
+- [ ] Test overwrite/preserve behavior on existing installations
 - [ ] Set up CI/CD pipeline for automated testing
 - [ ] Create documentation on how to run tests locally
 - [ ] Establish a regular testing schedule (e.g., weekly, on pull requests, etc.)
 
 ## Implementation Notes
 
-### Test Matrix
+### Simplified Test Matrix (CIP-000E)
 
 The test matrix should cover:
 
@@ -54,23 +58,19 @@ The test matrix should cover:
    - Windows (with Git Bash, WSL, PowerShell)
 
 2. **Installation Methods**:
-   - Shell script minimal installation
-   - Python full-featured installation
+   - Shell script installation (`install-minimal.sh`)
    - One-line curl/wget installation
    - Manual download and execution
 
-3. **Installation Scenarios**:
+3. **Core Scenarios**:
    - Fresh installation (empty directory)
-   - Installation in existing project
-   - Installation with existing similar directory structure
-   - Update of previous installation
+   - Reinstall over existing VibeSafe (verify overwrite/preserve rules)
+   - Installation in project with existing content
 
-4. **Component Selection**:
-   - All components
-   - Only backlog system
-   - Only CIP system
-   - Only cursor rules
-   - Custom combinations
+4. **Preserve/Overwrite Verification**:
+   - System files are always overwritten (templates, system READMEs, cursor rules)
+   - User content is always preserved (project README, user tasks/CIPs/tenets)
+   - Virtual environment is preserved for performance
 
 ### Testing Approach
 

@@ -54,11 +54,11 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
+- [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
+
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)
-
-- [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)
 
 
 ### In Progress
@@ -106,3 +106,8 @@ This file provides an overview of all current backlog items organized by categor
 ## Recently Abandoned Tasks
 
 *No tasks recently abandoned.*
+
+
+## Recently Superseded Tasks
+
+- [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)

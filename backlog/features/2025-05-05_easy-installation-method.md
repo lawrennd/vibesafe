@@ -4,7 +4,7 @@ id: 2025-05-05_easy-installation-method
 last_updated: '2025-05-11'
 owner: lawrennd
 priority: high
-status: ready
+status: superseded
 tags:
 - documentation
 - testing
@@ -28,7 +28,9 @@ title: Implement Easy Installation Method for VibeSafe
 
 ## Description
 
-To make VibeSafe easy to adopt across projects, we need to develop simple installation scripts that work with minimal dependencies. This task involves implementing the installation methods proposed in CIP-0002.
+**⚠️ SUPERSEDED by `2025-07-26_clean-installation-implementation.md`**
+
+This task proposed implementing the complex installation methods from CIP-0002, but has been superseded by a simpler approach in CIP-000E that treats every installation as a "reinstall" with clear preserve/overwrite rules.
 
 ## Acceptance Criteria
 

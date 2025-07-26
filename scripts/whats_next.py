@@ -322,7 +322,8 @@ def scan_backlog() -> Dict[str, Any]:
             'ready': [],
             'in_progress': [],
             'completed': [],
-            'abandoned': []
+            'abandoned': [],
+            'superseded': []
         }
     }
     
