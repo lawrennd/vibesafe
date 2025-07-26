@@ -330,6 +330,124 @@ EOF
   fi
 }
 
+# Function to get VibeSafe gitignore entries
+get_vibesafe_gitignore_entries() {
+  cat << 'EOF'
+
+# VibeSafe System Files (Auto-added during installation)
+# These are VibeSafe infrastructure - not your project content
+
+# Backlog system files
+backlog/README.md
+backlog/task_template.md
+backlog/update_index.py
+backlog/index.md
+
+# CIP system files  
+cip/README.md
+cip/cip_template.md
+
+# Cursor AI rules (VibeSafe-managed)
+.cursor/rules/
+
+# VibeSafe scripts and tools
+scripts/whats_next.py
+install-whats-next.sh
+vibesafe-update
+
+# VibeSafe templates directory
+templates/
+
+# AI-Requirements framework (VibeSafe-managed)
+ai-requirements/README.md
+ai-requirements/requirement_template.md
+ai-requirements/prompts/
+ai-requirements/patterns/
+ai-requirements/integrations/
+ai-requirements/examples/
+ai-requirements/guidance/
+
+# Tenets system files
+tenets/README.md
+tenets/tenet_template.md
+tenets/combine_tenets.py
+EOF
+}
+
+# Function to check if a pattern is already covered in .gitignore
+check_gitignore_coverage() {
+  local pattern="$1"
+  local gitignore_file="${2:-.gitignore}"
+  
+  # Return 1 (not covered) if .gitignore doesn't exist
+  if [ ! -f "$gitignore_file" ]; then
+    return 1
+  fi
+  
+  # Check if the exact pattern exists (accounting for comments and whitespace)
+  if grep -Fxq "$pattern" "$gitignore_file" 2>/dev/null; then
+    return 0  # Pattern is covered
+  fi
+  
+  # For directory patterns, also check if parent directories are ignored
+  if [[ "$pattern" == *"/" ]]; then
+    local parent_dir=$(dirname "$pattern")
+    if [ "$parent_dir" != "." ] && [ "$parent_dir" != "/" ]; then
+      if grep -Fxq "$parent_dir" "$gitignore_file" 2>/dev/null || \
+         grep -Fxq "${parent_dir}/" "$gitignore_file" 2>/dev/null; then
+        return 0  # Pattern is covered by parent directory
+      fi
+    fi
+  fi
+  
+  return 1  # Pattern is not covered
+}
+
+# Function to add VibeSafe gitignore protection
+add_vibesafe_gitignore() {
+  local gitignore_file="${1:-.gitignore}"
+  local vibesafe_section="# VibeSafe System Files (Auto-added during installation)"
+  
+  debug "Adding VibeSafe gitignore protection to $gitignore_file"
+  
+  # Check if VibeSafe section already exists
+  if [ -f "$gitignore_file" ] && grep -q "$vibesafe_section" "$gitignore_file" 2>/dev/null; then
+    debug "VibeSafe gitignore section already exists, checking for missing entries"
+    
+    # Read existing entries and only add missing ones
+    local missing_entries=()
+    local current_entry=""
+    
+    while IFS= read -r line; do
+      # Skip empty lines and comments (except section header)
+      if [[ -z "$line" || "$line" == "#"* ]]; then
+        continue
+      fi
+      
+      current_entry="$line"
+      if ! check_gitignore_coverage "$current_entry" "$gitignore_file"; then
+        missing_entries+=("$current_entry")
+      fi
+    done < <(get_vibesafe_gitignore_entries | grep -v "^#" | grep -v "^$")
+    
+    # Add missing entries after the existing VibeSafe section
+    if [ ${#missing_entries[@]} -gt 0 ]; then
+      echo "Adding ${#missing_entries[@]} missing VibeSafe gitignore entries..."
+      for entry in "${missing_entries[@]}"; do
+        echo "$entry" >> "$gitignore_file"
+        debug "Added missing entry: $entry"
+      done
+    else
+      debug "All VibeSafe entries already covered"
+    fi
+  else
+    # Add complete VibeSafe section
+    echo "Setting up VibeSafe gitignore protection..."
+    get_vibesafe_gitignore_entries >> "$gitignore_file"
+    debug "Added complete VibeSafe gitignore section"
+  fi
+}
+
 # Main installation function implementing Clean Installation Philosophy
 install_vibesafe() {
   print_banner
@@ -379,6 +497,9 @@ install_vibesafe() {
   # ALWAYS PRESERVE: User content
   preserve_project_readme
   
+  # PROTECT: Add VibeSafe gitignore protection
+  add_vibesafe_gitignore
+  
   # Setup What's Next script if requested (system file installation)
   if [ "$VIBESAFE_INSTALL_WHATS_NEXT" = "true" ]; then
     setup_whats_next
@@ -396,6 +517,7 @@ install_vibesafe() {
   echo "Clean Installation Philosophy applied:"
   echo "✅ VibeSafe system files updated to latest version"
   echo "✅ User content preserved"
+  echo "✅ VibeSafe gitignore protection enabled"
   echo ""
   echo -e "${YELLOW}Next steps:${NC}"
   echo "1. Define your project tenets in the tenets/ directory"
