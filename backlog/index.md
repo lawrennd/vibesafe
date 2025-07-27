@@ -54,7 +54,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-- [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
+- [Implement Automatic Tenets-to-Cursor-Rules Generation](features/2025-07-28_implement-tenets-to-cursor-rules.md)
 
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
@@ -62,6 +62,8 @@ This file provides an overview of all current backlog items organized by categor
 
 
 ### In Progress
+
+- [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
 
 - [Implement Goal Decomposition Pattern](features/2025-05-08_goal-decomposition-pattern.md)
 

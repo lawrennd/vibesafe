@@ -50,6 +50,7 @@ Each CIP can have one of the following statuses:
 - [CIP-000D](./cip000D.md): Backlog Module Refactor
 - [CIP-000E](./cip000E.md): Clean Installation Philosophy
 - [CIP-000F](./cip000F.md): VibeSafe Auto-Gitignore Protection
+- [CIP-0010](./cip0010.md): Automatic Tenets-to-Cursor-Rules Generation
 
 ## Creating a Good CIP
 
