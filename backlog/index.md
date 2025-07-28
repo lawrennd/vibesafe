@@ -35,7 +35,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-*No tasks currently ready.*
+- [Develop Testing Framework for VibeSafe Installation Methods](infrastructure/2025-05-05_installation-testing-plan.md)
 
 
 ### In Progress
@@ -46,8 +46,6 @@ This file provides an overview of all current backlog items organized by categor
 ### Proposed
 
 - [Implement Tenet System as a Core VibeSafe Feature](infrastructure/2025-05-05_implement-tenets.md)
-
-- [Develop Testing Framework for VibeSafe Installation Methods](infrastructure/2025-05-05_installation-testing-plan.md)
 
 
 ## Features
@@ -62,8 +60,6 @@ This file provides an overview of all current backlog items organized by categor
 
 
 ### In Progress
-
-- [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
 
 - [Implement Goal Decomposition Pattern](features/2025-05-08_goal-decomposition-pattern.md)
 
@@ -100,9 +96,9 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
 
-- [Update Tests for Status Normalization in update_index.py](features/2025-07-26_update-index-tests.md)
+- [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
 
-- [Improved Installation Script](documentation/2025-05-05_improved-installation-script.md)
+- [Update Tests for Status Normalization in update_index.py](features/2025-07-26_update-index-tests.md)
 
 
 ## Recently Abandoned Tasks

@@ -15,7 +15,7 @@ supersedes: ["CIP-0002", "CIP-000B"]
 - [x] Proposed: 2025-07-26
 - [x] Accepted: 2025-07-26
 - [x] Implemented: 2025-07-26
-- [ ] Closed
+- [x] Closed: 2025-07-28 (Fully implemented and tested)
 
 ## Description
 
