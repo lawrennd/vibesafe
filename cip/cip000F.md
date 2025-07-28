@@ -57,6 +57,8 @@ cip/cip_template.md
 
 # Cursor AI rules (VibeSafe-managed)
 .cursor/rules/
+# Generated project tenet cursor rules
+.cursor/rules/project_tenet_*.mdc
 
 # VibeSafe scripts and tools
 scripts/whats_next.py

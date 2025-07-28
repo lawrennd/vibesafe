@@ -257,6 +257,95 @@ teardown() {
   [[ "$output" == *"Warning"* ]] || [[ "$output" == *"Python"* ]]
 }
 
+@test "GENERATE: Cursor rules are created from project tenets" {
+  # Create a test tenet file
+  mkdir -p tenets/test
+  cat > tenets/test/test-tenet.md << 'EOF'
+## Tenet: test-tenet
+
+**Title**: Test Tenet
+
+**Description**: This is a test tenet for testing cursor rule generation.
+
+**Quote**: *"Test quote for testing"*
+
+**Examples**:
+- Example 1: Test example
+- Example 2: Another test example
+
+**Counter-examples**:
+- Counter-example 1: Bad test
+- Counter-example 2: Another bad test
+
+**Conflicts**:
+- Can conflict with other tenets
+- Resolution: Test resolution
+
+**Version**: 1.0 (2025-07-28)
+EOF
+
+  # Copy the actual combine_tenets.py script for testing
+  cp "$BATS_TEST_DIRNAME/../../tenets/combine_tenets.py" tenets/combine_tenets.py
+
+  # Run the installation script
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
+  
+  # Check that cursor rules directory exists
+  [ -d ".cursor/rules" ]
+  
+  # Check that the test tenet rule was generated
+  [ -f ".cursor/rules/project_tenet_test-tenet.mdc" ]
+  
+  # Verify the generated rule contains expected content
+  grep -q "Project Tenet: Test Tenet" ".cursor/rules/project_tenet_test-tenet.mdc"
+  grep -q "This is a test tenet for testing cursor rule generation" ".cursor/rules/project_tenet_test-tenet.mdc"
+  grep -q "Test quote for testing" ".cursor/rules/project_tenet_test-tenet.mdc"
+  grep -q "Example 1: Test example" ".cursor/rules/project_tenet_test-tenet.mdc"
+  grep -q "Counter-example 1: Bad test" ".cursor/rules/project_tenet_test-tenet.mdc"
+}
+
+@test "PRESERVE: Existing cursor rules are not overwritten" {
+  # Create an existing cursor rule
+  mkdir -p .cursor/rules
+  cat > .cursor/rules/project_tenet_existing.mdc << 'EOF'
+---
+description: "Existing rule that should be preserved"
+globs: "**/*"
+alwaysApply: true
+---
+
+# Existing Rule
+
+This rule should not be overwritten.
+EOF
+
+  # Store the checksum of the existing rule
+  EXISTING_RULE_CHECKSUM=$(md5sum .cursor/rules/project_tenet_existing.mdc | awk '{print $1}')
+  
+  # Create a test tenet that would generate the same rule
+  mkdir -p tenets/test
+  cat > tenets/test/existing.md << 'EOF'
+## Tenet: existing
+
+**Title**: Existing Tenet
+
+**Description**: This tenet would generate a rule that already exists.
+
+**Version**: 1.0 (2025-07-28)
+EOF
+
+  # Run the installation script
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
+  
+  # Check that the existing rule was preserved (same checksum)
+  NEW_CHECKSUM=$(md5sum .cursor/rules/project_tenet_existing.mdc | awk '{print $1}')
+  [ "$EXISTING_RULE_CHECKSUM" = "$NEW_CHECKSUM" ]
+  
+  # Verify the content is still the original
+  grep -q "Existing rule that should be preserved" ".cursor/rules/project_tenet_existing.mdc"
+  grep -q "This rule should not be overwritten" ".cursor/rules/project_tenet_existing.mdc"
+}
+
 @test "Debug mode provides detailed output" {
   export VIBESAFE_SKIP_CLONE=true
   export VIBESAFE_DEBUG=true

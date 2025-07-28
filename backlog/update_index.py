@@ -4,31 +4,32 @@ Update the backlog index.md file based on the current task files.
 
 This script scans all task files in the backlog directory structure,
 extracts their metadata, and generates an updated index.md file.
-
-The script accepts status values in multiple formats:
-- Lowercase with underscores: "proposed", "in_progress", "completed"
-- Capitalized with spaces: "Proposed", "In Progress", "Completed"  
-- Mixed case: "Ready", "abandoned", etc.
-All formats are normalized internally to lowercase with underscores.
 """
 
 import os
 import re
-import yaml
 from datetime import datetime
 from pathlib import Path
 
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
-# Use lowercase internally but accept both formats
 STATUSES = ['proposed', 'ready', 'in_progress', 'completed', 'abandoned', 'superseded']
 
 def normalize_status(status):
-    """Normalize status to lowercase with underscores."""
+    """Normalize status values to lowercase with underscores."""
     if not status:
         return None
-    # Convert to lowercase and replace spaces with underscores
-    return status.lower().replace(' ', '_').replace('-', '_')
+    
+    # Convert to lowercase and replace spaces and hyphens with underscores
+    normalized = status.lower().replace(' ', '_').replace('-', '_')
+    
+    # Handle special cases
+    if normalized in ['ready', 'proposed', 'completed', 'abandoned', 'superseded']:
+        return normalized
+    elif normalized in ['in_progress', 'in-progress']:
+        return 'in_progress'
+    
+    return normalized
 
 def extract_task_metadata(filepath):
     """Extract metadata from a task file."""
@@ -69,77 +70,74 @@ def extract_task_metadata(filepath):
         with open(filepath, 'r') as f:
             content = f.read()
             
-            # Check if file has YAML frontmatter
-            if content.startswith('---'):
-                # Split content into frontmatter and body
-                parts = content.split('---', 2)
-                if len(parts) >= 3:
-                    frontmatter_text = parts[1]
-                    body_text = parts[2]
-                    
-                    # Parse YAML frontmatter
-                    try:
-                        front_matter = yaml.safe_load(frontmatter_text)
-                        if front_matter:
-                            metadata['id'] = front_matter.get('id', id_from_filename)
-                            metadata['title'] = front_matter.get('title', None)
-                            metadata['status'] = normalize_status(front_matter.get('status', None))
-                            metadata['priority'] = front_matter.get('priority', None)
-                            metadata['created'] = front_matter.get('created', None)
-                            # Handle both 'updated' and 'last_updated' field names
-                            metadata['updated'] = front_matter.get('updated', front_matter.get('last_updated', None))
-                            metadata['category'] = front_matter.get('category', category)
-                    except yaml.YAMLError as e:
-                        print(f"Error parsing YAML in {filepath}: {e}")
-                    
-                    # Also try to extract title from markdown header in body
-                    title_match = re.search(r'# Task: (.*)', body_text)
-                    if title_match and not metadata['title']:
-                        metadata['title'] = title_match.group(1)
-                        
-                else:
-                    # No valid frontmatter, try old format
-                    _extract_old_format_metadata(content, metadata)
-            else:
-                # No frontmatter, try old format
-                _extract_old_format_metadata(content, metadata)
+            # Try to extract YAML frontmatter first
+            yaml_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+            if yaml_match:
+                yaml_content = yaml_match.group(1)
+                
+                # Extract metadata from YAML
+                id_match = re.search(r'^id:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if id_match:
+                    metadata['id'] = id_match.group(1).strip()
+                
+                title_match = re.search(r'^title:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if title_match:
+                    metadata['title'] = title_match.group(1).strip()
+                
+                status_match = re.search(r'^status:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if status_match:
+                    raw_status = status_match.group(1).strip()
+                    metadata['status'] = normalize_status(raw_status)
+                
+                priority_match = re.search(r'^priority:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if priority_match:
+                    metadata['priority'] = priority_match.group(1).strip()
+                
+                created_match = re.search(r'^created:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if created_match:
+                    metadata['created'] = created_match.group(1).strip()
+                
+                # Handle both 'updated' and 'last_updated' field names
+                updated_match = re.search(r'^(?:updated|last_updated):\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if updated_match:
+                    metadata['updated'] = updated_match.group(1).strip()
+            
+            # Fall back to traditional format if YAML didn't provide all needed fields
+            if not metadata['title']:
+                title_match = re.search(r'# Task: (.*)', content)
+                if title_match:
+                    metadata['title'] = title_match.group(1)
+            
+            if not metadata['id']:
+                id_match = re.search(r'\*\*ID\*\*: (.*)', content)
+                if id_match:
+                    metadata['id'] = id_match.group(1).strip()
+            
+            if not metadata['status']:
+                status_match = re.search(r'\*\*Status\*\*: (.*)', content)
+                if status_match:
+                    raw_status = status_match.group(1).strip()
+                    metadata['status'] = normalize_status(raw_status)
+            
+            if not metadata['priority']:
+                priority_match = re.search(r'\*\*Priority\*\*: (.*)', content)
+                if priority_match:
+                    metadata['priority'] = priority_match.group(1).strip()
+            
+            if not metadata['created']:
+                created_match = re.search(r'\*\*Created\*\*: (.*)', content)
+                if created_match:
+                    metadata['created'] = created_match.group(1).strip()
+            
+            if not metadata['updated']:
+                updated_match = re.search(r'\*\*Last Updated\*\*: (.*)', content)
+                if updated_match:
+                    metadata['updated'] = updated_match.group(1).strip()
                 
         return metadata
     except Exception as e:
         print(f"Error processing {filepath}: {str(e)}")
         return None
-
-def _extract_old_format_metadata(content, metadata):
-    """Extract metadata from old format task files."""
-    # Extract title from the first line
-    title_match = re.search(r'# Task: (.*)', content)
-    if title_match:
-        metadata['title'] = title_match.group(1)
-    
-    # Extract ID from content (overrides filename-based ID if found)
-    id_match = re.search(r'\*\*ID\*\*: (.*)', content)
-    if id_match:
-        metadata['id'] = id_match.group(1).strip()
-    
-    # Extract status
-    status_match = re.search(r'\*\*Status\*\*: (.*)', content)
-    if status_match:
-        metadata['status'] = status_match.group(1).strip()
-    
-    # Extract priority
-    priority_match = re.search(r'\*\*Priority\*\*: (.*)', content)
-    if priority_match:
-        metadata['priority'] = priority_match.group(1).strip()
-    
-    # Extract created date
-    created_match = re.search(r'\*\*Created\*\*: (.*)', content)
-    if created_match:
-        metadata['created'] = created_match.group(1).strip()
-    
-    # Extract updated date
-    updated_match = re.search(r'\*\*Last Updated\*\*: (.*)', content)
-    if updated_match:
-        metadata['updated'] = updated_match.group(1).strip()
 
 def find_all_task_files():
     """Find all task files in the backlog directory."""
@@ -179,7 +177,7 @@ def generate_index_content(tasks):
             continue
         
         category = task['category']
-        status = normalize_status(task['status'])
+        status = task['status'].strip()
         
         if category in categorized_tasks and status in categorized_tasks[category]:
             categorized_tasks[category][status].append(task)
@@ -190,8 +188,8 @@ def generate_index_content(tasks):
     for category in CATEGORIES:
         content.append(f"## {category.title()}\n")
         
-        for status in ['ready', 'in_progress', 'proposed']:
-            content.append(f"### {status.replace('_', ' ').title()}\n")
+        for status in ['Ready', 'In Progress', 'Proposed']:
+            content.append(f"### {status}\n")
             
             tasks_with_status = categorized_tasks[category][status]
             if tasks_with_status:
@@ -213,12 +211,12 @@ def generate_index_content(tasks):
     
     completed_tasks = []
     for category in CATEGORIES:
-        if 'completed' in categorized_tasks[category]:
-            completed_tasks.extend(categorized_tasks[category]['completed'])
+        if 'Completed' in categorized_tasks[category]:
+            completed_tasks.extend(categorized_tasks[category]['Completed'])
     
     if completed_tasks:
         def sort_key(task):
-            return task.get('updated', '') or ''
+            return task.get('updated', '')
         
         for task in sorted(completed_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
             relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
@@ -230,35 +228,18 @@ def generate_index_content(tasks):
     
     abandoned_tasks = []
     for category in CATEGORIES:
-        if 'abandoned' in categorized_tasks[category]:
-            abandoned_tasks.extend(categorized_tasks[category]['abandoned'])
+        if 'Abandoned' in categorized_tasks[category]:
+            abandoned_tasks.extend(categorized_tasks[category]['Abandoned'])
     
     if abandoned_tasks:
         def sort_key(task):
-            return task.get('updated', '') or ''
+            return task.get('updated', '')
         
         for task in sorted(abandoned_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
             relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
             content.append(f"- [{task['title']}]({relative_path})\n")
     else:
         content.append("*No tasks recently abandoned.*\n")
-    
-    content.append("\n## Recently Superseded Tasks\n")
-    
-    superseded_tasks = []
-    for category in CATEGORIES:
-        if 'superseded' in categorized_tasks[category]:
-            superseded_tasks.extend(categorized_tasks[category]['superseded'])
-    
-    if superseded_tasks:
-        def sort_key(task):
-            return task.get('updated', '') or ''
-        
-        for task in sorted(superseded_tasks, key=sort_key, reverse=True)[:5]:  # Show only recent 5
-            relative_path = os.path.relpath(task['filepath'], Path(__file__).parent)
-            content.append(f"- [{task['title']}]({relative_path})\n")
-    else:
-        content.append("*No tasks recently superseded.*\n")
     
     return "\n".join(content)
 

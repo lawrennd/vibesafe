@@ -310,17 +310,17 @@ setup_whats_next() {
       else
         debug "Preserved existing virtual environment"
       fi
-      
-      # Install dependencies
+
+# Install dependencies
       .venv/bin/pip install -q PyYAML
       
       # Create wrapper script (always overwrite - it's a system file)
-      cat > whats-next << 'EOF'
+cat > whats-next << 'EOF'
 #!/bin/bash
 cd "$(dirname "$0")"
 .venv/bin/python scripts/whats_next.py "$@"
 EOF
-      chmod +x whats-next
+chmod +x whats-next
       debug "Created whats-next wrapper script"
     fi
     
@@ -349,6 +349,8 @@ cip/cip_template.md
 
 # Cursor AI rules (VibeSafe-managed)
 .cursor/rules/
+# Generated project tenet cursor rules
+.cursor/rules/project_tenet_*.mdc
 
 # VibeSafe scripts and tools
 scripts/whats_next.py
@@ -405,6 +407,49 @@ check_gitignore_coverage() {
   fi
   
   return 1  # Pattern is not covered
+}
+
+# Function to generate cursor rules from project tenets
+generate_tenet_cursor_rules() {
+  echo "Generating cursor rules from project tenets..."
+  
+  # Check if Python 3 is available
+  if ! command_exists python3; then
+    echo -e "${YELLOW}Warning: Python 3 is required for tenet processing but not found.${NC}"
+    echo "Cursor rules will not be generated from tenets."
+    return 1
+  fi
+  
+  # Check if tenets directory exists
+  if [ ! -d "tenets" ]; then
+    debug "No tenets directory found, skipping cursor rule generation"
+    return 0
+  fi
+  
+  # Check if combine_tenets.py exists
+  if [ ! -f "tenets/combine_tenets.py" ]; then
+    echo -e "${YELLOW}Warning: tenets/combine_tenets.py not found.${NC}"
+    echo "Cursor rules will not be generated from tenets."
+    return 1
+  fi
+  
+  # Create .cursor/rules directory if it doesn't exist
+  mkdir -p .cursor/rules
+  
+  # Run tenet processing with Python
+  if [ -d ".venv" ]; then
+    debug "Using virtual environment for tenet processing"
+    .venv/bin/python tenets/combine_tenets.py --generate-cursor-rules --tenets-dir . --output-dir .cursor/rules
+  else
+    debug "Using system Python for tenet processing"
+    python3 tenets/combine_tenets.py --generate-cursor-rules --tenets-dir . --output-dir .cursor/rules
+  fi
+  
+  if [ $? -eq 0 ]; then
+    echo "✅ Cursor rules generated from project tenets"
+  else
+    echo -e "${YELLOW}Warning: Failed to generate cursor rules from tenets${NC}"
+  fi
 }
 
 # Function to add VibeSafe gitignore protection
@@ -509,6 +554,9 @@ install_vibesafe() {
     setup_whats_next
   fi
   
+  # GENERATE: Create cursor rules from project tenets (after virtual environment is set up)
+  generate_tenet_cursor_rules
+  
   # Clean up temporary directory if we created one
   if [ -n "$temp_dir" ]; then
     rm -rf "$temp_dir"
@@ -522,6 +570,7 @@ install_vibesafe() {
   echo "✅ VibeSafe system files updated to latest version"
   echo "✅ User content preserved"
   echo "✅ VibeSafe gitignore protection enabled"
+  echo "✅ Project tenets converted to cursor rules"
   echo ""
   echo -e "${YELLOW}Next steps:${NC}"
   echo "1. Define your project tenets in the tenets/ directory"

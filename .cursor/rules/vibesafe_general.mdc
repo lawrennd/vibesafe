@@ -112,7 +112,45 @@ last_updated: "2025-07-26"
 - Use broad git operations without explicit permission
 - Create dated files without confirming the date
 
-### 6. Git Workflow and Regular Commits
+### 6. Testing Before Commits
+
+**🧪 ALWAYS TEST BEFORE COMMITTING:**
+
+**✅ Required Testing Points:**
+```bash
+# After implementing new features
+# Run appropriate test suite for your project
+npm test                    # Node.js projects
+python -m pytest tests/ -v  # Python projects
+bats scripts/test/*.bats    # Shell script projects
+go test ./...              # Go projects
+cargo test                 # Rust projects
+# etc.
+
+# After modifying installation scripts
+bats scripts/test/install-test.bats
+
+# After changing core functionality
+# Run comprehensive test suite with verbose output
+
+# Before staging any changes
+# Ensure all tests pass: npm test && echo "✅ All tests passed"
+```
+
+**🎯 Testing Checklist:**
+- ✅ **Unit tests pass** for modified modules
+- ✅ **Integration tests pass** for affected systems
+- ✅ **Installation tests pass** for script changes
+- ✅ **No new test failures** introduced
+- ✅ **Test coverage maintained** or improved
+
+**⚠️ Why Testing Matters:**
+- **Quality**: Ensures changes work as expected
+- **Regression Prevention**: Catches unintended side effects
+- **Confidence**: Validates implementation against requirements
+- **Documentation**: Tests serve as working examples
+
+### 7. Git Workflow and Regular Commits
 
 **🔄 COMMIT EARLY AND OFTEN:**
 
@@ -171,3 +209,4 @@ git commit -m "Complete backlog task: 2025-07-26_feature-name"
 | **File Changes** | Know system vs user | Check file classification guides |
 
 These guidelines help ensure clean, predictable, and professional VibeSafe development practices.
+ 
