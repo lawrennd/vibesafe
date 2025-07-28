@@ -20,7 +20,7 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Create VibeSafe Documentation Style Guide](documentation/2025-05-05_documentation-style-guide.md)
 
-- [Evaluate Elevating "Breadcrumbs Pattern" to a Formal Tenet](documentation/2025-05-05_breadcrumbs-pattern-tenet.md)
+- [Evaluate Elevating](documentation/2025-05-05_breadcrumbs-pattern-tenet.md)
 
 - [Evaluate Documentation Systems Compatible with VibeSafe Tenets](documentation/2025-05-05_documentation-system-evaluation.md)
 
@@ -45,14 +45,16 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Ensure combine_tenets.py Includes Cursor Rules Generation Functionality](infrastructure/2025-07-28_vibesafe-combine-tenets-cursor-rules.md)
+
+- [Make combine_tenets.py Project-Agnostic Instead of Hardcoded for](infrastructure/2025-07-28_vibesafe-combine-tenets-project-detection.md)
+
 - [Implement Tenet System as a Core VibeSafe Feature](infrastructure/2025-05-05_implement-tenets.md)
 
 
 ## Features
 
 ### Ready
-
-- [Implement Automatic Tenets-to-Cursor-Rules Generation](features/2025-07-28_implement-tenets-to-cursor-rules.md)
 
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
@@ -90,22 +92,17 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Implement Automatic Tenets-to-Cursor-Rules Generation](features/2025-07-28_implement-tenets-to-cursor-rules.md)
+
 - [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
 
-- [What's Next Script Status Normalization Enhancement](features/2025-07-26_whats-next-status-normalization.md)
+- [What](features/2025-07-26_whats-next-status-normalization.md)
 
 - [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
 
 - [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
 
-- [Update Tests for Status Normalization in update_index.py](features/2025-07-26_update-index-tests.md)
-
 
 ## Recently Abandoned Tasks
 
 *No tasks recently abandoned.*
-
-
-## Recently Superseded Tasks
-
-- [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)

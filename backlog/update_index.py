@@ -188,8 +188,10 @@ def generate_index_content(tasks):
     for category in CATEGORIES:
         content.append(f"## {category.title()}\n")
         
-        for status in ['Ready', 'In Progress', 'Proposed']:
-            content.append(f"### {status}\n")
+        for status in ['ready', 'in_progress', 'proposed']:
+            # Convert to display format
+            display_status = status.replace('_', ' ').title()
+            content.append(f"### {display_status}\n")
             
             tasks_with_status = categorized_tasks[category][status]
             if tasks_with_status:
@@ -211,8 +213,8 @@ def generate_index_content(tasks):
     
     completed_tasks = []
     for category in CATEGORIES:
-        if 'Completed' in categorized_tasks[category]:
-            completed_tasks.extend(categorized_tasks[category]['Completed'])
+        if 'completed' in categorized_tasks[category]:
+            completed_tasks.extend(categorized_tasks[category]['completed'])
     
     if completed_tasks:
         def sort_key(task):
@@ -228,8 +230,8 @@ def generate_index_content(tasks):
     
     abandoned_tasks = []
     for category in CATEGORIES:
-        if 'Abandoned' in categorized_tasks[category]:
-            abandoned_tasks.extend(categorized_tasks[category]['Abandoned'])
+        if 'abandoned' in categorized_tasks[category]:
+            abandoned_tasks.extend(categorized_tasks[category]['abandoned'])
     
     if abandoned_tasks:
         def sort_key(task):
