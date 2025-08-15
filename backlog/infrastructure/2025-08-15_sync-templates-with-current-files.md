@@ -63,10 +63,10 @@ The fundamental issue is that VibeSafe development happens in the main directori
 ## Acceptance Criteria
 
 ### Phase 1: Immediate Fix
-- [ ] Identify all outdated files in templates directory
-- [ ] Copy current versions of system files to templates directory
-- [ ] Verify file sizes and dates are updated
-- [ ] Test that install-minimal.sh installs current versions
+- [x] Identify all outdated files in templates directory
+- [x] Copy current versions of system files to templates directory
+- [x] Verify file sizes and dates are updated
+- [x] Test that install-minimal.sh installs current versions
 
 ### Phase 2: Self-Update Implementation
 - [ ] Modify VibeSafe's `.gitignore` to exclude installed system files
@@ -119,3 +119,11 @@ vibesafe self-update [--force] [--dry-run]
 
 ### 2025-08-15
 Task created with Ready status after discovering outdated templates during GPy integration. Expanded scope to address root cause and prevent future drift.
+
+### 2025-08-15 (Update)
+Phase 1 completed successfully:
+- Identified outdated files: update_index.py (8027 → 10676 bytes), combine_tenets.py (2490 → 6947 bytes), missing whats_next.py
+- Updated templates directory with current versions
+- Verified file sizes and dates are correct
+- Tested install-minimal.sh successfully installs current versions with YAML frontmatter support
+- Confirmed fix works in GPy project - no more "Skipping invalid task" messages
