@@ -13,7 +13,23 @@ from pathlib import Path
 
 # Categories to organize backlog items
 CATEGORIES = ['documentation', 'infrastructure', 'features', 'bugs']
-STATUSES = ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned']
+STATUSES = ['proposed', 'ready', 'in_progress', 'completed', 'abandoned', 'superseded']
+
+def normalize_status(status):
+    """Normalize status values to lowercase with underscores."""
+    if not status:
+        return None
+    
+    # Convert to lowercase and replace spaces and hyphens with underscores
+    normalized = status.lower().replace(' ', '_').replace('-', '_')
+    
+    # Handle special cases
+    if normalized in ['ready', 'proposed', 'completed', 'abandoned', 'superseded']:
+        return normalized
+    elif normalized in ['in_progress', 'in-progress']:
+        return 'in_progress'
+    
+    return normalized
 
 def extract_task_metadata(filepath):
     """Extract metadata from a task file."""
@@ -54,35 +70,69 @@ def extract_task_metadata(filepath):
         with open(filepath, 'r') as f:
             content = f.read()
             
-            # Extract title from the first line
-            title_match = re.search(r'# Task: (.*)', content)
-            if title_match:
-                metadata['title'] = title_match.group(1)
+            # Try to extract YAML frontmatter first
+            yaml_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+            if yaml_match:
+                yaml_content = yaml_match.group(1)
+                
+                # Extract metadata from YAML
+                id_match = re.search(r'^id:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if id_match:
+                    metadata['id'] = id_match.group(1).strip()
+                
+                title_match = re.search(r'^title:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if title_match:
+                    metadata['title'] = title_match.group(1).strip()
+                
+                status_match = re.search(r'^status:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if status_match:
+                    raw_status = status_match.group(1).strip()
+                    metadata['status'] = normalize_status(raw_status)
+                
+                priority_match = re.search(r'^priority:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if priority_match:
+                    metadata['priority'] = priority_match.group(1).strip()
+                
+                created_match = re.search(r'^created:\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if created_match:
+                    metadata['created'] = created_match.group(1).strip()
+                
+                # Handle both 'updated' and 'last_updated' field names
+                updated_match = re.search(r'^(?:updated|last_updated):\s*["\']?([^"\'\n]+)["\']?', yaml_content, re.MULTILINE)
+                if updated_match:
+                    metadata['updated'] = updated_match.group(1).strip()
             
-            # Extract ID from content (overrides filename-based ID if found)
-            id_match = re.search(r'\*\*ID\*\*: (.*)', content)
-            if id_match:
-                metadata['id'] = id_match.group(1).strip()
+            # Fall back to traditional format if YAML didn't provide all needed fields
+            if not metadata['title']:
+                title_match = re.search(r'# Task: (.*)', content)
+                if title_match:
+                    metadata['title'] = title_match.group(1)
             
-            # Extract status
-            status_match = re.search(r'\*\*Status\*\*: (.*)', content)
-            if status_match:
-                metadata['status'] = status_match.group(1).strip()
+            if not metadata['id']:
+                id_match = re.search(r'\*\*ID\*\*: (.*)', content)
+                if id_match:
+                    metadata['id'] = id_match.group(1).strip()
             
-            # Extract priority
-            priority_match = re.search(r'\*\*Priority\*\*: (.*)', content)
-            if priority_match:
-                metadata['priority'] = priority_match.group(1).strip()
+            if not metadata['status']:
+                status_match = re.search(r'\*\*Status\*\*: (.*)', content)
+                if status_match:
+                    raw_status = status_match.group(1).strip()
+                    metadata['status'] = normalize_status(raw_status)
             
-            # Extract created date
-            created_match = re.search(r'\*\*Created\*\*: (.*)', content)
-            if created_match:
-                metadata['created'] = created_match.group(1).strip()
+            if not metadata['priority']:
+                priority_match = re.search(r'\*\*Priority\*\*: (.*)', content)
+                if priority_match:
+                    metadata['priority'] = priority_match.group(1).strip()
             
-            # Extract updated date
-            updated_match = re.search(r'\*\*Last Updated\*\*: (.*)', content)
-            if updated_match:
-                metadata['updated'] = updated_match.group(1).strip()
+            if not metadata['created']:
+                created_match = re.search(r'\*\*Created\*\*: (.*)', content)
+                if created_match:
+                    metadata['created'] = created_match.group(1).strip()
+            
+            if not metadata['updated']:
+                updated_match = re.search(r'\*\*Last Updated\*\*: (.*)', content)
+                if updated_match:
+                    metadata['updated'] = updated_match.group(1).strip()
                 
         return metadata
     except Exception as e:
@@ -138,8 +188,10 @@ def generate_index_content(tasks):
     for category in CATEGORIES:
         content.append(f"## {category.title()}\n")
         
-        for status in ['Ready', 'In Progress', 'Proposed']:
-            content.append(f"### {status}\n")
+        for status in ['ready', 'in_progress', 'proposed']:
+            # Convert to display format
+            display_status = status.replace('_', ' ').title()
+            content.append(f"### {display_status}\n")
             
             tasks_with_status = categorized_tasks[category][status]
             if tasks_with_status:
@@ -161,8 +213,8 @@ def generate_index_content(tasks):
     
     completed_tasks = []
     for category in CATEGORIES:
-        if 'Completed' in categorized_tasks[category]:
-            completed_tasks.extend(categorized_tasks[category]['Completed'])
+        if 'completed' in categorized_tasks[category]:
+            completed_tasks.extend(categorized_tasks[category]['completed'])
     
     if completed_tasks:
         def sort_key(task):
@@ -178,8 +230,8 @@ def generate_index_content(tasks):
     
     abandoned_tasks = []
     for category in CATEGORIES:
-        if 'Abandoned' in categorized_tasks[category]:
-            abandoned_tasks.extend(categorized_tasks[category]['Abandoned'])
+        if 'abandoned' in categorized_tasks[category]:
+            abandoned_tasks.extend(categorized_tasks[category]['abandoned'])
     
     if abandoned_tasks:
         def sort_key(task):
