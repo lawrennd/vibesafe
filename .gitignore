@@ -92,3 +92,7 @@ tenets/combine_tenets.py
 docs/whats_next_script.md
 docs/yaml_frontmatter_examples.md
 .cursor/rules/project_tenet_*.mdc
+
+# Generated tenet files
+vibesafe-tenets.md
+vibesafe-tenets.yaml
