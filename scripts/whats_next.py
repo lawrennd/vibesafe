@@ -543,9 +543,15 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
         next_steps.append(f"Continue work on in-progress backlog item: {backlog_info['by_status']['in_progress'][0]['title']}")
     
-    # Check for high priority backlog items
+    # Check for high priority backlog items (excluding completed)
     if backlog_info and backlog_info.get('by_priority') and backlog_info['by_priority'].get('high'):
-        for item in backlog_info['by_priority']['high'][:2]:  # Top 2 high priority items
+        # Filter out completed items
+        completed_ids = {task['id'] for task in backlog_info.get('by_status', {}).get('completed', [])}
+        high_priority_active = [
+            item for item in backlog_info['by_priority']['high']
+            if item['id'] not in completed_ids
+        ]
+        for item in high_priority_active[:2]:  # Top 2 active high priority items
             if not any(item['title'] in step for step in next_steps):  # Avoid duplicates
                 next_steps.append(f"Address high priority backlog item: {item['title']}")
     
@@ -685,9 +691,16 @@ def main():
                 print(f"    - {task['title']} ({task['id']})")
         
         if backlog_info['by_priority']['high']:
-            print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(backlog_info['by_priority']['high'])}")
-            for task in backlog_info['by_priority']['high']:
-                print(f"    - {task['title']} ({task['id']})")
+            # Filter out completed items from high priority display
+            completed_ids = {task['id'] for task in backlog_info['by_status']['completed']}
+            high_priority_active = [
+                task for task in backlog_info['by_priority']['high']
+                if task['id'] not in completed_ids
+            ]
+            if high_priority_active:
+                print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(high_priority_active)}")
+                for task in high_priority_active:
+                    print(f"    - {task['title']} ({task['id']})")
         
         print("")
     
@@ -728,10 +741,14 @@ def main():
         print("")
     
     # Generate next steps
+    # Ensure requirements_info has minimal structure for next_steps generation
+    if not requirements_info:
+        requirements_info = {'has_framework': False}
+    
     if args.cip_only:
-        next_steps = generate_next_steps(git_info, cips_info, {}, {})
+        next_steps = generate_next_steps(git_info, cips_info, {}, requirements_info)
     elif args.backlog_only:
-        next_steps = generate_next_steps(git_info, {}, backlog_info, {})
+        next_steps = generate_next_steps(git_info, {}, backlog_info, requirements_info)
     elif args.requirements_only:
         next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info)
     else:

@@ -187,12 +187,12 @@ status: proposed
             "by_status": {
                 "proposed": [],
                 "ready": [],
-                "in_progress": [{"title": "In Progress Item"}],
+                "in_progress": [{"id": "2025-01-01_in-progress", "title": "In Progress Item"}],
                 "completed": [],
                 "abandoned": [],
             },
             "by_priority": {
-                "high": [{"title": "High Priority Item"}],
+                "high": [{"id": "2025-01-01_high-priority", "title": "High Priority Item"}],
                 "medium": [],
                 "low": [],
             },

@@ -35,6 +35,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
+- [Implement VibeSafe self-update workflow to prevent template drift](infrastructure/2025-08-15_sync-templates-with-current-files.md)
+
 - [Develop Testing Framework for VibeSafe Installation Methods](infrastructure/2025-05-05_installation-testing-plan.md)
 
 
@@ -92,6 +94,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Filter Completed Items from High Priority Display in What](features/2025-12-01_filter-completed-from-high-priority.md)
+
 - [Implement Automatic Tenets-to-Cursor-Rules Generation](features/2025-07-28_implement-tenets-to-cursor-rules.md)
 
 - [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
@@ -99,8 +103,6 @@ This file provides an overview of all current backlog items organized by categor
 - [What](features/2025-07-26_whats-next-status-normalization.md)
 
 - [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
-
-- [Implement CIP-000F: VibeSafe Auto-Gitignore Protection](features/2025-07-26_implement-cip000f-gitignore-protection.md)
 
 
 ## Recently Abandoned Tasks
