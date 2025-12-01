@@ -38,6 +38,17 @@ How will this change affect backward compatibility? Will users need to make chan
 ## Testing Strategy
 How will the changes be tested?
 
+## Related Requirements
+This CIP addresses the following requirements:
+
+- [Link to requirements document 1]
+- [Link to requirements document 2]
+
+Specifically, it implements solutions for:
+- [Requirement 1]
+- [Requirement 2]
+- [Requirement 3]
+
 ## Implementation Status
 - [ ] Task 1
 - [ ] Task 2
@@ -45,10 +56,4 @@ How will the changes be tested?
 
 ## References
 - Link to relevant code or documentation
-- Other references
-
-## Author
-[Your Name]
-
-## Date
-[YYYY-MM-DD] 
+- Other references 

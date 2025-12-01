@@ -149,7 +149,7 @@ Content goes here.
         # Check that old format parsing works
         self.assertEqual(metadata['id'], '2025-05-12_test-task')
         self.assertEqual(metadata['title'], 'Test Task Traditional')
-        self.assertEqual(metadata['status'], 'In Progress')  # old format doesn't normalize
+        self.assertEqual(metadata['status'], 'in_progress')  # normalized from 'In Progress'
         self.assertEqual(metadata['priority'], 'Medium')
         self.assertEqual(metadata['created'], '2025-05-12')
         self.assertEqual(metadata['updated'], '2025-05-13')

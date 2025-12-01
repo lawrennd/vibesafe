@@ -3,16 +3,17 @@ id: "YYYY-MM-DD_short-identifier"
 title: "[Descriptive task title]"
 status: "Proposed"
 priority: "Medium"
-effort: "Medium"
-type: "feature"
 created: "YYYY-MM-DD"
 last_updated: "YYYY-MM-DD"
-owner: ""
-github_issue: null
-dependencies:
-  - "[Dependency 1]"
-  - "[Dependency 2]"
+owner: "[Person responsible for the task]"
+github_issue: "[Issue number, if applicable]"
+dependencies: "[List of dependencies]"
+tags:
+- backlog
+- "[additional tags]"
 ---
+
+# Task: [Short Title]
 
 ## Description
 
