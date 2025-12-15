@@ -5,7 +5,7 @@ status: "Proposed"
 priority: "Medium"
 created: "2025-12-15"
 last_updated: "2025-12-15"
-owner: ""
+owner: "Neil D. Lawrence"
 github_issue: ""
 dependencies: ""
 tags:
