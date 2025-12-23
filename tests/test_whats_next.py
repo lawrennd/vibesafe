@@ -24,6 +24,7 @@ from scripts.whats_next import (
     scan_requirements,
     normalize_status,
     scan_backlog,
+    check_tenet_status,
 )
 
 
@@ -381,6 +382,7 @@ def test_cmd_args_requirements_only():
          mock.patch('scripts.whats_next.scan_requirements') as mock_scan_req, \
          mock.patch('scripts.whats_next.print_section'), \
          mock.patch('scripts.whats_next.generate_next_steps') as mock_generate, \
+         mock.patch('scripts.whats_next.run_update_scripts'), \
          mock.patch('builtins.print'):
         
         # Setup mock args with requirements_only=True
@@ -389,7 +391,9 @@ def test_cmd_args_requirements_only():
             no_color=False, 
             cip_only=False, 
             backlog_only=False, 
-            requirements_only=True
+            requirements_only=True,
+            no_update=True,
+            tenet_review_period=180
         )
         
         # Setup mock scan_requirements to return a valid result
@@ -406,13 +410,14 @@ def test_cmd_args_requirements_only():
         from scripts.whats_next import main
         main()
         
-        # Verify that generate_next_steps was called with empty dicts for cips_info and backlog_info
+        # Verify that generate_next_steps was called with 5 arguments including tenet_info
         mock_generate.assert_called_once()
-        _, cips_arg, backlog_arg, req_arg = mock_generate.call_args[0]
+        _, cips_arg, backlog_arg, req_arg, tenet_arg = mock_generate.call_args[0]
         assert 'by_status' in cips_arg
         assert 'by_status' in backlog_arg
         assert 'by_priority' in backlog_arg
         assert req_arg == mock_scan_req.return_value
+        assert isinstance(tenet_arg, dict)  # tenet_info should be a dict
 
 
 class TestStatusNormalization(unittest.TestCase):
@@ -614,6 +619,256 @@ Content goes here.
                 f"Inconsistent normalization for '{test_case}': "
                 f"whats_next='{whats_next_result}' vs update_index='{update_index_result}'"
             )
+
+
+class TestTenetStatus(unittest.TestCase):
+    """Test the tenet status checking functionality."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.test_dir = tempfile.mkdtemp()
+        self.original_dir = os.getcwd()
+        os.chdir(self.test_dir)
+
+    def tearDown(self):
+        """Clean up test fixtures."""
+        os.chdir(self.original_dir)
+        import shutil
+        shutil.rmtree(self.test_dir)
+
+    def test_check_tenet_status_missing_directory(self):
+        """Test check_tenet_status when tenets directory doesn't exist."""
+        result = check_tenet_status()
+        
+        self.assertEqual(result['status'], 'missing')
+        self.assertEqual(result['count'], 0)
+        self.assertFalse(result['needs_review'])
+        self.assertIn('No tenets directory found', result['message'])
+
+    def test_check_tenet_status_empty_directory(self):
+        """Test check_tenet_status when tenets directory exists but has no project tenets."""
+        # Create tenets directory with only system files
+        tenets_dir = Path('tenets')
+        tenets_dir.mkdir()
+        
+        # Add system files that should be ignored
+        (tenets_dir / 'README.md').write_text('System readme')
+        (tenets_dir / 'tenet_template.md').write_text('Template')
+        (tenets_dir / 'combine_tenets.py').write_text('# Script')
+        
+        # Add vibesafe subdirectory (should be ignored)
+        vibesafe_dir = tenets_dir / 'vibesafe'
+        vibesafe_dir.mkdir()
+        (vibesafe_dir / 'user-autonomy.md').write_text('VibeSafe tenet')
+        
+        result = check_tenet_status()
+        
+        self.assertEqual(result['status'], 'empty')
+        self.assertEqual(result['count'], 0)
+        self.assertFalse(result['needs_review'])
+
+    def test_check_tenet_status_with_project_tenets_fresh(self):
+        """Test check_tenet_status with fresh project tenets."""
+        # Create tenets directory with project tenets
+        tenets_dir = Path('tenets')
+        tenets_dir.mkdir()
+        
+        # Add project tenets
+        (tenets_dir / 'my-tenet.md').write_text('My project tenet')
+        (tenets_dir / 'another-tenet.md').write_text('Another tenet')
+        
+        result = check_tenet_status(review_period_days=180)
+        
+        self.assertEqual(result['status'], 'exists')
+        self.assertEqual(result['count'], 2)
+        self.assertFalse(result['needs_review'])
+        self.assertIsNotNone(result['days_since_modification'])
+        self.assertLess(result['days_since_modification'], 1)  # Just created
+        self.assertEqual(len(result['files']), 2)
+
+    def test_check_tenet_status_with_old_tenets(self):
+        """Test check_tenet_status with old tenets that need review."""
+        import time
+        
+        # Create tenets directory with project tenets
+        tenets_dir = Path('tenets')
+        tenets_dir.mkdir()
+        
+        # Add project tenet
+        tenet_file = tenets_dir / 'my-tenet.md'
+        tenet_file.write_text('My project tenet')
+        
+        # Modify the file's timestamp to be 200 days ago
+        old_time = time.time() - (200 * 24 * 60 * 60)  # 200 days ago
+        os.utime(tenet_file, (old_time, old_time))
+        
+        result = check_tenet_status(review_period_days=180)
+        
+        self.assertEqual(result['status'], 'exists')
+        self.assertEqual(result['count'], 1)
+        self.assertTrue(result['needs_review'])
+        self.assertGreater(result['days_since_modification'], 180)
+        self.assertEqual(result['review_period_days'], 180)
+
+    def test_check_tenet_status_custom_review_period(self):
+        """Test check_tenet_status with custom review period."""
+        import time
+        
+        # Create tenets directory with project tenets
+        tenets_dir = Path('tenets')
+        tenets_dir.mkdir()
+        
+        # Add project tenet
+        tenet_file = tenets_dir / 'my-tenet.md'
+        tenet_file.write_text('My project tenet')
+        
+        # Modify the file's timestamp to be 100 days ago
+        old_time = time.time() - (100 * 24 * 60 * 60)  # 100 days ago
+        os.utime(tenet_file, (old_time, old_time))
+        
+        # With default period (180 days), should not need review
+        result_180 = check_tenet_status(review_period_days=180)
+        self.assertFalse(result_180['needs_review'])
+        
+        # With 90-day period, should need review
+        result_90 = check_tenet_status(review_period_days=90)
+        self.assertTrue(result_90['needs_review'])
+        self.assertEqual(result_90['review_period_days'], 90)
+
+    def test_check_tenet_status_nested_tenets(self):
+        """Test check_tenet_status with nested project tenet directories."""
+        # Create tenets directory with nested project tenets
+        tenets_dir = Path('tenets')
+        tenets_dir.mkdir()
+        
+        # Add project tenets in subdirectory (not vibesafe)
+        project_dir = tenets_dir / 'my-project'
+        project_dir.mkdir()
+        (project_dir / 'tenet1.md').write_text('Project tenet 1')
+        (project_dir / 'tenet2.md').write_text('Project tenet 2')
+        
+        # Also add some system files (should be ignored)
+        (tenets_dir / 'README.md').write_text('System readme')
+        
+        # Add vibesafe subdirectory (should be ignored)
+        vibesafe_dir = tenets_dir / 'vibesafe'
+        vibesafe_dir.mkdir()
+        (vibesafe_dir / 'user-autonomy.md').write_text('VibeSafe tenet')
+        
+        result = check_tenet_status()
+        
+        self.assertEqual(result['status'], 'exists')
+        self.assertEqual(result['count'], 2)  # Only the 2 in my-project
+        self.assertEqual(len(result['files']), 2)
+        # Check that vibesafe tenets are not included
+        self.assertTrue(all('vibesafe' not in f for f in result['files']))
+
+    def test_check_tenet_status_multiple_ages(self):
+        """Test check_tenet_status with tenets of different ages."""
+        import time
+        
+        # Create tenets directory with project tenets
+        tenets_dir = Path('tenets')
+        tenets_dir.mkdir()
+        
+        # Add fresh tenet
+        fresh_tenet = tenets_dir / 'fresh-tenet.md'
+        fresh_tenet.write_text('Fresh tenet')
+        
+        # Add old tenet
+        old_tenet = tenets_dir / 'old-tenet.md'
+        old_tenet.write_text('Old tenet')
+        old_time = time.time() - (200 * 24 * 60 * 60)  # 200 days ago
+        os.utime(old_tenet, (old_time, old_time))
+        
+        result = check_tenet_status(review_period_days=180)
+        
+        self.assertEqual(result['status'], 'exists')
+        self.assertEqual(result['count'], 2)
+        # Should report based on newest modification (fresh tenet)
+        self.assertLess(result['days_since_modification'], 1)
+        self.assertFalse(result['needs_review'])  # Because newest is fresh
+
+
+class TestGenerateNextStepsWithTenets(unittest.TestCase):
+    """Test next steps generation with tenet information."""
+
+    def test_generate_next_steps_with_missing_tenets(self):
+        """Test that missing tenets appear in next steps."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': [], 'completed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = {'status': 'missing', 'needs_review': False}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info)
+        
+        # Should suggest creating tenets
+        tenet_suggestions = [step for step in next_steps if 'tenet' in step.lower()]
+        self.assertGreater(len(tenet_suggestions), 0)
+        self.assertTrue(any('create' in step.lower() for step in tenet_suggestions))
+
+    def test_generate_next_steps_with_empty_tenets(self):
+        """Test that empty tenet directory appears in next steps."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': [], 'completed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = {'status': 'empty', 'needs_review': False}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info)
+        
+        # Should suggest creating first tenet
+        tenet_suggestions = [step for step in next_steps if 'tenet' in step.lower()]
+        self.assertGreater(len(tenet_suggestions), 0)
+        self.assertTrue(any('first' in step.lower() for step in tenet_suggestions))
+
+    def test_generate_next_steps_with_stale_tenets(self):
+        """Test that stale tenets appear in next steps."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': [], 'completed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = {'status': 'exists', 'needs_review': True, 'count': 3}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info)
+        
+        # Should suggest reviewing tenets
+        tenet_suggestions = [step for step in next_steps if 'tenet' in step.lower()]
+        self.assertGreater(len(tenet_suggestions), 0)
+        self.assertTrue(any('review' in step.lower() for step in tenet_suggestions))
+
+    def test_generate_next_steps_with_fresh_tenets(self):
+        """Test that fresh tenets don't appear in next steps."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': [], 'completed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = {'status': 'exists', 'needs_review': False, 'count': 3}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info)
+        
+        # Should NOT suggest anything about tenets
+        tenet_suggestions = [step for step in next_steps if 'tenet' in step.lower()]
+        self.assertEqual(len(tenet_suggestions), 0)
+
+    def test_generate_next_steps_without_tenet_info(self):
+        """Test that next steps still work without tenet info (backwards compatibility)."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': [], 'completed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        
+        # Call without tenet_info
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, None)
+        
+        # Should still return next steps (shouldn't crash)
+        self.assertIsInstance(next_steps, list)
 
 
 if __name__ == "__main__":
