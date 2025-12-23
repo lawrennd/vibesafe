@@ -409,6 +409,65 @@ check_gitignore_coverage() {
   return 1  # Pattern is not covered
 }
 
+# Function to clean up spurious cursor rules from previous buggy installations
+cleanup_spurious_cursor_rules() {
+  local rules_dir=".cursor/rules"
+  
+  # Only cleanup if directory exists
+  if [ ! -d "$rules_dir" ]; then
+    return 0
+  fi
+  
+  debug "Checking for spurious cursor rule files from previous installations..."
+  
+  # Count spurious files before cleanup
+  local spurious_count=0
+  
+  # Known spurious patterns from the tenet generation bug
+  # These are definitely spurious based on the bug that processed entire project
+  local patterns=(
+    "project_tenet_2024-*.mdc"  # Backlog tasks with dates
+    "project_tenet_2025-*.mdc"
+    "project_tenet_cip*.mdc"     # CIP files
+    "project_tenet_about.mdc"    # Random project files
+    "project_tenet_philosophy.mdc"
+    "project_tenet_LICENSE.mdc"
+    "project_tenet_AUTHORS.mdc"
+    "project_tenet_README.mdc"
+    "project_tenet_index.mdc"
+    "project_tenet_*-prompt.mdc"  # AI-requirements prompts
+    "project_tenet_*-example.mdc" # AI-requirements examples
+    "project_tenet_*-integration.mdc" # AI-requirements integration files
+    "project_tenet_getting_started.mdc"
+    "project_tenet_dev-intro.mdc"
+    "project_tenet_future.mdc"
+    "project_tenet_cpython-timings.mdc"
+    "project_tenet_task_template.mdc"  # Template files (not actual tenets)
+    "project_tenet_requirement_template.mdc"
+  )
+  
+  # Find and remove spurious files
+  for pattern in "${patterns[@]}"; do
+    local files=$(find "$rules_dir" -name "$pattern" 2>/dev/null)
+    if [ -n "$files" ]; then
+      while IFS= read -r file; do
+        if [ -f "$file" ]; then
+          debug "Removing spurious file: $(basename "$file")"
+          rm -f "$file"
+          ((spurious_count++))
+        fi
+      done <<< "$files"
+    fi
+  done
+  
+  # Report cleanup results
+  if [ $spurious_count -gt 0 ]; then
+    echo "✅ Cleaned up $spurious_count spurious cursor rule file(s) from previous installation"
+  else
+    debug "No spurious cursor rule files found"
+  fi
+}
+
 # Function to generate cursor rules from project tenets
 generate_tenet_cursor_rules() {
   echo "Generating cursor rules from project tenets..."
@@ -435,6 +494,9 @@ generate_tenet_cursor_rules() {
   
   # Create .cursor/rules directory if it doesn't exist
   mkdir -p .cursor/rules
+  
+  # Clean up spurious cursor rules before generating new ones
+  cleanup_spurious_cursor_rules
   
   # Run tenet processing with Python
   if [ -d ".venv" ]; then
