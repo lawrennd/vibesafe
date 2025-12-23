@@ -72,6 +72,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Add automatic cleanup of spurious cursor rules during installation](features/2025-12-23_auto-cleanup-spurious-cursor-rules.md)
+
 - [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
 
