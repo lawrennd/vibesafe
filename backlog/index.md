@@ -89,6 +89,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Fix overly broad tenet-to-cursor-rule generation in installation script](bugs/2025-12-23_fix-tenet-cursor-rule-generation.md)
+
 - [Fix install-whats-next messaging and requirements rule installation in minimal installs](bugs/2025-12-15_fix-install-whats-next-docs-link.md)
 
 
