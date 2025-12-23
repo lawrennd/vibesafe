@@ -439,10 +439,10 @@ generate_tenet_cursor_rules() {
   # Run tenet processing with Python
   if [ -d ".venv" ]; then
     debug "Using virtual environment for tenet processing"
-    .venv/bin/python tenets/combine_tenets.py --generate-cursor-rules --tenets-dir . --output-dir .cursor/rules
+    .venv/bin/python tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules
   else
     debug "Using system Python for tenet processing"
-    python3 tenets/combine_tenets.py --generate-cursor-rules --tenets-dir . --output-dir .cursor/rules
+    python3 tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules
   fi
   
   if [ $? -eq 0 ]; then
