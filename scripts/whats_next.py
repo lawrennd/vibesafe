@@ -9,6 +9,7 @@ The script provides a comprehensive overview of:
 - CIP (Change Implementation Proposal) status
 - Backlog item status
 - Requirements status
+- Project tenets status and review recommendations
 
 The script accepts status values in multiple formats for backlog items:
 - Lowercase with underscores: "proposed", "in_progress", "completed"
@@ -17,14 +18,15 @@ The script accepts status values in multiple formats for backlog items:
 All formats are normalized internally to lowercase with underscores.
 
 Usage:
-    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
+    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only] [--tenet-review-period DAYS]
 
 Options:
-    --no-git              Skip Git status information
-    --no-color           Disable colored output
-    --cip-only           Show only CIP status
-    --backlog-only       Show only backlog status
-    --requirements-only  Show only requirements status
+    --no-git                  Skip Git status information
+    --no-color               Disable colored output
+    --cip-only               Show only CIP status
+    --backlog-only           Show only backlog status
+    --requirements-only      Show only requirements status
+    --tenet-review-period    Days after which tenets should be reviewed (default: 180)
 
 Returns:
     None. Outputs formatted status information to stdout.
@@ -451,10 +453,97 @@ def scan_requirements() -> Dict[str, Any]:
     
     return requirements_info
 
+def check_tenet_status(review_period_days: int = 180) -> Dict[str, Any]:
+    """Check the status of project tenets.
+    
+    Args:
+        review_period_days: Number of days after which tenets should be reviewed (default: 180 = 6 months)
+    
+    Returns:
+        Dictionary containing tenet status information:
+        - status: 'missing', 'empty', or 'exists'
+        - count: Number of project tenets found
+        - oldest_modification: Timestamp of oldest modification
+        - newest_modification: Timestamp of newest modification
+        - days_since_modification: Days since last modification
+        - needs_review: Boolean indicating if review is recommended
+        - files: List of tenet file paths
+    """
+    tenets_dir = Path("tenets")
+    
+    # Check if tenets directory exists
+    if not tenets_dir.exists():
+        return {
+            "status": "missing",
+            "message": "No tenets directory found",
+            "count": 0,
+            "needs_review": False
+        }
+    
+    # Find project-specific tenet files (not VibeSafe system files)
+    project_tenets = []
+    system_files = ["README.md", "tenet_template.md", "combine_tenets.py", 
+                    "vibesafe-tenets.md", "vibesafe-tenets.yaml"]
+    
+    for file in tenets_dir.rglob("*.md"):
+        # Skip system files and files in vibesafe subdirectory
+        if file.name not in system_files and "vibesafe" not in str(file.parent):
+            project_tenets.append(file)
+    
+    if not project_tenets:
+        return {
+            "status": "empty",
+            "message": "Tenets directory exists but no project tenets found",
+            "count": 0,
+            "needs_review": False
+        }
+    
+    # Check age of tenets
+    oldest_modification = None
+    newest_modification = None
+    
+    for tenet in project_tenets:
+        try:
+            mtime = tenet.stat().st_mtime
+            if oldest_modification is None or mtime < oldest_modification:
+                oldest_modification = mtime
+            if newest_modification is None or mtime > newest_modification:
+                newest_modification = mtime
+        except OSError:
+            continue
+    
+    # Calculate days since last modification
+    days_since_modification = None
+    needs_review = False
+    if newest_modification:
+        days_since_modification = (datetime.now().timestamp() - newest_modification) / (60 * 60 * 24)
+        needs_review = days_since_modification > review_period_days
+    
+    return {
+        "status": "exists",
+        "count": len(project_tenets),
+        "oldest_modification": oldest_modification,
+        "newest_modification": newest_modification,
+        "days_since_modification": days_since_modification,
+        "needs_review": needs_review,
+        "review_period_days": review_period_days,
+        "files": [str(f.relative_to(tenets_dir)) for f in project_tenets]
+    }
+
 def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], 
-                         backlog_info: Dict[str, Any], requirements_info: Dict[str, Any]) -> List[str]:
+                         backlog_info: Dict[str, Any], requirements_info: Dict[str, Any],
+                         tenet_info: Dict[str, Any] = None) -> List[str]:
     """Generate suggested next steps based on the project state."""
     next_steps = []
+    
+    # Add suggestion to create tenets if missing
+    if tenet_info:
+        if tenet_info.get('status') == 'missing':
+            next_steps.append("Create tenets directory and define your project's guiding principles")
+        elif tenet_info.get('status') == 'empty':
+            next_steps.append("Create your first project tenet to document guiding principles")
+        elif tenet_info.get('needs_review'):
+            next_steps.append("Review and update project tenets to reflect current practices")
     
     # Add suggestion to create AI-Requirements framework if missing
     if not requirements_info['has_framework']:
@@ -605,6 +694,8 @@ def main():
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
+    parser.add_argument('--tenet-review-period', type=int, default=180, 
+                        help='Days after which tenets should be reviewed (default: 180 = 6 months)')
     args = parser.parse_args()
     
     if args.no_color:
@@ -740,19 +831,84 @@ def main():
         
         print("")
     
+    # Get tenet status
+    tenet_info = check_tenet_status(args.tenet_review_period)
+    
+    print(f"{Colors.BOLD}Project Tenets:{Colors.ENDC}")
+    if tenet_info['status'] == 'missing':
+        print(f"  Status: {Colors.RED}No tenets directory found{Colors.ENDC}")
+        print("")
+        print("  Tenets help define guiding principles for your project.")
+        print("")
+        print("  Next steps:")
+        print("    1. Review VibeSafe tenets for inspiration: tenets/vibesafe/")
+        print("    2. Create your first project tenet: cp tenets/tenet_template.md tenets/my-first-tenet.md")
+        print("    3. Edit and define your project's guiding principles")
+        print("")
+    elif tenet_info['status'] == 'empty':
+        print(f"  Status: {Colors.YELLOW}No project tenets found{Colors.ENDC}")
+        print("  (Tenets directory exists but contains only VibeSafe system files)")
+        print("")
+        print("  Next steps:")
+        print("    1. Review VibeSafe tenets for inspiration: tenets/vibesafe/")
+        print("    2. Create your first project tenet: cp tenets/tenet_template.md tenets/my-first-tenet.md")
+        print("    3. Edit and define your project's guiding principles")
+        print("")
+    else:  # status == 'exists'
+        print(f"  Tenets found: {Colors.GREEN}{tenet_info['count']}{Colors.ENDC}")
+        
+        if tenet_info['days_since_modification'] is not None:
+            days = int(tenet_info['days_since_modification'])
+            months = days / 30.44  # Average days per month
+            
+            if days < 90:
+                age_color = Colors.GREEN
+                age_status = "fresh"
+            elif days < 180:
+                age_color = Colors.YELLOW
+                age_status = "recent"
+            else:
+                age_color = Colors.RED
+                age_status = "needs review"
+            
+            if months < 1:
+                age_str = f"{days} days ago"
+            else:
+                age_str = f"{int(months)} months ago ({days} days)"
+            
+            print(f"  Last modified: {age_color}{age_str}{Colors.ENDC}")
+            
+            if tenet_info['needs_review']:
+                print("")
+                print(f"  {Colors.RED}⚠️  Review recommended{Colors.ENDC}")
+                print(f"  Your tenets haven't been reviewed in {int(months)} months.")
+                print("")
+                print("  Consider reviewing your tenets to ensure they still reflect your project's")
+                print("  current practices and goals. Projects evolve, and tenets should too.")
+                print("")
+                print("  Next steps:")
+                print("    1. Review existing tenets: ls tenets/")
+                print("    2. Update tenets that need refinement")
+                print("    3. Add new tenets for emerging patterns")
+                print("    4. Remove or archive tenets that are no longer relevant")
+                print("")
+            else:
+                print(f"  Status: {Colors.GREEN}Up to date{Colors.ENDC}")
+                print("")
+    
     # Generate next steps
     # Ensure requirements_info has minimal structure for next_steps generation
     if not requirements_info:
         requirements_info = {'has_framework': False}
     
     if args.cip_only:
-        next_steps = generate_next_steps(git_info, cips_info, {}, requirements_info)
+        next_steps = generate_next_steps(git_info, cips_info, {}, requirements_info, tenet_info)
     elif args.backlog_only:
-        next_steps = generate_next_steps(git_info, {}, backlog_info, requirements_info)
+        next_steps = generate_next_steps(git_info, {}, backlog_info, requirements_info, tenet_info)
     elif args.requirements_only:
-        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info)
+        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info)
     else:
-        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info)
     
     if next_steps:
         print_section("Suggested Next Steps")

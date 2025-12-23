@@ -1,7 +1,7 @@
 ---
 id: "2025-12-23_whats-next-tenet-review-suggestions"
 title: "Add tenet review suggestions to What's Next script"
-status: "Proposed"
+status: "Completed"
 priority: "Medium"
 created: "2025-12-23"
 last_updated: "2025-12-23"
@@ -44,15 +44,15 @@ Tenets are living documents that should be reviewed and updated as projects evol
 
 ## Acceptance Criteria
 
-- [ ] Detect if `tenets/` directory exists
-- [ ] Detect if any project-specific tenets exist (not just VibeSafe system files)
-- [ ] Check creation/modification dates of tenet files
-- [ ] Suggest tenet creation if none exist
-- [ ] Suggest tenet review if tenets haven't been modified in X months (configurable)
-- [ ] Add tenet status section to What's Next output
-- [ ] Make review period configurable (default: 6 months)
-- [ ] Handle edge cases (no git history, new projects, etc.)
-- [ ] Update What's Next documentation
+- [x] Detect if `tenets/` directory exists
+- [x] Detect if any project-specific tenets exist (not just VibeSafe system files)
+- [x] Check creation/modification dates of tenet files
+- [x] Suggest tenet creation if none exist
+- [x] Suggest tenet review if tenets haven't been modified in X months (configurable)
+- [x] Add tenet status section to What's Next output
+- [x] Make review period configurable (default: 6 months)
+- [x] Handle edge cases (no git history, new projects, etc.)
+- [ ] Update What's Next documentation (deferred)
 
 ## Implementation Notes
 
@@ -208,4 +208,34 @@ Suggested thresholds:
 ### 2025-12-23
 
 Task created to enhance What's Next script with tenet health checking and review suggestions. This will help teams maintain living tenets that evolve with their projects.
+
+### 2025-12-23 (Later)
+
+**Implementation completed:**
+
+Added `check_tenet_status()` function to `scripts/whats_next.py`:
+- Detects if tenets directory exists
+- Distinguishes project tenets from VibeSafe system files (excludes vibesafe/ subdirectory)
+- Calculates days since last modification
+- Recommends review after configurable period (default: 180 days = 6 months)
+- Handles missing directory, empty directory, and existing tenets
+
+Added command-line argument:
+- `--tenet-review-period DAYS` (default: 180)
+
+Display output with color-coded status:
+- Missing: Red - suggests creation with step-by-step instructions
+- Empty: Yellow - directory exists but no project tenets
+- Fresh (< 3 months): Green - no action needed
+- Recent (3-6 months): Yellow - no urgent action
+- Needs review (> review period): Red - detailed review recommendations
+
+Integrated with next steps generation:
+- Suggests tenet creation if missing
+- Suggests first tenet if directory empty
+- Suggests review if tenets exceed review period
+
+Tested on VibeSafe repository - correctly identifies no project tenets and suggests creation.
+
+Status changed to Completed. Documentation update deferred as script has --help for usage.
 

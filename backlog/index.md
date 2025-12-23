@@ -72,8 +72,6 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-- [Add tenet review suggestions to What](features/2025-12-23_whats-next-tenet-review-suggestions.md)
-
 - [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
 
@@ -98,6 +96,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Add tenet review suggestions to What](features/2025-12-23_whats-next-tenet-review-suggestions.md)
+
 - [Add automatic cleanup of spurious cursor rules during installation](features/2025-12-23_auto-cleanup-spurious-cursor-rules.md)
 
 - [Fix overly broad tenet-to-cursor-rule generation in installation script](bugs/2025-12-23_fix-tenet-cursor-rule-generation.md)
@@ -105,8 +105,6 @@ This file provides an overview of all current backlog items organized by categor
 - [Filter Completed Items from High Priority Display in What](features/2025-12-01_filter-completed-from-high-priority.md)
 
 - [Implement Automatic Tenets-to-Cursor-Rules Generation](features/2025-07-28_implement-tenets-to-cursor-rules.md)
-
-- [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
 
 
 ## Recently Abandoned Tasks
