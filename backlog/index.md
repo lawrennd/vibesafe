@@ -89,14 +89,14 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-- [Fix overly broad tenet-to-cursor-rule generation in installation script](bugs/2025-12-23_fix-tenet-cursor-rule-generation.md)
-
 - [Fix install-whats-next messaging and requirements rule installation in minimal installs](bugs/2025-12-15_fix-install-whats-next-docs-link.md)
 
 
 ---
 
 ## Recently Completed Tasks
+
+- [Fix overly broad tenet-to-cursor-rule generation in installation script](bugs/2025-12-23_fix-tenet-cursor-rule-generation.md)
 
 - [Filter Completed Items from High Priority Display in What](features/2025-12-01_filter-completed-from-high-priority.md)
 
@@ -105,8 +105,6 @@ This file provides an overview of all current backlog items organized by categor
 - [Implement Clean Installation Philosophy](features/2025-07-26_clean-installation-implementation.md)
 
 - [What](features/2025-07-26_whats-next-status-normalization.md)
-
-- [Update Index Script Status Normalization Enhancement](features/2025-07-26_update-index-status-normalization.md)
 
 
 ## Recently Abandoned Tasks

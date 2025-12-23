@@ -1,7 +1,7 @@
 ---
 id: "2025-12-23_fix-tenet-cursor-rule-generation"
 title: "Fix overly broad tenet-to-cursor-rule generation in installation script"
-status: "Proposed"
+status: "Completed"
 priority: "High"
 created: "2025-12-23"
 last_updated: "2025-12-23"
@@ -70,12 +70,12 @@ The `.cursor/rules/` directory should only contain:
 
 ## Acceptance Criteria
 
-- [ ] Fix `scripts/install-minimal.sh` to use `--tenets-dir tenets` instead of `--tenets-dir .`
-- [ ] Clean up all spurious `project_tenet_*.mdc` files from `.cursor/rules/`
-- [ ] Verify that only actual tenets from `tenets/vibesafe/*.md` generate cursor rules
-- [ ] Test that reinstallation doesn't recreate the spurious files
-- [ ] Update templates/scripts/install-minimal.sh with the same fix
-- [ ] Document what cursor rules should be present in VibeSafe projects
+- [x] Fix `scripts/install-minimal.sh` to use `--tenets-dir tenets` instead of `--tenets-dir .`
+- [x] Clean up all spurious `project_tenet_*.mdc` files from `.cursor/rules/`
+- [x] Verify that only actual tenets from `tenets/vibesafe/*.md` generate cursor rules
+- [x] Test that reinstallation doesn't recreate the spurious files
+- [x] Update templates/scripts/install-minimal.sh with the same fix (N/A - template doesn't exist)
+- [x] Document what cursor rules should be present in VibeSafe projects
 
 ## Implementation Notes
 
@@ -127,4 +127,16 @@ The `.cursor/rules/` directory should only contain:
 ### 2025-12-23
 
 Task created after discovering 90+ spurious cursor rule files in `.cursor/rules/` directory during documentation update work. The installation script is processing the entire project directory instead of just the `tenets/` directory when generating cursor rules.
+
+### 2025-12-23 (Later)
+
+**Fix implemented and tested successfully:**
+- Updated `scripts/install-minimal.sh` lines 442 and 445: changed `--tenets-dir .` to `--tenets-dir tenets`
+- Removed 93 spurious `project_tenet_*.mdc` files from `.cursor/rules/`
+- Tested reinstallation - now generates only 7 legitimate tenet cursor rules from `tenets/vibesafe/`
+- Verified correct cursor rules directory contains:
+  - 5 VibeSafe system rules (backlog.mdc, cip.mdc, requirements_rule.mdc, vibesafe_general.mdc, whats_next.mdc)
+  - 7 actual project tenets (documentation-as-code, information-exploration-patterns, shared-information-landmarks, simplicity-of-use, tenet_template, user-autonomy, vibesafe-tenets)
+  - Total: 12 files instead of previous 102 files
+- Status changed to Completed
 
