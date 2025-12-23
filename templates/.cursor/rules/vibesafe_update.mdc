@@ -1,0 +1,31 @@
+---
+description: VibeSafe Update Guide - How to update VibeSafe system files
+globs: "**/*"
+alwaysApply: true
+---
+
+# VibeSafe Update Guide
+
+## How to Update VibeSafe
+
+Update VibeSafe by running the installation script from your project root:
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh)
+```
+
+VibeSafe follows the **Clean Installation Philosophy** - every installation is also a reinstallation.
+
+## What Happens
+
+**✅ System Files Updated:**
+- Templates, cursor rules, scripts, system documentation
+
+**🛡️ Your Content Preserved:**
+- Your backlog tasks, CIPs, tenets, README, code, and configuration
+
+## For AI Assistants
+
+- **Never manually edit VibeSafe system files** - they're overwritten on update
+- **Always use the installation script** to update
+- **Preserve user content** - never delete backlog tasks, CIPs, or user tenets
