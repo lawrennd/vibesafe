@@ -89,7 +89,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-*No tasks currently proposed.*
+- [Fix install-whats-next messaging and requirements rule installation in minimal installs](bugs/2025-12-15_fix-install-whats-next-docs-link.md)
 
 
 ---
