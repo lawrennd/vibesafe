@@ -72,6 +72,20 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Phase 2: Move Patterns to VibeSafe Guidance](features/2026-01-03_patterns-to-vibesafe-guidance.md)
+
+- [Phase 0: YAML Frontmatter Standardization](features/2026-01-03_yaml-frontmatter-standardization.md)
+
+- [Phase 5: CIP-0011 Documentation and Testing](features/2026-01-03_cip0011-documentation.md)
+
+- [Phase 1: Requirements Framework Simplification](features/2026-01-03_simplify-requirements-framework.md)
+
+- [Create Process Conformance Validation Scripts](features/2026-01-03_process-conformance-validation.md)
+
+- [Phase 3: Tenets Sustainability Process](features/2026-01-03_tenets-sustainability-process.md)
+
+- [Phase 4: Create Project Summary Tool](features/2026-01-03_project-summary-tool.md)
+
 - [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
 
@@ -96,6 +110,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [VibeSafe .venv conflicts with user project virtual environments](bugs/2026-01-03_venv-naming-conflict.md)
+
 - [Add tenet review suggestions to What](features/2025-12-23_whats-next-tenet-review-suggestions.md)
 
 - [Add automatic cleanup of spurious cursor rules during installation](features/2025-12-23_auto-cleanup-spurious-cursor-rules.md)
@@ -103,8 +119,6 @@ This file provides an overview of all current backlog items organized by categor
 - [Fix overly broad tenet-to-cursor-rule generation in installation script](bugs/2025-12-23_fix-tenet-cursor-rule-generation.md)
 
 - [Filter Completed Items from High Priority Display in What](features/2025-12-01_filter-completed-from-high-priority.md)
-
-- [Implement Automatic Tenets-to-Cursor-Rules Generation](features/2025-07-28_implement-tenets-to-cursor-rules.md)
 
 
 ## Recently Abandoned Tasks
