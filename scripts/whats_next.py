@@ -845,18 +845,20 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     
     # Requirements process recommendations
     if requirements_info['has_framework']:
-        # Check for in-progress backlog items related to requirements
+        # Check for in-progress backlog items that are explicitly linked to requirements
+        # Only suggest if they have related_requirements field populated
         requirements_related_items = []
         if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
             for item in backlog_info['by_status']['in_progress']:
-                title = item.get('title', '').lower()
-                if any(keyword in title for keyword in ['requirement', 'goal decomposition', 'stakeholder']):
+                # Check if item has explicit requirement links (not just keyword matching)
+                if item.get('related_requirements') and len(item.get('related_requirements', [])) > 0:
                     requirements_related_items.append(item)
                     
         # If requirements-related items are in progress
         if requirements_related_items:
-            next_steps.append(f"Continue implementation of requirements-related item: {requirements_related_items[0]['title']}")
-            next_steps.append("Verify requirements-related implementation against acceptance criteria")
+            item = requirements_related_items[0]
+            next_steps.append(f"Continue implementation: {item['title']} (linked to requirements)")
+            next_steps.append(f"Verify implementation against requirements: {', '.join(item['related_requirements'])}")
             
         # Suggest requirements process for new features
         # Check if there are proposed CIPs that might need requirements gathering
