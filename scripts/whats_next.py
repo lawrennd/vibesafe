@@ -823,10 +823,10 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         next_steps.append(
             "Create requirements directory: mkdir -p requirements"
         )
-    # Check if requirement template exists
-    elif not requirements_info.get('has_template'):
+    # Check if there are actual requirement files (not just templates/README)
+    elif not gaps.get('has_requirements', False):
         next_steps.append(
-            "Create first requirement using template: cp requirements/requirement_template.md requirements/req0001_my-requirement.md"
+            "Create first requirement (WHAT): Define what needs to be built before planning how (CIP)"
         )
     
     # Add suggestion to use requirements for backlog tasks
