@@ -9,7 +9,6 @@ category: "features"
 owner: ""
 dependencies: ["2026-01-03_yaml-frontmatter-standardization"]
 related_cips: ["0004", "0011"]
-related_requirements: ["0004"]
 ---
 
 # Task: Phase 3: Tenets Sustainability Process
@@ -75,9 +74,10 @@ When we violate a principle/tenet, document:
 
 ## Related
 
-- CIP: 0011
-- Requirement: REQ-004
+- CIP: 0004, 0011 (CIP-0004 provides foundation, CIP-0011 adds sustainability features)
 - Depends on: 2026-01-03_yaml-frontmatter-standardization
+
+**Note**: REQ-0004 (Sustainable and Relevant Tenets) is linked via CIP-0011, following VibeSafe's bottom-up linking pattern (Backlog → CIP → Requirement).
 
 ## Progress Updates
 
