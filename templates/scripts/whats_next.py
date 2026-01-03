@@ -870,7 +870,6 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         if proposed_cips_needing_requirements:
             cip = proposed_cips_needing_requirements[0]
             next_steps.append(f"Start requirements gathering for proposed CIP: {cip['id']} - {cip['title']}")
-            next_steps.append("Document requirements (WHAT) before implementation (HOW)")
             
         # Remind about checking for requirements drift for implemented CIPs
         implemented_cips = []
