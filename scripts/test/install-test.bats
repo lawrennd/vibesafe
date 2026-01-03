@@ -2,13 +2,18 @@
 # Tests for VibeSafe Clean Installation Philosophy (CIP-000E)
 # Verifies: System files overwritten, User content preserved
 
+# Store original directory before any tests run
+ORIGINAL_DIR="$(pwd)"
+
 # Setup file runs once before all tests
 setup_file() {
   # Clone VibeSafe once to a shared location for tests that need it
   export VIBESAFE_SHARED_CLONE="$(mktemp -d)"
+  local current_dir="$(pwd)"
   cd "$VIBESAFE_SHARED_CLONE"
   git clone --quiet https://github.com/lawrennd/vibesafe.git vibesafe-test-clone
   export VIBESAFE_TEST_TEMPLATES="$VIBESAFE_SHARED_CLONE/vibesafe-test-clone"
+  cd "$current_dir"
 }
 
 # Cleanup after all tests
@@ -21,9 +26,6 @@ teardown_file() {
 setup() {
   # Create a temporary directory for testing
   TEST_DIR="$(mktemp -d)"
-  
-  # Store the original working directory
-  ORIGINAL_DIR="$(pwd)"
   
   # Store the path to the install script
   INSTALL_SCRIPT="${ORIGINAL_DIR}/scripts/install-minimal.sh"
