@@ -53,8 +53,6 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Make combine_tenets.py Project-Agnostic Instead of Hardcoded for](infrastructure/2025-07-28_vibesafe-combine-tenets-project-detection.md)
 
-- [Implement Tenet System as a Core VibeSafe Feature](infrastructure/2025-05-05_implement-tenets.md)
-
 
 ## Features
 
@@ -106,6 +104,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Implement Tenet System as a Core VibeSafe Feature](infrastructure/2025-05-05_implement-tenets.md)
+
 - [Phase 0c: Integrate Validator into What](features/2026-01-03_integrate-validator-whats-next.md)
 
 - [Phase 0a: Create Validation Script (DO FIRST)](features/2026-01-03_process-conformance-validation.md)
@@ -113,8 +113,6 @@ This file provides an overview of all current backlog items organized by categor
 - [Phase 0b: Integrate Validator into Install Script](features/2026-01-03_integrate-validator-install.md)
 
 - [Phase 0d: Intelligent Gap Detection & AI-Assisted Suggestions](features/2026-01-03_intelligent-gap-detection.md)
-
-- [VibeSafe .venv conflicts with user project virtual environments](bugs/2026-01-03_venv-naming-conflict.md)
 
 
 ## Recently Abandoned Tasks
