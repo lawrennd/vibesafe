@@ -1,18 +1,21 @@
 ---
-id: "2025-12-15_fix-install-whats-next-docs-link"
-title: "Fix install-whats-next messaging and requirements rule installation in minimal installs"
-status: "Proposed"
-priority: "Medium"
-created: "2025-12-15"
-last_updated: "2025-12-15"
-owner: ""
-github_issue: ""
-dependencies: ""
+category: bugs
+created: '2025-12-15'
+dependencies: ''
+github_issue: ''
+id: 2025-12-15_fix-install-whats-next-docs-link
+last_updated: '2025-12-15'
+owner: ''
+priority: Medium
+related_cips: []
+status: Proposed
 tags:
 - backlog
 - bugs
 - installer
 - whats-next
+title: Fix install-whats-next messaging and requirements rule installation in minimal
+  installs
 ---
 
 # Task: Fix install-whats-next messaging and requirements rule installation in minimal installs

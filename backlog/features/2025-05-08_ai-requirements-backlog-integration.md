@@ -1,18 +1,19 @@
 ---
-id: "2025-05-08_ai-requirements-backlog-integration"
-title: "Implement Backlog Integration for AI-Requirements Framework"
-status: "completed"
-priority: "high"
-effort: "medium"
-type: "feature"
-created: "2025-05-08"
-last_updated: "2025-05-12"
-owner: lawrennd
+category: features
+created: '2025-05-08'
 dependencies:
-  - "CIP-0009"
-  - "ai-requirements foundation"
+- CIP-0009
+- ai-requirements foundation
+effort: medium
+id: 2025-05-08_ai-requirements-backlog-integration
+last_updated: '2025-05-12'
+owner: lawrennd
+priority: High
+related_cips: []
+status: Completed
+title: Implement Backlog Integration for AI-Requirements Framework
+type: feature
 ---
-
 
 ## Description
 
@@ -77,4 +78,4 @@ Status updated to In Progress. Implemented the following components:
 - Created a detailed example in `ai-requirements/examples/backlog-creation-example.md` showing the process of creating backlog items from requirements 
 
 ### 2025-05-12
-Status updated to completed. All tasks completed and documentation updated. 
+Status updated to completed. All tasks completed and documentation updated.

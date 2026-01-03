@@ -1,9 +1,11 @@
 ---
+category: features
 created: '2025-05-05'
 id: 2025-05-05_easy-installation-method
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: high
+priority: High
+related_cips: []
 status: superseded
 tags:
 - documentation
@@ -70,4 +72,4 @@ The installation scripts should be designed to work with minimal dependencies, p
 
 ### 2025-05-05
 
-Task created based on CIP-0002 proposal. The CIP contains a draft implementation of the shell script that serves as a starting point. 
+Task created based on CIP-0002 proposal. The CIP contains a draft implementation of the shell script that serves as a starting point.

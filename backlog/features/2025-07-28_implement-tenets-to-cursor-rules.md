@@ -1,11 +1,12 @@
 ---
-id: "2025-07-28_implement-tenets-to-cursor-rules"
-title: "Implement Automatic Tenets-to-Cursor-Rules Generation"
-status: "Completed"
-priority: "High"
-created: "2025-07-28"
-last_updated: "2025-07-28"
-category: "features"
+category: features
+created: '2025-07-28'
+id: 2025-07-28_implement-tenets-to-cursor-rules
+last_updated: '2025-07-28'
+priority: High
+related_cips: []
+status: Completed
+title: Implement Automatic Tenets-to-Cursor-Rules Generation
 ---
 
 # Task: Implement Automatic Tenets-to-Cursor-Rules Generation
@@ -68,4 +69,4 @@ Implement the automatic generation of Cursor AI rules from project tenets during
 
 ## Related
 
-- CIP: 0010 
+- CIP: 0010

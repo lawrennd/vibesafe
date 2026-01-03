@@ -1,11 +1,12 @@
 ---
-id: "2026-01-03_venv-naming-conflict"
-title: "VibeSafe .venv conflicts with user project virtual environments"
-status: "Completed"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-category: "bugs"
+category: bugs
+created: '2026-01-03'
+id: 2026-01-03_venv-naming-conflict
+last_updated: '2026-01-03'
+priority: High
+related_cips: []
+status: Completed
+title: VibeSafe .venv conflicts with user project virtual environments
 ---
 
 # Bug: VibeSafe .venv conflicts with user project virtual environments
@@ -186,4 +187,3 @@ Bug identified and documented with implementation options.
 - No more naming conflicts or environment confusion
 - All existing tests pass without modification
 - Installation philosophy maintained: system files updated, user content preserved
-

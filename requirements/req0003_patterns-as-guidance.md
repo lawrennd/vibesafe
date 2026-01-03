@@ -1,19 +1,22 @@
 ---
-id: "0003"
-title: "Accessible Guidance Without Prescriptive Structure"
-status: "Ready"
-priority: "Medium"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_tenets: ["user-autonomy", "simplicity-of-use"]
-related_cips: ["0011"]
+created: '2026-01-03'
+id: '0003'
+last_updated: '2026-01-03'
+priority: Medium
 related_backlog: []
-stakeholders: ["developers", "vibesafe-users"]
+related_tenets:
+- user-autonomy
+- simplicity-of-use
+stakeholders:
+- developers
+- vibesafe-users
+status: Ready
 tags:
-  - guidance
-  - documentation
-  - user-autonomy
-  - pedagogy
+- guidance
+- documentation
+- user-autonomy
+- pedagogy
+title: Accessible Guidance Without Prescriptive Structure
 ---
 
 # Requirement 0003: Accessible Guidance Without Prescriptive Structure
@@ -52,4 +55,3 @@ The guidance should cover common challenges: identifying stakeholders, decomposi
 - **Bad**: Subdirectories users must populate
 - **Good**: Optional thinking tools
 - **Bad**: Mandatory process steps
-

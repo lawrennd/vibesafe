@@ -1,19 +1,22 @@
 ---
-id: "0008"
-title: "Clear Boundaries Between Framework and User Content"
-status: "Ready"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_tenets: ["user-autonomy"]
-related_cips: ["0011"]
+created: '2026-01-03'
+id: 0008
+last_updated: '2026-01-03'
+priority: High
 related_backlog: []
-stakeholders: ["vibesafe-users", "developers", "ai-assistants"]
+related_tenets:
+- user-autonomy
+stakeholders:
+- vibesafe-users
+- developers
+- ai-assistants
+status: Ready
 tags:
-  - user-experience
-  - clarity
-  - namespace
-  - autonomy
+- user-experience
+- clarity
+- namespace
+- autonomy
+title: Clear Boundaries Between Framework and User Content
 ---
 
 # Requirement 0008: Clear Boundaries Between Framework and User Content
@@ -74,4 +77,3 @@ This clarity protects user autonomy and reduces cognitive load.
 **Related:**
 - WHY: user-autonomy tenet (respect users' freedom)
 - HOW: CIP-0011 implements through namespace separation, naming conventions
-

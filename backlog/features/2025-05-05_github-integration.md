@@ -1,10 +1,12 @@
 ---
+category: features
 created: '2025-05-05'
 id: 2025-05-05_github-integration
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: high
-status: ready
+priority: High
+related_cips: []
+status: Ready
 tags:
 - documentation
 - feature
@@ -54,4 +56,4 @@ Potential technologies:
 
 ### 2025-05-05
 
-Initial task created with Ready status after discussing requirements. 
+Initial task created with Ready status after discussing requirements.

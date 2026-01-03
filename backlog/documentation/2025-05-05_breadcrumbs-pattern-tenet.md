@@ -1,10 +1,12 @@
 ---
+category: documentation
 created: '2025-05-05'
 id: 2025-05-05_breadcrumbs-pattern-tenet
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: medium
-status: proposed
+priority: Medium
+related_cips: []
+status: Proposed
 tags:
 - documentation
 - tenets
@@ -66,4 +68,4 @@ If the decision is to create a new tenet, this would likely require a new CIP to
 
 ### 2025-05-05
 
-Task created with Proposed status, to be addressed after implementing CIP-0008. 
+Task created with Proposed status, to be addressed after implementing CIP-0008.

@@ -1,19 +1,21 @@
 ---
-id: "2025-12-23_whats-next-tenet-review-suggestions"
-title: "Add tenet review suggestions to What's Next script"
-status: "Completed"
-priority: "Medium"
-created: "2025-12-23"
-last_updated: "2025-12-23"
-owner: "Neil Lawrence"
-github_issue: ""
-dependencies: ""
+category: features
+created: '2025-12-23'
+dependencies: ''
+github_issue: ''
+id: 2025-12-23_whats-next-tenet-review-suggestions
+last_updated: '2025-12-23'
+owner: Neil Lawrence
+priority: Medium
+related_cips: []
+status: Completed
 tags:
 - feature
 - whats-next
 - tenets
 - maintenance
 - project-health
+title: Add tenet review suggestions to What's Next script
 ---
 
 # Task: Add tenet review suggestions to What's Next script
@@ -238,4 +240,3 @@ Integrated with next steps generation:
 Tested on VibeSafe repository - correctly identifies no project tenets and suggests creation.
 
 Status changed to Completed. Documentation update deferred as script has --help for usage.
-

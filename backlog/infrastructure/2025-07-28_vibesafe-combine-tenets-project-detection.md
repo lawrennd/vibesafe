@@ -1,13 +1,15 @@
 ---
-title: "Make combine_tenets.py Project-Agnostic Instead of Hardcoded for 'vibesafe'"
-id: "2025-07-28_vibesafe-combine-tenets-project-detection"
-status: "proposed"
-priority: "medium"
-created: "2025-07-28"
-updated: "2025-07-28"
-owner: "Neil"
+category: infrastructure
+created: '2025-07-28'
 dependencies: []
-category: "infrastructure"
+id: 2025-07-28_vibesafe-combine-tenets-project-detection
+last_updated: '2025-07-28'
+owner: Neil
+priority: Medium
+related_cips: []
+status: Proposed
+title: Make combine_tenets.py Project-Agnostic Instead of Hardcoded for 'vibesafe'
+updated: '2025-07-28'
 ---
 
 # Task: Make combine_tenets.py Project-Agnostic Instead of Hardcoded for 'vibesafe'
@@ -113,4 +115,4 @@ def detect_project_name():
 - [ ] Script works correctly in The Inaccessible Game project
 - [ ] Script still works correctly in VibeSafe's own repository
 - [ ] No manual configuration required for new projects
-- [ ] Clear error messages when auto-detection fails 
+- [ ] Clear error messages when auto-detection fails

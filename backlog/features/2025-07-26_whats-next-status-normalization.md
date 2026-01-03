@@ -1,11 +1,12 @@
 ---
-id: "2025-07-26_whats-next-status-normalization"
-title: "What's Next Script Status Normalization Enhancement"
-status: "Completed"
-priority: "Medium"
-created: "2025-07-26"
-last_updated: "2025-07-26"
-category: "features"
+category: features
+created: '2025-07-26'
+id: 2025-07-26_whats-next-status-normalization
+last_updated: '2025-07-26'
+priority: Medium
+related_cips: []
+status: Completed
+title: What's Next Script Status Normalization Enhancement
 ---
 
 # Task: What's Next Script Status Normalization Enhancement
@@ -138,4 +139,4 @@ The `whats_next.py` script currently has similar status handling logic to the ol
 1. Both `update_index.py` and `whats_next.py` handle status formats consistently
 2. No regression in existing functionality or output format
 3. All status formats are correctly normalized and processed
-4. Cross-script compatibility verified through testing 
+4. Cross-script compatibility verified through testing

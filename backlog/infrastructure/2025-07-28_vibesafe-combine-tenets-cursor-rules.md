@@ -1,13 +1,16 @@
 ---
-title: "Ensure combine_tenets.py Includes Cursor Rules Generation Functionality"
-id: "2025-07-28_vibesafe-combine-tenets-cursor-rules"
-status: "proposed"
-priority: "medium"
-created: "2025-07-28"
-updated: "2025-07-28"
-owner: "Neil"
-dependencies: ["2025-07-28_vibesafe-combine-tenets-project-detection"]
-category: "infrastructure"
+category: infrastructure
+created: '2025-07-28'
+dependencies:
+- 2025-07-28_vibesafe-combine-tenets-project-detection
+id: 2025-07-28_vibesafe-combine-tenets-cursor-rules
+last_updated: '2025-07-28'
+owner: Neil
+priority: Medium
+related_cips: []
+status: Proposed
+title: Ensure combine_tenets.py Includes Cursor Rules Generation Functionality
+updated: '2025-07-28'
 ---
 
 # Task: Ensure combine_tenets.py Includes Cursor Rules Generation Functionality
@@ -146,4 +149,4 @@ if __name__ == "__main__":
 
 ## Implementation Priority
 
-This task should be implemented **after** the project detection task, as both improvements should be made together to ensure a complete solution. 
+This task should be implemented **after** the project detection task, as both improvements should be made together to ensure a complete solution.

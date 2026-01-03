@@ -1,19 +1,22 @@
 ---
-id: "0002"
-title: "Simple and Accessible Requirements Framework"
-status: "Ready"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_tenets: ["simplicity-of-use"]
-related_cips: ["0011"]
+created: '2026-01-03'
+id: '0002'
+last_updated: '2026-01-03'
+priority: High
 related_backlog: []
-stakeholders: ["developers", "product-managers", "non-technical-users"]
+related_tenets:
+- simplicity-of-use
+stakeholders:
+- developers
+- product-managers
+- non-technical-users
+status: Ready
 tags:
-  - requirements
-  - simplicity
-  - usability
-  - cognitive-load
+- requirements
+- simplicity
+- usability
+- cognitive-load
+title: Simple and Accessible Requirements Framework
 ---
 
 # Requirement 0002: Simple and Accessible Requirements Framework
@@ -52,4 +55,3 @@ Above all, the framework should align with VibeSafe's core principle: simplicity
 - Simple need → Requirement
 - Need design thinking → CIP
 - Ready to do → Backlog task
-

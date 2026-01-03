@@ -1,10 +1,12 @@
 ---
+category: documentation
 created: '2025-05-05'
 id: 2025-05-05_getting-started-guide
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: high
-status: proposed
+priority: High
+related_cips: []
+status: Proposed
 tags:
 - documentation
 - tenets
@@ -65,4 +67,4 @@ The guide should embody our tenets, particularly "Simplicity at All Levels" and 
 
 ### 2025-05-05
 
-Task created with Proposed status. 
+Task created with Proposed status.

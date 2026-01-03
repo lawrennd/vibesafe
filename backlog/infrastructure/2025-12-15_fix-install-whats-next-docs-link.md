@@ -1,18 +1,21 @@
 ---
-id: "2025-12-15_fix-install-whats-next-docs-link"
-title: "Fix install-whats-next messaging and requirements rule installation in minimal installs"
-status: "Proposed"
-priority: "Medium"
-created: "2025-12-15"
-last_updated: "2025-12-15"
-owner: "Neil D. Lawrence"
-github_issue: ""
-dependencies: ""
+category: infrastructure
+created: '2025-12-15'
+dependencies: ''
+github_issue: ''
+id: 2025-12-15_fix-install-whats-next-docs-link
+last_updated: '2025-12-15'
+owner: Neil D. Lawrence
+priority: Medium
+related_cips: []
+status: Proposed
 tags:
 - backlog
 - infrastructure
 - installer
 - whats-next
+title: Fix install-whats-next messaging and requirements rule installation in minimal
+  installs
 ---
 
 # Task: Fix install-whats-next messaging and requirements rule installation in minimal installs
@@ -59,5 +62,3 @@ This is confusing for users: the “What’s Next” script works, but the insta
 ### 2025-12-15
 
 Task created after observing misleading output and a missing-template warning during minimal installation into a target project.
-
-

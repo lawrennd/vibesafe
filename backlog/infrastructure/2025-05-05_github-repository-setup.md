@@ -1,10 +1,12 @@
 ---
+category: infrastructure
 created: '2025-05-05'
 id: 2025-05-05_github-repository-setup
 last_updated: '2025-05-12'
 owner: lawrennd
 priority: completed
-status: completed
+related_cips: []
+status: Completed
 tags:
 - documentation
 - feature

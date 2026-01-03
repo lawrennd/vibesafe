@@ -1,18 +1,20 @@
 ---
-id: "2025-05-16_requirements-cip-integration"
-title: "Implement Requirements-CIP Integration"
-status: "Ready"
-priority: "Medium"
-created: "2025-05-16"
-last_updated: "2025-05-16"
-owner: "Neil Lawrence"
-github_issue: "N/A"
-dependencies: "CIP-000E foundation phase must be completed first"
+category: features
+created: '2025-05-16'
+dependencies: CIP-000E foundation phase must be completed first
+github_issue: N/A
+id: 2025-05-16_requirements-cip-integration
+last_updated: '2025-05-16'
+owner: Neil Lawrence
+priority: Medium
+related_cips: []
+status: Ready
 tags:
 - backlog
 - feature
 - requirements
 - integration
+title: Implement Requirements-CIP Integration
 ---
 
 # Task: Implement Requirements-CIP Integration
@@ -51,4 +53,4 @@ The integration should work with minimal overhead for users and support existing
 
 ### 2025-05-16
 
-Backlog item created for implementing the requirements-CIP integration mechanism. 
+Backlog item created for implementing the requirements-CIP integration mechanism.

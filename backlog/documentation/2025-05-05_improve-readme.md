@@ -1,10 +1,12 @@
 ---
+category: documentation
 created: '2025-05-05'
 id: 2025-05-05_improve-readme
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: medium
-status: proposed
+priority: Medium
+related_cips: []
+status: Proposed
 tags:
 - cip
 - backlog
@@ -47,4 +49,4 @@ Examples should be simple and easy to follow, focusing on the most common use ca
 
 ### 2025-05-05
 
-Task created with Proposed status. 
+Task created with Proposed status.

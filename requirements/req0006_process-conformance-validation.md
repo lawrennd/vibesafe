@@ -1,19 +1,22 @@
 ---
-id: "0006"
-title: "Automated Process Conformance Validation"
-status: "Ready"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_tenets: ["validation-led-development"]
-related_cips: ["0011"]
+created: '2026-01-03'
+id: '0006'
+last_updated: '2026-01-03'
+priority: High
 related_backlog: []
-stakeholders: ["developers", "maintainers", "vibesafe-itself"]
+related_tenets:
+- validation-led-development
+stakeholders:
+- developers
+- maintainers
+- vibesafe-itself
+status: Ready
 tags:
-  - validation
-  - quality
-  - automation
-  - dogfooding
+- validation
+- quality
+- automation
+- dogfooding
+title: Automated Process Conformance Validation
 ---
 
 # Requirement 0006: Automated Process Conformance Validation
@@ -65,4 +68,3 @@ By validating our own conformance, we demonstrate VibeSafe's principles in actio
 **False Positives OK**: Better to warn and let humans judge than miss actual issues.
 
 **Dogfooding**: This requirement itself will be validated by the script we build!
-

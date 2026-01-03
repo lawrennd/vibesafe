@@ -1,18 +1,21 @@
 ---
-id: "0005"
-title: "Clear Understanding of Project Status"
-status: "Ready"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_cips: ["0011"]
+created: '2026-01-03'
+id: '0005'
+last_updated: '2026-01-03'
+priority: High
 related_backlog: []
-stakeholders: ["developers", "project-managers", "ai-assistants"]
+related_tenets: []
+stakeholders:
+- developers
+- project-managers
+- ai-assistants
+status: Ready
 tags:
-  - visibility
-  - status
-  - understanding
-  - context
+- visibility
+- status
+- understanding
+- context
+title: Clear Understanding of Project Status
 ---
 
 # Requirement 0005: Clear Understanding of Project Status
@@ -55,4 +58,3 @@ Intelligent recommendations based on project state would help users prioritize w
 **Quick vs Deep**:
 - Quick: Current work (what's next?)
 - Deep: Full analysis (where are we? what's next? any issues?)
-

@@ -1,19 +1,21 @@
 ---
-id: "2025-12-23_fix-tenet-cursor-rule-generation"
-title: "Fix overly broad tenet-to-cursor-rule generation in installation script"
-status: "Completed"
-priority: "High"
-created: "2025-12-23"
-last_updated: "2025-12-23"
-owner: "Neil Lawrence"
-github_issue: ""
-dependencies: ""
+category: bugs
+created: '2025-12-23'
+dependencies: ''
+github_issue: ''
+id: 2025-12-23_fix-tenet-cursor-rule-generation
+last_updated: '2025-12-23'
+owner: Neil Lawrence
+priority: High
+related_cips: []
+status: Completed
 tags:
 - bug
 - installation
 - cursor-rules
 - tenets
 - system-files
+title: Fix overly broad tenet-to-cursor-rule generation in installation script
 ---
 
 # Task: Fix overly broad tenet-to-cursor-rule generation in installation script
@@ -139,4 +141,3 @@ Task created after discovering 90+ spurious cursor rule files in `.cursor/rules/
   - 7 actual project tenets (documentation-as-code, information-exploration-patterns, shared-information-landmarks, simplicity-of-use, tenet_template, user-autonomy, vibesafe-tenets)
   - Total: 12 files instead of previous 102 files
 - Status changed to Completed
-

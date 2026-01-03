@@ -80,8 +80,6 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Phase 1: Requirements Framework Simplification](features/2026-01-03_simplify-requirements-framework.md)
 
-- [Create Process Conformance Validation Scripts](features/2026-01-03_process-conformance-validation.md)
-
 - [Phase 3: Tenets Sustainability Process](features/2026-01-03_tenets-sustainability-process.md)
 
 - [Phase 4: Create Project Summary Tool](features/2026-01-03_project-summary-tool.md)
@@ -110,15 +108,15 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
+- [Phase 0c: Integrate Validator into What](features/2026-01-03_integrate-validator-whats-next.md)
+
+- [Phase 0a: Create Validation Script (DO FIRST)](features/2026-01-03_process-conformance-validation.md)
+
+- [Phase 0b: Integrate Validator into Install Script](features/2026-01-03_integrate-validator-install.md)
+
+- [Phase 0d: Intelligent Gap Detection & AI-Assisted Suggestions](features/2026-01-03_intelligent-gap-detection.md)
+
 - [VibeSafe .venv conflicts with user project virtual environments](bugs/2026-01-03_venv-naming-conflict.md)
-
-- [Add tenet review suggestions to What](features/2025-12-23_whats-next-tenet-review-suggestions.md)
-
-- [Add automatic cleanup of spurious cursor rules during installation](features/2025-12-23_auto-cleanup-spurious-cursor-rules.md)
-
-- [Fix overly broad tenet-to-cursor-rule generation in installation script](bugs/2025-12-23_fix-tenet-cursor-rule-generation.md)
-
-- [Filter Completed Items from High Priority Display in What](features/2025-12-01_filter-completed-from-high-priority.md)
 
 
 ## Recently Abandoned Tasks

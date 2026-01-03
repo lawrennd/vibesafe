@@ -1,10 +1,12 @@
 ---
+category: documentation
 created: '2025-05-05'
 id: 2025-05-05_documentation-system-evaluation
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: medium
-status: proposed
+priority: Medium
+related_cips: []
+status: Proposed
 tags:
 - documentation
 - feature
@@ -80,4 +82,4 @@ Consider lightweight systems that can be easily installed alongside VibeSafe wit
 
 ### 2025-05-05
 
-Task created with Proposed status. 
+Task created with Proposed status.

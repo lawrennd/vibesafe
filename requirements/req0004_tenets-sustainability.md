@@ -1,18 +1,20 @@
 ---
-id: "0004"
-title: "Sustainable and Relevant Tenets"
-status: "Ready"
-priority: "Medium"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_cips: ["0011"]
+created: '2026-01-03'
+id: '0004'
+last_updated: '2026-01-03'
+priority: Medium
 related_backlog: []
-stakeholders: ["project-teams", "maintainers"]
+related_tenets: []
+stakeholders:
+- project-teams
+- maintainers
+status: Ready
 tags:
-  - tenets
-  - sustainability
-  - relevance
-  - maintenance
+- tenets
+- sustainability
+- relevance
+- maintenance
+title: Sustainable and Relevant Tenets
 ---
 
 # Requirement 0004: Sustainable and Relevant Tenets
@@ -53,4 +55,3 @@ When we violate a tenet, document:
 - Was it justified (tenet needs update) or mistake (recommit to tenet)?
 
 This creates feedback loop for tenet improvement.
-

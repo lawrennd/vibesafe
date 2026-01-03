@@ -1,10 +1,12 @@
 ---
+category: documentation
 created: '2025-05-05'
 id: 2025-05-05_documentation-style-guide
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: high
-status: proposed
+priority: High
+related_cips: []
+status: Proposed
 tags:
 - documentation
 - tenets
@@ -54,4 +56,4 @@ The guide should reflect our "Documentation as First-Class Citizen" tenet and em
 
 ### 2025-05-05
 
-Task created with Proposed status. 
+Task created with Proposed status.

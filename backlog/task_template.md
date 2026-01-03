@@ -1,42 +1,30 @@
 ---
-id: "YYYY-MM-DD_short-identifier"
-title: "[Descriptive task title]"
+id: "YYYY-MM-DD_short-name"
+title: "Task Title"
 status: "Proposed"
 priority: "Medium"
 created: "YYYY-MM-DD"
 last_updated: "YYYY-MM-DD"
-owner: "[Person responsible for the task]"
-github_issue: "[Issue number, if applicable]"
-dependencies: "[List of dependencies]"
-tags:
-- backlog
-- "[additional tags]"
+category: "features"
 ---
 
-# Task: [Short Title]
+# Task: Task Title
 
 ## Description
 
-[Detailed description of the task]
+Brief description of what needs to be done.
 
 ## Acceptance Criteria
 
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-- [ ] [Criterion 3]
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] Criterion 3
 
 ## Implementation Notes
 
-[Technical notes about implementation approach]
-
-## Related
-
-- CIP: [CIP number if related]
-- PRs: [Pull request numbers]
-- Documentation: [Links to relevant documentation]
+Any technical notes or considerations.
 
 ## Progress Updates
 
 ### YYYY-MM-DD
-
-[Update description] 
+Task created.

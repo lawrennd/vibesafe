@@ -1,19 +1,21 @@
 ---
-id: "sync-templates-with-current-files"
-title: "Implement VibeSafe self-update workflow to prevent template drift"
-status: "Ready"
-priority: "High"
-created: "2025-08-15"
-last_updated: "2025-08-15"
-owner: "Neil Lawrence"
-github_issue: ""
-dependencies: ""
+category: infrastructure
+created: '2025-08-15'
+dependencies: ''
+github_issue: ''
+id: sync-templates-with-current-files
+last_updated: '2025-08-15'
+owner: Neil Lawrence
+priority: High
+related_cips: []
+status: Ready
 tags:
 - templates
 - installation
 - maintenance
 - system-files
 - self-update
+title: Implement VibeSafe self-update workflow to prevent template drift
 ---
 
 # Task: Implement VibeSafe self-update workflow to prevent template drift

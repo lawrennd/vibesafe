@@ -1,10 +1,12 @@
 ---
+category: infrastructure
 created: '2025-05-05'
 id: 2025-05-05_installation-testing-plan
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: high
-status: ready
+priority: High
+related_cips: []
+status: Ready
 tags:
 - documentation
 - feature
@@ -112,4 +114,4 @@ In addition to the basic functionality shared with the shell script:
 
 ### 2025-05-05
 
-Task created to establish a comprehensive testing plan for installation methods. 
+Task created to establish a comprehensive testing plan for installation methods.

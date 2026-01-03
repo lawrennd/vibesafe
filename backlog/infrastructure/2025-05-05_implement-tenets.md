@@ -1,10 +1,12 @@
 ---
+category: infrastructure
 created: '2025-05-05'
 id: 2025-05-05_implement-tenets
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: high
-status: proposed
+priority: High
+related_cips: []
+status: Proposed
 tags:
 - documentation
 - feature
@@ -79,4 +81,4 @@ VibeSafe's own tenets will serve as both examples and genuine guiding principles
 
 ### 2025-05-05
 
-Task created based on CIP-0004 proposal, which shifts focus from simply implementing tenets within VibeSafe to creating a standardized system for tenets that any project can adopt. 
+Task created based on CIP-0004 proposal, which shifts focus from simply implementing tenets within VibeSafe to creating a standardized system for tenets that any project can adopt.

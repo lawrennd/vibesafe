@@ -1,11 +1,12 @@
 ---
-id: "2025-07-26_update-index-status-normalization"
-title: "Update Index Script Status Normalization Enhancement"
-status: "Completed"
-priority: "Medium"
-created: "2025-07-26"
-last_updated: "2025-07-26"
-category: "features"
+category: features
+created: '2025-07-26'
+id: 2025-07-26_update-index-status-normalization
+last_updated: '2025-07-26'
+priority: Medium
+related_cips: []
+status: Completed
+title: Update Index Script Status Normalization Enhancement
 ---
 
 # Task: Update Index Script Status Normalization Enhancement
@@ -115,4 +116,4 @@ Currently, the script expects status values in a specific format (capitalized wi
 ## Related Items
 
 - **Follow-up**: `2025-07-26_whats-next-status-normalization` (apply same improvements to whats_next.py)
-- None currently identified 
+- None currently identified

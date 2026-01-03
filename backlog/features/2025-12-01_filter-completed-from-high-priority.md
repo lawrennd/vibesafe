@@ -1,13 +1,15 @@
 ---
-title: "Filter Completed Items from High Priority Display in What's Next"
-id: "2025-12-01_filter-completed-from-high-priority"
-status: "completed"
-priority: "medium"
-created: "2025-12-01"
-updated: "2025-12-01"
-owner: "Neil"
+category: features
+created: '2025-12-01'
 dependencies: []
-category: "features"
+id: 2025-12-01_filter-completed-from-high-priority
+last_updated: '2025-12-01'
+owner: Neil
+priority: Medium
+related_cips: []
+status: Completed
+title: Filter Completed Items from High Priority Display in What's Next
+updated: '2025-12-01'
 ---
 
 # Task: Filter Completed Items from High Priority Display in What's Next
@@ -103,4 +105,3 @@ python -m pytest tests/test_whats_next.py -v
 - Fixed test data to include required 'id' fields
 - All tests passing
 - Task completed
-

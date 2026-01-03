@@ -1,19 +1,21 @@
 ---
-id: "0007"
-title: "Automatic System Updates on Installation"
-status: "Ready"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_tenets: ["clean-installation"]
-related_cips: ["000E", "0011"]
+created: '2026-01-03'
+id: '0007'
+last_updated: '2026-01-03'
+priority: High
 related_backlog: []
-stakeholders: ["vibesafe-users", "existing-projects"]
+related_tenets:
+- clean-installation
+stakeholders:
+- vibesafe-users
+- existing-projects
+status: Ready
 tags:
-  - installation
-  - updates
-  - migration
-  - backwards-compatibility
+- installation
+- updates
+- migration
+- backwards-compatibility
+title: Automatic System Updates on Installation
 ---
 
 # Requirement 0007: Automatic System Updates on Installation
@@ -65,4 +67,3 @@ When users update VibeSafe after CIP-0011 implementation:
 - Clear: Communicate what changed
 
 This requirement ensures VibeSafe can evolve without abandoning existing users.
-

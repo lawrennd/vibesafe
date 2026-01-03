@@ -1,19 +1,20 @@
 ---
-id: "2025-05-12_ai-requirements-integration"
-title: "Integrate AI-Requirements Framework into Installation Script"
-status: "completed"
-priority: "high"
-effort: "medium"
-type: "infrastructure"
-created: "2025-05-12"
-last_updated: "2025-05-12"
-owner: lawrennd
-github_issue:
+category: infrastructure
+created: '2025-05-12'
 dependencies:
-  - "CIP-0009"
-  - "CIP-000C"
+- CIP-0009
+- CIP-000C
+effort: medium
+github_issue: null
+id: 2025-05-12_ai-requirements-integration
+last_updated: '2025-05-12'
+owner: lawrennd
+priority: High
+related_cips: []
+status: Completed
+title: Integrate AI-Requirements Framework into Installation Script
+type: infrastructure
 ---
-
 
 ## Description
 
@@ -149,4 +150,4 @@ Performed testing of the installation process on macOS. The installation script 
 
 Tested the What's Next script functionality with the new --requirements-only flag. The script correctly detects and reports on the AI-Requirements framework status.
 
-All acceptance criteria have been met, and this task is now completed. 
+All acceptance criteria have been met, and this task is now completed.

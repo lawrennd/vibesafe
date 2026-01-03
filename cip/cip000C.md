@@ -1,9 +1,9 @@
 ---
-id: "000C"
-title: "Integrate AI-Requirements Framework into Installation Script"
-status: "implemented"
-created: "2025-05-12"
-last_updated: "2025-05-14"
+created: '2025-05-12'
+id: 000C
+last_updated: '2025-05-14'
+status: Implemented
+title: Integrate AI-Requirements Framework into Installation Script
 ---
 
 # CIP-000C: Integrate AI-Requirements Framework into Installation Script
@@ -168,4 +168,4 @@ We could create a "full" installation script that includes the Requirements Fram
 ## References
 
 - [CIP-0009: Requirements Conversation Framework](cip0009.md)
-- [AI-Requirements Framework Documentation](../ai-requirements/README.md) 
+- [AI-Requirements Framework Documentation](../ai-requirements/README.md)

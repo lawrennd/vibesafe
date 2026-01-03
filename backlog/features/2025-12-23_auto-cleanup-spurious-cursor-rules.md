@@ -1,19 +1,21 @@
 ---
-id: "2025-12-23_auto-cleanup-spurious-cursor-rules"
-title: "Add automatic cleanup of spurious cursor rules during installation"
-status: "Completed"
-priority: "Medium"
-created: "2025-12-23"
-last_updated: "2025-12-23"
-owner: "Neil Lawrence"
-github_issue: ""
-dependencies: "2025-12-23_fix-tenet-cursor-rule-generation"
+category: features
+created: '2025-12-23'
+dependencies: 2025-12-23_fix-tenet-cursor-rule-generation
+github_issue: ''
+id: 2025-12-23_auto-cleanup-spurious-cursor-rules
+last_updated: '2025-12-23'
+owner: Neil Lawrence
+priority: Medium
+related_cips: []
+status: Completed
 tags:
 - feature
 - installation
 - cursor-rules
 - cleanup
 - user-experience
+title: Add automatic cleanup of spurious cursor rules during installation
 ---
 
 # Task: Add automatic cleanup of spurious cursor rules during installation
@@ -223,4 +225,3 @@ Added `cleanup_spurious_cursor_rules()` function to `scripts/install-minimal.sh`
 - Safe handling of edge cases
 
 Status changed to Completed. Documentation update not done as the cleanup is self-explanatory through the log message.
-

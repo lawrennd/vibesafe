@@ -1,10 +1,12 @@
 ---
+category: features
 created: '2025-05-05'
 id: 2025-05-05_gist-integration
 last_updated: '2025-05-11'
 owner: lawrennd
-priority: medium
-status: proposed
+priority: Medium
+related_cips: []
+status: Proposed
 tags:
 - documentation
 - feature
@@ -100,4 +102,4 @@ The final implementation should prioritize:
 
 ### 2025-05-05
 
-Task created based on CIP-0003 proposal, which outlines three potential implementation approaches for evaluation. 
+Task created based on CIP-0003 proposal, which outlines three potential implementation approaches for evaluation.

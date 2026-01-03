@@ -1,11 +1,12 @@
 ---
-id: "2025-07-26_update-index-tests"
-title: "Update Tests for Status Normalization in update_index.py"
-status: "Completed"
-priority: "High"
-created: "2025-07-26"
-last_updated: "2025-07-26"
-category: "features"
+category: features
+created: '2025-07-26'
+id: 2025-07-26_update-index-tests
+last_updated: '2025-07-26'
+priority: High
+related_cips: []
+status: Completed
+title: Update Tests for Status Normalization in update_index.py
 ---
 
 # Task: Update Tests for Status Normalization in update_index.py
@@ -146,4 +147,4 @@ The tests show status values coming back as `None` instead of normalized values.
 
 - **Depends on**: `2025-07-26_update-index-status-normalization` (completed)
 - **Blocks**: Confidence in status normalization implementation ✅ UNBLOCKED
-- **Related**: Testing infrastructure for VibeSafe scripts 
+- **Related**: Testing infrastructure for VibeSafe scripts

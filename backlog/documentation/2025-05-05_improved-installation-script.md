@@ -1,10 +1,12 @@
 ---
+category: documentation
 created: '2025-05-05'
 id: 2025-05-05_improved-installation-script
 last_updated: '2025-05-12'
 owner: Neil Lawrence
 priority: completed
-status: completed
+related_cips: []
+status: Completed
 tags:
 - bug
 - testing
@@ -82,4 +84,4 @@ The main functions affected were:
 - Redesigned the script to support environment variables and self-documenting templates
 - Fixed the directory copying logic to properly handle custom directory structures
 - Added comprehensive tests and verified they run without hanging
-- Documented the improvements in this backlog item 
+- Documented the improvements in this backlog item

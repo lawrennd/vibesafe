@@ -1,18 +1,20 @@
 ---
-id: "0001"
-title: "Standardize YAML Frontmatter Across VibeSafe Components"
-status: "Ready"
-priority: "High"
-created: "2026-01-03"
-last_updated: "2026-01-03"
-related_cips: ["0011"]
+created: '2026-01-03'
+id: '0001'
+last_updated: '2026-01-03'
+priority: High
 related_backlog: []
-stakeholders: ["developers", "ai-assistants"]
+related_tenets: []
+stakeholders:
+- developers
+- ai-assistants
+status: Ready
 tags:
-  - standardization
-  - yaml
-  - metadata
-  - tooling
+- standardization
+- yaml
+- metadata
+- tooling
+title: Standardize YAML Frontmatter Across VibeSafe Components
 ---
 
 # Requirement 0001: Standardized Component Metadata
@@ -57,4 +59,3 @@ This standardization is foundational for building unified tools, generating summ
 - Scripts query for inverse: "Which requirements relate to tenet X?"
 
 Validation should be soft (warnings, not errors) to maintain flexibility.
-

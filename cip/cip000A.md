@@ -1,14 +1,14 @@
 ---
-id: "000A"
-title: "Project Status Summarizer (\"What's Next\" Script)"
-status: "implemented"
-created: "2025-05-11"
-last_updated: "2025-05-11"
-author: "Neil Lawrence"
+author: Neil Lawrence
+created: '2025-05-11'
+id: 000A
+last_updated: '2025-05-11'
+status: Implemented
 tags:
-  - "project-management"
-  - "automation"
-  - "tooling"
+- project-management
+- automation
+- tooling
+title: Project Status Summarizer ("What's Next" Script)
 ---
 
 # CIP-000A: Project Status Summarizer ("What's Next" Script)
@@ -154,4 +154,4 @@ This change will require updating existing CIPs and backlog items to include YAM
 Neil Lawrence
 
 ## Date
-2025-05-11 
+2025-05-11

@@ -1,16 +1,18 @@
 ---
-id: "2025-05-08_goal-decomposition-pattern"
-title: "Implement Goal Decomposition Pattern"
-status: "in progress"
-priority: "high"
-effort: "medium"
-type: "feature"
-created: "2025-05-08"
-last_updated: "2025-05-12"
-owner: lawernnd
+category: features
+created: '2025-05-08'
 dependencies:
-  - "CIP-0009"
-  - "ai-requirements foundation"
+- CIP-0009
+- ai-requirements foundation
+effort: medium
+id: 2025-05-08_goal-decomposition-pattern
+last_updated: '2025-05-12'
+owner: lawernnd
+priority: High
+related_cips: []
+status: In Progress
+title: Implement Goal Decomposition Pattern
+type: feature
 ---
 
 # Task: Implement Goal Decomposition Pattern
@@ -89,4 +91,4 @@ Updated status to In Progress. Created the initial Goal Decomposition Pattern do
 - Integration guidance with the requirements process
 - Common pitfalls to avoid
 
-Also created a complete example in `ai-requirements/examples/goal-decomposition-example.md` showing the pattern applied to a data analytics dashboard project. 
+Also created a complete example in `ai-requirements/examples/goal-decomposition-example.md` showing the pattern applied to a data analytics dashboard project.

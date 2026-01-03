@@ -1,14 +1,14 @@
 ---
-author: "Neil Lawrence"
-created: "2025-05-16"
-id: "000E"
-last_updated: "2025-05-16"
-status: proposed
+author: Neil Lawrence
+created: '2025-05-16'
+id: 000E
+last_updated: '2025-05-16'
+status: Proposed
 tags:
 - cip
 - requirements
 - framework
-title: "Implement AI-Assisted Requirements Framework"
+title: Implement AI-Assisted Requirements Framework
 ---
 
 # CIP-000E: Implement AI-Assisted Requirements Framework
@@ -212,4 +212,4 @@ The AI-Requirements framework must:
 
 ## Copyright
 
-Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/). 
+Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
