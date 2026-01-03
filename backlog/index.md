@@ -76,8 +76,6 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Phase 2: Move Patterns to VibeSafe Guidance](features/2026-01-03_patterns-to-vibesafe-guidance.md)
 
-- [Phase 0: YAML Frontmatter Standardization](features/2026-01-03_yaml-frontmatter-standardization.md)
-
 - [Phase 5: CIP-0011 Documentation and Testing](features/2026-01-03_cip0011-documentation.md)
 
 - [Phase 1: Requirements Framework Simplification](features/2026-01-03_simplify-requirements-framework.md)
@@ -114,9 +112,9 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Add Deferred Status for CIPs](infrastructure/2026-01-03_cip-deferred-status.md)
 
-- [Phase 0c: Integrate Validator into What](features/2026-01-03_integrate-validator-whats-next.md)
+- [Phase 0: YAML Frontmatter Standardization](features/2026-01-03_yaml-frontmatter-standardization.md)
 
-- [Phase 0a: Create Validation Script (DO FIRST)](features/2026-01-03_process-conformance-validation.md)
+- [Phase 0c: Integrate Validator into What](features/2026-01-03_integrate-validator-whats-next.md)
 
 
 ## Recently Abandoned Tasks
