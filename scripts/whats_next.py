@@ -402,10 +402,10 @@ def scan_backlog() -> Dict[str, Any]:
     return backlog_info
 
 def scan_requirements() -> Dict[str, Any]:
-    """Scan the AI-Requirements directory and collect information."""
+    """Scan the requirements directory and collect information."""
     requirements_info = {
-        'has_framework': os.path.isdir('ai-requirements'),
-        'has_template': os.path.exists('ai-requirements/requirement_template.md'),
+        'has_framework': os.path.isdir('requirements'),
+        'has_template': os.path.exists('requirements/requirement_template.md'),
         'patterns': [],
         'prompts': {
             'discovery': [],
@@ -418,36 +418,14 @@ def scan_requirements() -> Dict[str, Any]:
         'guidance': []
     }
     
-    # Check if the AI-Requirements framework is present
+    # Check if the requirements framework is present
     if not requirements_info['has_framework']:
         return requirements_info
     
-    # Scan patterns
-    if os.path.isdir('ai-requirements/patterns'):
-        pattern_files = glob.glob('ai-requirements/patterns/*.md')
-        requirements_info['patterns'] = [os.path.basename(f).replace('.md', '') for f in pattern_files]
-    
-    # Scan prompts
-    for prompt_type in ['discovery', 'refinement', 'validation', 'testing']:
-        prompt_dir = f'ai-requirements/prompts/{prompt_type}'
-        if os.path.isdir(prompt_dir):
-            prompt_files = glob.glob(f'{prompt_dir}/*.md')
-            requirements_info['prompts'][prompt_type] = [os.path.basename(f) for f in prompt_files]
-    
-    # Scan integrations
-    if os.path.isdir('ai-requirements/integrations'):
-        integration_files = glob.glob('ai-requirements/integrations/*.md')
-        requirements_info['integrations'] = [os.path.basename(f).replace('.md', '') for f in integration_files]
-    
-    # Scan examples
-    if os.path.isdir('ai-requirements/examples'):
-        example_files = glob.glob('ai-requirements/examples/*.md')
-        requirements_info['examples'] = [os.path.basename(f) for f in example_files]
-    
-    # Scan guidance
-    if os.path.isdir('ai-requirements/guidance'):
-        guidance_files = glob.glob('ai-requirements/guidance/*.md')
-        requirements_info['guidance'] = [os.path.basename(f) for f in guidance_files]
+    # Note: The old ai-requirements/ structure with patterns/prompts/etc. has been
+    # simplified to just requirements/ with flat or optional categorization.
+    # This scan function is kept for backwards compatibility but will be simplified
+    # in future versions to just check for requirements/*.md files.
     
     return requirements_info
 
@@ -466,7 +444,7 @@ def detect_codebase() -> bool:
         '.venv', '.venv-vibesafe',  # Virtual environments
         'node_modules', '__pycache__', '.git',  # Dependencies and system
         'venv', 'env',  # Other common venv names
-        'cip', 'backlog', 'tenets', 'requirements', 'ai-requirements',  # VibeSafe components
+        'cip', 'backlog', 'tenets', 'requirements',  # VibeSafe components
         'docs', 'doc', 'documentation',  # Documentation
         '.cursor', '.vscode', '.idea',  # IDE directories
     }
@@ -840,32 +818,21 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         elif tenet_info.get('needs_review'):
             next_steps.append("Review and update project tenets to reflect current practices")
     
-    # Add suggestion to create AI-Requirements framework if missing
+    # Add suggestion to create requirements framework if missing
     if not requirements_info['has_framework']:
         next_steps.append(
-            "Create AI-Requirements framework directory structure: "
-            "mkdir -p ai-requirements/{patterns,prompts/{discovery,refinement,validation,testing},integrations,examples,guidance}"
+            "Create requirements directory: mkdir -p requirements"
         )
     # Check if requirement template exists
     elif not requirements_info.get('has_template'):
         next_steps.append(
-            "Create requirements template: cp templates/ai-requirements/requirement_template.md ai-requirements/"
-        )
-    # Add suggestion if no patterns exist
-    elif not requirements_info['patterns']:
-        next_steps.append(
-            "Create requirements patterns in ai-requirements/patterns/"
-        )
-    # Add suggestion if no prompts exist in any category
-    elif all(not prompts for prompts in requirements_info['prompts'].values()):
-        next_steps.append(
-            "Create requirements prompts in ai-requirements/prompts/"
+            "Create first requirement using template: cp requirements/requirement_template.md requirements/req0001_my-requirement.md"
         )
     
     # Add suggestion to use requirements for backlog tasks
     if requirements_info['has_framework'] and backlog_info['by_status']['proposed']:
         next_steps.append(
-            "Use AI-Requirements patterns to refine proposed backlog tasks"
+            "Review requirements to refine proposed backlog tasks"
         )
     
     # Check for missing frontmatter
@@ -902,7 +869,7 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         if proposed_cips_needing_requirements:
             cip = proposed_cips_needing_requirements[0]
             next_steps.append(f"Start requirements gathering for proposed CIP: {cip['id']} - {cip['title']}")
-            next_steps.append("Use AI-Requirements framework prompts and patterns for structured requirements discovery")
+            next_steps.append("Document requirements (WHAT) before implementation (HOW)")
             
         # Remind about checking for requirements drift for implemented CIPs
         implemented_cips = []
@@ -915,13 +882,13 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
             next_steps.append("Check for requirements drift - ensure code aligns with specified requirements")
     else:
         # If requirements framework doesn't exist, suggest setting it up
-        next_steps.append("Set up AI-Requirements framework to improve requirements gathering")
+        next_steps.append("Set up requirements framework to improve requirements gathering")
     
     # Check for accepted CIPs that need implementation
     if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('accepted'):
         next_steps.append(f"Implement accepted CIP: {cips_info['by_status']['accepted'][0]['id']} - {cips_info['by_status']['accepted'][0]['title']}")
         # Add requirements reminder for implementation
-        next_steps.append("Start implementation by reviewing requirements from the AI-Requirements framework")
+        next_steps.append("Start implementation by reviewing requirements")
     
     # Check for in-progress backlog items
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
@@ -957,7 +924,7 @@ def run_update_scripts() -> List[str]:
         'backlog/update_index.py',
         'cip/update_index.py',
         'tenets/update_index.py',
-        'ai-requirements/update_index.py'
+        'requirements/update_index.py'
     ]
     
     results = []
@@ -1081,7 +1048,7 @@ def main():
     if not args.cip_only and not args.backlog_only or args.requirements_only:
         requirements_info = scan_requirements()
         
-        print(f"{Colors.BOLD}AI-Requirements Framework:{Colors.ENDC}")
+        print(f"{Colors.BOLD}Requirements Framework:{Colors.ENDC}")
         if requirements_info['has_framework']:
             print(f"  Framework installed: {Colors.GREEN}Yes{Colors.ENDC}")
             

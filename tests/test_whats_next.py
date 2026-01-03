@@ -119,21 +119,15 @@ status: proposed
         """Test the scan_requirements function."""
         # Create temporary directory structure
         with tempfile.TemporaryDirectory() as temp_dir:
-            # Create ai-requirements directory and subdirectories
-            os.makedirs(os.path.join(temp_dir, "ai-requirements/patterns"), exist_ok=True)
-            os.makedirs(os.path.join(temp_dir, "ai-requirements/examples"), exist_ok=True)
-            os.makedirs(os.path.join(temp_dir, "ai-requirements/prompts/discovery"), exist_ok=True)
-            os.makedirs(os.path.join(temp_dir, "ai-requirements/integrations"), exist_ok=True)
+            # Create requirements directory
+            os.makedirs(os.path.join(temp_dir, "requirements"), exist_ok=True)
             
-            # Create sample files
-            pattern_file = os.path.join(temp_dir, "ai-requirements/patterns/goal-decomposition.md")
-            example_file = os.path.join(temp_dir, "ai-requirements/examples/web-app-discovery.md")
-            integration_file = os.path.join(temp_dir, "ai-requirements/integrations/cip-integration.md")
+            # Create sample requirement file
+            req_file = os.path.join(temp_dir, "requirements/req0001_test.md")
             
-            # Write some content to files
-            for file_path in [pattern_file, example_file, integration_file]:
-                with open(file_path, 'w') as f:
-                    f.write("# Test Content")
+            # Write some content to file
+            with open(req_file, 'w') as f:
+                f.write("# Test Requirement")
             
             # Change to the temporary directory to test
             original_dir = os.getcwd()
@@ -145,13 +139,8 @@ status: proposed
                 
                 # Verify the results
                 self.assertTrue(requirements_info['has_framework'])
-                self.assertEqual(len(requirements_info['patterns']), 1)
-                self.assertEqual(requirements_info['patterns'][0], 'goal-decomposition')
-                self.assertEqual(len(requirements_info['examples']), 1)
-                self.assertEqual(requirements_info['examples'][0], 'web-app-discovery.md')
-                self.assertEqual(len(requirements_info['prompts']['discovery']), 0)
-                self.assertEqual(len(requirements_info['integrations']), 1)
-                self.assertEqual(requirements_info['integrations'][0], 'cip-integration')
+                # Note: patterns/prompts/examples/integrations are deprecated in simplified requirements framework
+                # The new requirements framework just checks for requirements/*.md files
             finally:
                 # Change back to original directory
                 os.chdir(original_dir)
@@ -205,13 +194,13 @@ status: proposed
             },
         }
         
-        # Create a temporary directory with a mock ai-requirements structure
+        # Create a temporary directory with a mock requirements structure
         with tempfile.TemporaryDirectory() as temp_dir:
-            # Create ai-requirements directory and pattern file
-            os.makedirs(os.path.join(temp_dir, "ai-requirements/patterns"), exist_ok=True)
-            pattern_file = os.path.join(temp_dir, "ai-requirements/patterns/goal-decomposition.md")
-            with open(pattern_file, 'w') as f:
-                f.write("# Test Content")
+            # Create requirements directory
+            os.makedirs(os.path.join(temp_dir, "requirements"), exist_ok=True)
+            req_file = os.path.join(temp_dir, "requirements/req0001_test.md")
+            with open(req_file, 'w') as f:
+                f.write("# Test Requirement")
             
             # Change to the temporary directory
             original_dir = os.getcwd()
@@ -226,7 +215,7 @@ status: proposed
                 
                 # Check requirements-related recommendations
                 self.assertTrue(any("Start requirements gathering for proposed CIP" in step for step in next_steps))
-                self.assertTrue(any("AI-Requirements framework" in step for step in next_steps))
+                self.assertTrue(any("requirements" in step.lower() for step in next_steps))
                 self.assertTrue(any("Implement accepted CIP" in step for step in next_steps))
                 self.assertTrue(any("Verify implementation" in step for step in next_steps))
                 self.assertTrue(any("Continue work on in-progress backlog item" in step for step in next_steps))
@@ -249,7 +238,7 @@ status: proposed
                 next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
                 
                 # Check that it recommends setting up requirements framework
-                self.assertTrue(any("AI-Requirements framework" in step for step in next_steps))
+                self.assertTrue(any("requirements framework" in step.lower() for step in next_steps))
             finally:
                 os.chdir(original_dir)
 
@@ -257,54 +246,14 @@ status: proposed
 def test_scan_requirements_with_framework():
     """Test scanning requirements when the framework exists."""
     with mock.patch('os.path.isdir', return_value=True), \
-         mock.patch('glob.glob') as mock_glob:
-        
-        # Mock the glob results for different directories
-        def mock_glob_side_effect(pattern):
-            if 'patterns' in pattern:
-                return ['ai-requirements/patterns/stakeholder-identification.md', 
-                        'ai-requirements/patterns/goal-decomposition.md']
-            elif 'prompts/discovery' in pattern:
-                return ['ai-requirements/prompts/discovery/discovery-prompt.md']
-            elif 'prompts/refinement' in pattern:
-                return ['ai-requirements/prompts/refinement/refinement-prompt.md']
-            elif 'prompts/validation' in pattern:
-                return ['ai-requirements/prompts/validation/validation-prompt.md']
-            elif 'prompts/testing' in pattern:
-                return ['ai-requirements/prompts/testing/testing-prompt.md']
-            elif 'integrations' in pattern:
-                return ['ai-requirements/integrations/backlog-integration.md',
-                        'ai-requirements/integrations/cip-integration.md']
-            elif 'examples' in pattern:
-                return ['ai-requirements/examples/example-conversation.md']
-            elif 'guidance' in pattern:
-                return ['ai-requirements/guidance/requirements-process.md']
-            else:
-                return []
-        
-        mock_glob.side_effect = mock_glob_side_effect
+         mock.patch('os.path.exists', return_value=True):
         
         result = scan_requirements()
         
         assert result['has_framework'] is True
-        assert len(result['patterns']) == 2
-        assert 'stakeholder-identification' in result['patterns']
-        assert 'goal-decomposition' in result['patterns']
-        
-        assert len(result['prompts']['discovery']) == 1
-        assert len(result['prompts']['refinement']) == 1
-        assert len(result['prompts']['validation']) == 1
-        assert len(result['prompts']['testing']) == 1
-        
-        assert len(result['integrations']) == 2
-        assert 'backlog-integration' in result['integrations']
-        assert 'cip-integration' in result['integrations']
-        
-        assert len(result['examples']) == 1
-        assert 'example-conversation.md' in result['examples']
-        
-        assert len(result['guidance']) == 1
-        assert 'requirements-process.md' in result['guidance']
+        assert result['has_template'] is True
+        # Note: patterns/prompts/integrations/examples/guidance are deprecated in simplified requirements framework
+        # The new requirements framework just checks for requirements/*.md files
 
 def test_scan_requirements_without_framework():
     """Test scanning requirements when the framework doesn't exist."""
@@ -325,22 +274,23 @@ def test_generate_next_steps_with_requirements():
     backlog_info = {'by_status': {'proposed': [{'id': '2025-01-01_test', 'title': 'Test Backlog'}]}}
     requirements_info = {
         'has_framework': True,
-        'patterns': ['stakeholder-identification', 'goal-decomposition'],
+        'has_template': True,
+        'patterns': [],
         'prompts': {
-            'discovery': ['discovery-prompt.md'],
-            'refinement': ['refinement-prompt.md'],
+            'discovery': [],
+            'refinement': [],
             'validation': [],
             'testing': []
         },
-        'integrations': ['backlog-integration', 'cip-integration'],
-        'examples': ['example-conversation.md'],
-        'guidance': ['requirements-process.md']
+        'integrations': [],
+        'examples': [],
+        'guidance': []
     }
     
     next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
     
     # Check that requirements-related steps are included
-    assert any("AI-Requirements" in step for step in next_steps)
+    assert any("requirements" in step.lower() for step in next_steps)
     assert any("requirements" in step.lower() for step in next_steps)
 
 def test_generate_next_steps_without_requirements():
@@ -350,6 +300,7 @@ def test_generate_next_steps_without_requirements():
     backlog_info = {'by_status': {'proposed': []}}
     requirements_info = {
         'has_framework': False,
+        'has_template': False,
         'patterns': [],
         'prompts': {'discovery': [], 'refinement': [], 'validation': [], 'testing': []},
         'integrations': [],
@@ -360,16 +311,16 @@ def test_generate_next_steps_without_requirements():
     next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
     
     # Check that a step to create the requirements framework is included
-    assert any("Create AI-Requirements framework directory structure" in step for step in next_steps)
+    assert any("Create requirements directory" in step for step in next_steps)
 
 def test_generate_next_steps_with_empty_requirements():
-    """Test generating next steps when the requirements framework exists but is empty."""
+    """Test generating next steps when the requirements framework exists but has no template."""
     git_info = {}
     cips_info = {'by_status': {'proposed': []}}
     backlog_info = {'by_status': {'proposed': []}}
     requirements_info = {
         'has_framework': True,
-        'has_template': True,  # Template exists, so we can suggest creating patterns
+        'has_template': False,  # No template, so suggest creating first requirement
         'patterns': [],
         'prompts': {'discovery': [], 'refinement': [], 'validation': [], 'testing': []},
         'integrations': [],
@@ -379,8 +330,8 @@ def test_generate_next_steps_with_empty_requirements():
     
     next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
     
-    # Check that a step to create patterns is included
-    assert any("Create requirements patterns" in step for step in next_steps)
+    # Check that a step to create first requirement is included
+    assert any("Create first requirement" in step for step in next_steps)
 
 def test_cmd_args_requirements_only():
     """Test that the --requirements-only flag works correctly."""
