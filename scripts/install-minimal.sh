@@ -311,8 +311,8 @@ setup_whats_next() {
         debug "Preserved existing virtual environment"
       fi
 
-# Install dependencies
-      .venv-vibesafe/bin/pip install -q PyYAML
+  # Install dependencies
+  .venv-vibesafe/bin/pip install -q PyYAML python-frontmatter
       
       # Create wrapper script (always overwrite - it's a system file)
 cat > whats-next << 'EOF'

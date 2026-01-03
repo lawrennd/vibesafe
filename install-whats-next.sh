@@ -45,7 +45,7 @@ source "$VENV_DIR/bin/activate"
 
 # Install dependencies
 echo "Installing dependencies..."
-python3 -m pip install PyYAML
+python3 -m pip install PyYAML python-frontmatter
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install dependencies."
     exit 2

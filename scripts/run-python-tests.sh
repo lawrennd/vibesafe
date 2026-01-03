@@ -26,7 +26,7 @@ source "$VENV_DIR/bin/activate"
 
 # Install dependencies in the virtual environment
 echo "Installing test dependencies..."
-python3 -m pip install pytest pytest-cov pyyaml
+python3 -m pip install pytest pytest-cov pyyaml python-frontmatter
 
 # Run tests with coverage
 echo "Running Python tests with coverage..."
