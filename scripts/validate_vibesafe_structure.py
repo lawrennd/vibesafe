@@ -647,7 +647,7 @@ def print_results(result, strict=False, dry_run=False):
     if dry_run and result.has_fixes():
         print()
         print(colored("   To apply automatic fixes, run:", Colors.BLUE))
-        print(colored("   ./scripts/validate_vibesafe_structure.py --fix --fix-links", Colors.CYAN))
+        print(colored("   ./scripts/validate_vibesafe_structure.py --fix --fix-links", Colors.BOLD))
     
     print(colored("─" * 70, Colors.BLUE))
     print()
