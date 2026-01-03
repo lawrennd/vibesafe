@@ -824,10 +824,13 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
             "Create requirements directory: mkdir -p requirements"
         )
     # Check if there are actual requirement files (not just templates/README)
-    elif not gaps.get('has_requirements', False):
-        next_steps.append(
-            "Create first requirement (WHAT): Define what needs to be built before planning how (CIP)"
-        )
+    # Use scan to count actual requirement files
+    elif requirements_info['has_framework']:
+        req_count = len([f for f in Path('requirements').glob('req*.md')])
+        if req_count == 0:
+            next_steps.append(
+                "Create first requirement (WHAT): Define what needs to be built before planning how (CIP)"
+            )
     
     # Add suggestion to use requirements for backlog tasks
     if requirements_info['has_framework'] and backlog_info['by_status']['proposed']:
