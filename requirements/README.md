@@ -14,8 +14,9 @@ status: "Proposed|Ready|In Progress|Implemented|Validated"
 priority: "High|Medium|Low"
 created: "YYYY-MM-DD"
 last_updated: "YYYY-MM-DD"
-related_cips: ["XXXX"]
-related_backlog: ["YYYY-MM-DD_task-name"]
+related_tenets: ["tenet-id"]  # WHY: Which tenets inform this requirement?
+related_cips: ["XXXX"]  # HOW: Which CIPs implement this?
+related_backlog: ["YYYY-MM-DD_task-name"]  # DO: Which tasks execute this?
 stakeholders: ["group1", "group2"]
 tags:
   - tag1
@@ -53,16 +54,19 @@ Examples:
 
 ## Integration
 
-Requirements flow to implementation:
+Requirements connect tenets (WHY) to implementation (HOW/DO):
 
 ```
-Requirement → CIP (design) → Backlog Task (work item) → Implementation
+Tenets (WHY) → Requirements (WHAT) → CIP (HOW) → Backlog Task (DO) → Implementation
 ```
 
-Link between components using YAML frontmatter:
-- Requirements reference related CIPs and backlog tasks
-- CIPs reference source requirements
-- Backlog tasks reference requirements
+**Linking Structure** (bottom-up):
+- Requirements reference `related_tenets` (WHY informs WHAT)
+- CIPs reference `related_requirements` (WHAT informs HOW)
+- Backlog tasks reference `related_cips` (HOW informs DO)
+- Scripts query inverse: "Which requirements relate to this tenet?"
+
+This creates bidirectional traceability while keeping each component focused on its immediate context.
 
 ## Need Help?
 

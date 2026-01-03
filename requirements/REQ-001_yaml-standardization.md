@@ -44,11 +44,17 @@ This standardization is foundational for building unified tools, generating summ
 - `last_updated`: Last modification date (YYYY-MM-DD)
 - `tags`: Array of categorization tags
 
-**Component-Specific Extensions**:
-- **CIP**: `author`, `related_cips`, `related_backlog`
-- **Backlog**: `priority`, `category`, `owner`, `dependencies`
-- **Requirements**: `priority`, `related_cips`, `related_backlog`, `stakeholders`
-- **Tenets**: `last_reviewed`, `review_frequency`, `related_cips`, `conflicts_with`
+**Component-Specific Extensions** (links bottom-up):
+- **Requirements**: `priority`, `stakeholders`, `related_tenets`, `related_cips`, `related_backlog`
+- **CIP**: `author`, `related_requirements`, `related_cips`
+- **Backlog**: `priority`, `category`, `owner`, `dependencies`, `related_cips`
+- **Tenets**: `last_reviewed`, `review_frequency`, `conflicts_with`
+
+**Linking Structure**: Each component references "up" the chain:
+- Requirements → Tenets (WHY informs WHAT)
+- CIPs → Requirements (WHAT informs HOW)
+- Backlog → CIPs (HOW informs DO)
+- Scripts query for inverse: "Which requirements relate to tenet X?"
 
 Validation should be soft (warnings, not errors) to maintain flexibility.
 

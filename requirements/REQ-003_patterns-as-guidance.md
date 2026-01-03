@@ -5,6 +5,7 @@ status: "Ready"
 priority: "Medium"
 created: "2026-01-03"
 last_updated: "2026-01-03"
+related_tenets: ["user-autonomy", "simplicity-of-use"]
 related_cips: ["0011"]
 related_backlog: []
 stakeholders: ["developers", "vibesafe-users"]
