@@ -804,6 +804,8 @@ install_vibesafe() {
   echo ""
   echo -e "${GREEN}🎉 VibeSafe has been successfully installed!${NC}"
   echo ""
+  echo "For more information, visit: https://github.com/lawrennd/vibesafe"
+  echo ""
   echo "Clean Installation Philosophy applied:"
   echo "✅ VibeSafe system files updated to latest version"
   echo "✅ User content preserved"
@@ -826,18 +828,19 @@ install_vibesafe() {
     fi
   fi
   echo ""
-  echo -e "${YELLOW}Next steps:${NC}"
-  if [ "$WHATS_NEXT_INSTALLED" = "true" ]; then
-    echo "Run the 'What's Next' script to see your project status and recommended actions:"
-    echo -e "  ${GREEN}./whats-next${NC}"
+  
+  # Run whats-next automatically if installed
+  if [ "$WHATS_NEXT_INSTALLED" = "true" ] && [ -f "whats-next" ]; then
+    echo -e "${YELLOW}Running the 'What's Next' script...${NC}"
+    echo ""
+    ./whats-next
   else
+    echo -e "${YELLOW}Next steps:${NC}"
     echo "1. Define your project tenets in the tenets/ directory"
     echo "2. Use the backlog to track tasks"
     echo "3. Document code improvements using CIPs"
+    echo ""
   fi
-  echo ""
-  echo "For more information, visit: https://github.com/lawrennd/vibesafe"
-  echo ""
   
   return 0
 }
