@@ -495,8 +495,11 @@ def find_component_files(root_dir, component_type):
         if 'templates' in root or 'template' in root.lower():
             continue
         
+        # System/template files to exclude
+        excluded_files = {'readme.md', 'tenet_template.md', 'task_template.md', 'cip_template.md', 'requirement_template.md', 'vibesafe-tenets.md', 'index.md'}
+        
         for filename in filenames:
-            if filename.lower() == 'readme.md':
+            if filename.lower() in excluded_files:
                 continue
             if filename.endswith('.md') and pattern.match(filename):
                 files.append(os.path.join(root, filename))
