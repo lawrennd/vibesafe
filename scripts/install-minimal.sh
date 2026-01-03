@@ -330,9 +330,24 @@ chmod +x whats-next
   fi
 }
 
+# Function to detect if this is a dogfood install (VibeSafe installing into itself)
+is_dogfood_install() {
+  # Check if we have templates/ with VibeSafe system files
+  if [ -d "templates/.cursor/rules" ] && [ -f "templates/scripts/whats_next.py" ]; then
+    return 0  # True - this is dogfood
+  fi
+  return 1  # False - regular install
+}
+
 # Function to get VibeSafe gitignore entries
 get_vibesafe_gitignore_entries() {
-  cat << 'EOF'
+  # Detect dogfood install
+  local is_dogfood=false
+  if is_dogfood_install; then
+    is_dogfood=true
+  fi
+  
+  cat << EOF
 
 # VibeSafe System Files (Auto-added during installation)
 # These are VibeSafe infrastructure - not your project content
@@ -359,9 +374,18 @@ cip/cip_template.md
 scripts/whats_next.py
 install-whats-next.sh
 whats-next
+EOF
 
-# VibeSafe templates directory
+  # Only add templates/ to gitignore for non-dogfood installs
+  if [ "$is_dogfood" = "false" ]; then
+    cat << 'EOF'
+
+# VibeSafe templates directory (source files for VibeSafe development)
 templates/
+EOF
+  fi
+
+  cat << 'EOF'
 
 # AI-Requirements framework (VibeSafe-managed)
 ai-requirements/README.md
