@@ -832,10 +832,10 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
                 "Create first requirement (WHAT): Define what needs to be built before planning how (CIP)"
             )
     
-    # Add suggestion to use requirements for backlog tasks
-    if requirements_info['has_framework'] and backlog_info['by_status']['proposed']:
+    # Add suggestion to use requirements for CIPs (WHAT → HOW)
+    if requirements_info['has_framework'] and cips_info['by_status'].get('proposed', []):
         next_steps.append(
-            "Review requirements to refine proposed backlog tasks"
+            "Review requirements (WHAT) to refine or create CIPs (HOW) for proposed features"
         )
     
     # Check for missing frontmatter
