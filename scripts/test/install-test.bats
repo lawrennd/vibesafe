@@ -2,6 +2,22 @@
 # Tests for VibeSafe Clean Installation Philosophy (CIP-000E)
 # Verifies: System files overwritten, User content preserved
 
+# Setup file runs once before all tests
+setup_file() {
+  # Clone VibeSafe once to a shared location for tests that need it
+  export VIBESAFE_SHARED_CLONE="$(mktemp -d)"
+  cd "$VIBESAFE_SHARED_CLONE"
+  git clone --quiet https://github.com/lawrennd/vibesafe.git vibesafe-test-clone
+  export VIBESAFE_TEST_TEMPLATES="$VIBESAFE_SHARED_CLONE/vibesafe-test-clone"
+}
+
+# Cleanup after all tests
+teardown_file() {
+  if [ -n "$VIBESAFE_SHARED_CLONE" ] && [ -d "$VIBESAFE_SHARED_CLONE" ]; then
+    rm -rf "$VIBESAFE_SHARED_CLONE"
+  fi
+}
+
 setup() {
   # Create a temporary directory for testing
   TEST_DIR="$(mktemp -d)"
@@ -518,7 +534,8 @@ EOF
   grep -q "successfully installed" output.log
 } 
 @test "SCRIPTS: Both user-facing scripts are deployed" {
-  # Run real installation (clone from GitHub) to test deployment
+  # Use shared clone to speed up test
+  export VIBESAFE_TEMPLATES_DIR="$VIBESAFE_TEST_TEMPLATES"
   export VIBESAFE_INSTALL_WHATS_NEXT=true
   run bash "$INSTALL_SCRIPT"
   [ "$status" -eq 0 ]
@@ -535,7 +552,8 @@ EOF
 }
 
 @test "SCRIPTS: Validator script works with .venv-vibesafe" {
-  # Run real installation to deploy validator
+  # Use shared clone to speed up test
+  export VIBESAFE_TEMPLATES_DIR="$VIBESAFE_TEST_TEMPLATES"
   export VIBESAFE_INSTALL_WHATS_NEXT=true
   bash "$INSTALL_SCRIPT"
   
