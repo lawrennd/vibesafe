@@ -142,23 +142,67 @@ teardown() {
   grep -q "User Created CIP" "cip/cip0001.md"
 }
 
-@test "PRESERVE: Virtual environment is preserved if exists" {
-  # Create a mock virtual environment
-  mkdir -p .venv/bin
-  echo "#!/bin/bash" > .venv/bin/python
-  echo "echo 'Mock Python'" >> .venv/bin/python
-  chmod +x .venv/bin/python
+@test "VENV: Old VibeSafe .venv is migrated to .venv-vibesafe on first install" {
+  # Create a mock old VibeSafe .venv (minimal with PyYAML)
+  python3 -m venv .venv
+  .venv/bin/pip install -q PyYAML python-frontmatter
+  
+  # Verify it looks like old VibeSafe venv
+  [ -d ".venv" ]
+  [ ! -d ".venv-vibesafe" ]
+  
+  # Run the installation script
+  export VIBESAFE_SKIP_CLONE=true
+  run bash "$INSTALL_SCRIPT"
+  
+  # Verify migration happened
+  [ "$status" -eq 0 ]
+  [ ! -d ".venv" ]  # Old venv should be removed
+  [ -d ".venv-vibesafe" ]  # New venv should exist
+  [ -f ".venv-vibesafe/bin/python" ]
+}
+
+@test "VENV: Project .venv (not VibeSafe) is preserved" {
+  # Create a mock project venv with many packages (not VibeSafe)
+  python3 -m venv .venv
+  .venv/bin/pip install -q requests flask django 2>/dev/null || true
   
   # Store checksum
-  VENV_CHECKSUM=$(md5sum ".venv/bin/python" | awk '{print $1}')
+  VENV_CHECKSUM=$(find .venv -type f -name "python*" -executable | head -1 | xargs md5sum | awk '{print $1}')
   
-  # Run the installation script  
-  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
+  # Run the installation script
+  export VIBESAFE_SKIP_CLONE=true
+  run bash "$INSTALL_SCRIPT"
   
-  # Verify .venv was preserved
-  [ -f ".venv/bin/python" ]
-  NEW_CHECKSUM=$(md5sum ".venv/bin/python" | awk '{print $1}')
+  # Verify project .venv was preserved
+  [ "$status" -eq 0 ]
+  [ -d ".venv" ]  # Project venv should still exist
+  [ -d ".venv-vibesafe" ]  # VibeSafe venv should be created separately
+  
+  # Verify .venv wasn't modified
+  NEW_CHECKSUM=$(find .venv -type f -name "python*" -executable | head -1 | xargs md5sum | awk '{print $1}')
   [ "$VENV_CHECKSUM" = "$NEW_CHECKSUM" ]
+}
+
+@test "VENV: Orphaned .venv warns but doesn't delete when .venv-vibesafe exists" {
+  # Create both venvs (simulating testing scenario)
+  python3 -m venv .venv
+  .venv/bin/pip install -q PyYAML python-frontmatter
+  python3 -m venv .venv-vibesafe
+  .venv-vibesafe/bin/pip install -q PyYAML python-frontmatter
+  
+  # Run the installation script
+  export VIBESAFE_SKIP_CLONE=true
+  run bash "$INSTALL_SCRIPT"
+  
+  # Verify both still exist (orphaned .venv not deleted)
+  [ "$status" -eq 0 ]
+  [ -d ".venv" ]  # Orphaned venv should still exist
+  [ -d ".venv-vibesafe" ]  # Active venv should exist
+  
+  # Verify warning was shown
+  [[ "$output" == *"orphaned .venv"* ]]
+  [[ "$output" == *"rm -rf .venv"* ]]
 }
 
 @test "OVERWRITE: System files are always updated on reinstall" {
@@ -455,3 +499,57 @@ EOF
   # (Either validated successfully, or skipped, or found issues)
   grep -q "successfully installed" output.log
 } 
+@test "SCRIPTS: Both user-facing scripts are deployed" {
+  export VIBESAFE_SKIP_CLONE=true
+  run bash "$INSTALL_SCRIPT"
+  [ "$status" -eq 0 ]
+  
+  # Verify both scripts exist and are executable
+  [ -f "scripts/whats_next.py" ]
+  [ -x "scripts/whats_next.py" ]
+  [ -f "scripts/validate_vibesafe_structure.py" ]
+  [ -x "scripts/validate_vibesafe_structure.py" ]
+  
+  # Verify they have content (not empty)
+  [ -s "scripts/whats_next.py" ]
+  [ -s "scripts/validate_vibesafe_structure.py" ]
+}
+
+@test "SCRIPTS: Validator script works with .venv-vibesafe" {
+  export VIBESAFE_SKIP_CLONE=true
+  bash "$INSTALL_SCRIPT"
+  
+  # Verify validator can be run
+  [ -f "scripts/validate_vibesafe_structure.py" ]
+  [ -d ".venv-vibesafe" ]
+  
+  # Run validator (should not crash)
+  run .venv-vibesafe/bin/python scripts/validate_vibesafe_structure.py --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"VibeSafe Structure Validation"* ]]
+}
+
+@test "DOGFOOD: templates/ not added to gitignore in VibeSafe repo" {
+  # Simulate VibeSafe repo structure
+  mkdir -p templates/.cursor/rules
+  mkdir -p templates/scripts
+  touch templates/scripts/whats_next.py
+  
+  export VIBESAFE_SKIP_CLONE=true
+  bash "$INSTALL_SCRIPT"
+  
+  # Verify templates/ is NOT in gitignore (dogfood detection)
+  if [ -f ".gitignore" ]; then
+    ! grep -q "^templates/$" .gitignore
+  fi
+}
+
+@test "DOGFOOD: templates/ added to gitignore in user projects" {
+  # Regular user project (no templates/ structure)
+  export VIBESAFE_SKIP_CLONE=true
+  bash "$INSTALL_SCRIPT"
+  
+  # Verify templates/ IS in gitignore
+  [ -f ".gitignore" ]
+  grep -q "^templates/$" .gitignore
+}
