@@ -2,8 +2,8 @@
 author: Neil Lawrence
 created: '2025-05-11'
 id: 000A
-last_updated: '2025-05-11'
-status: Implemented
+last_updated: '2026-01-03'
+status: Closed
 tags:
 - project-management
 - automation
@@ -15,10 +15,37 @@ title: Project Status Summarizer ("What's Next" Script)
 
 ## Status
 
-- [ ] Proposed: [2025-05-11]
-- [ ] Accepted
-- [x] Implemented: [2025-05-11]
-- [ ] Closed
+- [x] Proposed: 2025-05-11
+- [x] Accepted
+- [x] Implemented: 2025-05-11
+- [x] Closed: 2026-01-03
+
+## Closure Summary
+
+**Closed 2026-01-03**: "What's Next" script fully implemented, tested, and actively used.
+
+**What Was Completed**:
+- ✅ Complete Python script: `scripts/whats_next.py` (46KB, fully functional)
+- ✅ Comprehensive test suite: `tests/test_whats_next.py` (49KB of tests)
+- ✅ User documentation: `docs/whats_next_script.md`
+- ✅ Wrapper script: `whats-next` for convenient execution
+- ✅ Template version: `templates/scripts/whats_next.py` for new installations
+- ✅ YAML frontmatter standards defined and implemented
+- ✅ Git status/log parsing working
+- ✅ CIP and backlog parsers with full YAML support
+- ✅ Project status summarizer functioning
+- ✅ "Next steps" recommendation engine working
+
+**Proven in Production**:
+The script has been battle-tested and even improved during active use (2026-01-03):
+- Used extensively throughout project cleanup session
+- Successfully tracked status changes for 5 CIPs
+- Provided accurate recommendations for next steps
+- Identified and helped fix workflow logic issues
+- Correctly parsed YAML frontmatter from all components
+- Automatically advanced suggestions as CIPs were closed
+
+**Impact**: This script is now a **core part of VibeSafe workflow**, providing LLMs and humans with instant project context and actionable next steps. It's one of the most-used tools in the VibeSafe system.
 
 ## Summary
 Create a "what's next" script that summarizes the current project status and identifies pending tasks for an LLM, enabling it to quickly understand project context and prioritize future work.
