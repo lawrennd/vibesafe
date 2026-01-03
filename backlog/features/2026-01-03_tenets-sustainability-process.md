@@ -27,6 +27,19 @@ Implement Phase 3 of CIP-0011: Add sustainability and review process to tenets. 
   - Add last_reviewed dates (set to today for initial review)
   - Add review_frequency (Annual for most)
   - Add status (Active for current tenets)
+- [ ] **Create VibeSafe Principles script and cursor rule**:
+  - Create `scripts/generate_vibesafe_principles.py` (separate from combine_tenets.py)
+  - Generates `templates/.cursor/rules/vibesafe-principles.mdc` (single comprehensive cursor rule)
+  - Content includes:
+    - All VibeSafe Principles (validation-led, simplicity, user-autonomy, etc.)
+    - WHY/WHAT/HOW/DO hierarchy (Tenets → Requirements → CIPs → Backlog)
+    - Bottom-up linking pattern explanation
+    - Component naming conventions (reqXXXX, cipXXXX, YYYY-MM-DD)
+    - Core VibeSafe concepts ("What is VibeSafe?")
+  - Gets automatically deployed to user projects via install-minimal.sh
+  - May consolidate/replace parts of existing cursor rules to avoid duplication
+  - Distinction: "VibeSafe Principles" = framework guidance, "Project Tenets" = user-specific (via combine_tenets.py)
+  - Keep combine_tenets.py focused on user's project tenets only
 - [ ] Create tenet review checklist in tenets/README.md
 - [ ] Document tenet review process in tenets/README.md
   - When to review (quarterly, on deviation, on conflict)
@@ -40,17 +53,25 @@ Implement Phase 3 of CIP-0011: Add sustainability and review process to tenets. 
 
 ## Implementation Notes
 
+**Terminology Clarity**:
+- **VibeSafe Principles**: Framework-level guidance (in `tenets/vibesafe/`)
+  - Examples: validation-led-development, simplicity-of-use, documentation-as-code
+  - Deployed to all user projects via `vibesafe-principles.mdc`
+- **Project Tenets**: User-specific values (in `tenets/projectname/`)
+  - User creates their own tenets for their project
+  - Deployed via CIP-0010's individual `project_tenet_*.mdc` files
+
 **Review Process** (Lightweight - 10-15 minutes):
-1. Scan active tenets
+1. Scan active tenets/principles
 2. Check if any violations documented recently
 3. Check if any conflicts detected
 4. Update last_reviewed date
 
 **Learning from Deviations**:
-When we violate a tenet, document:
+When we violate a principle/tenet, document:
 - What decision was made
 - Why we deviated  
-- Justified (tenet needs update) or mistake (recommit to tenet)?
+- Justified (needs update) or mistake (recommit)?
 
 ## Related
 

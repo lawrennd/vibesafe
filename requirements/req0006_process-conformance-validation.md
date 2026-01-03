@@ -5,6 +5,7 @@ status: "Ready"
 priority: "High"
 created: "2026-01-03"
 last_updated: "2026-01-03"
+related_tenets: ["validation-led-development"]
 related_cips: ["0011"]
 related_backlog: []
 stakeholders: ["developers", "maintainers", "vibesafe-itself"]
