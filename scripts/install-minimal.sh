@@ -303,6 +303,25 @@ setup_whats_next() {
     else
       echo "Creating basic What's Next setup..."
       
+      # Migrate old .venv to .venv-vibesafe if needed
+      if [ -d ".venv" ] && [ ! -d ".venv-vibesafe" ]; then
+        # Check if .venv looks like a VibeSafe venv (has PyYAML but is minimal)
+        if [ -f ".venv/bin/python" ]; then
+          package_count=$(.venv/bin/pip list 2>/dev/null | wc -l || echo "0")
+          has_pyyaml=$(.venv/bin/pip show PyYAML 2>/dev/null | grep -c "Name: PyYAML" || echo "0")
+          
+          # If it has PyYAML and is minimal (< 15 packages), it's likely old VibeSafe
+          if [ "$has_pyyaml" -gt 0 ] && [ "$package_count" -lt 15 ]; then
+            echo -e "${YELLOW}Migrating old VibeSafe virtual environment...${NC}"
+            mv .venv .venv-vibesafe
+            echo -e "${GREEN}✓ Migrated .venv → .venv-vibesafe${NC}"
+          else
+            echo -e "${YELLOW}Note: Found existing .venv (appears to be project venv)${NC}"
+            echo -e "${YELLOW}      Creating .venv-vibesafe for VibeSafe scripts${NC}"
+          fi
+        fi
+      fi
+      
       # Create virtual environment if it doesn't exist (preserve if exists)
       if [ ! -d ".venv-vibesafe" ]; then
         python3 -m venv .venv-vibesafe
