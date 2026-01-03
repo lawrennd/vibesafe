@@ -84,8 +84,6 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Phase 4: Create Project Summary Tool](features/2026-01-03_project-summary-tool.md)
 
-- [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
-
 
 ## Bugs
 
@@ -120,5 +118,7 @@ This file provides an overview of all current backlog items organized by categor
 
 
 ## Recently Abandoned Tasks
+
+- [Evaluate and Implement Gist Integration for VibeSafe](features/2025-05-05_gist-integration.md)
 
 - [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)
