@@ -1,7 +1,7 @@
 ---
 id: "2026-01-03_cip-in-progress-status"
 title: "Add In Progress Status for CIPs"
-status: "Proposed"
+status: "Completed"
 priority: "Medium"
 created: "2026-01-03"
 last_updated: "2026-01-03"
@@ -20,12 +20,12 @@ This extends CIP-0011's YAML standardization to include a status for CIPs that h
 
 ## Acceptance Criteria
 
-- [ ] Update `scripts/validate_vibesafe_structure.py` to allow "In Progress" in CIP allowed_status list
-- [ ] Update `templates/scripts/validate_vibesafe_structure.py` (template version) similarly
-- [ ] Valid CIP statuses: `['Proposed', 'Accepted', 'In Progress', 'Implemented', 'Closed', 'Rejected', 'Deferred']`
-- [ ] "In Progress" indicates active implementation work
-- [ ] Validation passes on test cases
-- [ ] Update CIP template to mention new status
+- [x] Update `scripts/validate_vibesafe_structure.py` to allow "In Progress" in CIP allowed_status list
+- [x] Update `templates/scripts/validate_vibesafe_structure.py` (template version) similarly
+- [x] Valid CIP statuses: `['Proposed', 'Accepted', 'In Progress', 'Implemented', 'Closed', 'Rejected', 'Deferred']`
+- [x] "In Progress" indicates active implementation work
+- [x] Validation passes on test cases
+- [x] Update CIP template to mention new status
 
 ## Implementation Notes
 

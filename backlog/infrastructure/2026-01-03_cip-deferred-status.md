@@ -1,7 +1,7 @@
 ---
 id: "2026-01-03_cip-deferred-status"
 title: "Add Deferred Status for CIPs"
-status: "Proposed"
+status: "Completed"
 priority: "Medium"
 created: "2026-01-03"
 last_updated: "2026-01-03"
@@ -20,14 +20,14 @@ This extends CIP-0011's YAML standardization to include a status for CIPs that a
 
 ## Acceptance Criteria
 
-- [ ] Update `scripts/validate_vibesafe_structure.py` to allow "Deferred" in CIP allowed_status list
-- [ ] Update `templates/scripts/validate_vibesafe_structure.py` (template version) similarly
-- [ ] Document `blocked_by` field (optional, stores CIP ID that blocks this one)
-- [ ] Document `superseded_by` field (optional, stores CIP ID that replaces this one)
-- [ ] Valid CIP statuses: `['Proposed', 'Accepted', 'Implemented', 'Closed', 'Rejected', 'Deferred']`
-- [ ] `blocked_by` and `superseded_by` are optional string fields (CIP IDs like "0011")
-- [ ] Validation passes on test cases
-- [ ] Update CIP template to mention new status and fields
+- [x] Update `scripts/validate_vibesafe_structure.py` to allow "Deferred" in CIP allowed_status list
+- [x] Update `templates/scripts/validate_vibesafe_structure.py` (template version) similarly
+- [x] Document `blocked_by` field (optional, stores CIP ID that blocks this one)
+- [x] Document `superseded_by` field (optional, stores CIP ID that replaces this one)
+- [x] Valid CIP statuses: `['Proposed', 'Accepted', 'In Progress', 'Implemented', 'Closed', 'Rejected', 'Deferred']`
+- [x] `blocked_by` and `superseded_by` are optional string fields (CIP IDs like "0011")
+- [x] Validation passes on test cases
+- [x] Update CIP template to mention new status and fields
 
 ## Implementation Notes
 

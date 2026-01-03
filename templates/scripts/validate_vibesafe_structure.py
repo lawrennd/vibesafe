@@ -73,8 +73,8 @@ COMPONENT_SPECS = {
         'pattern': r'^cip([0-9A-Fa-f]{4})(_[\w-]+)?\.md$',
         'id_format': 'XXXX (4-digit hex)',
         'required_fields': ['id', 'title', 'status', 'created', 'last_updated'],
-        'optional_fields': ['author', 'related_requirements', 'related_cips', 'tags'],
-        'allowed_status': ['Proposed', 'Accepted', 'Implemented', 'Closed', 'Rejected'],
+        'optional_fields': ['author', 'related_requirements', 'related_cips', 'blocked_by', 'superseded_by', 'tags'],
+        'allowed_status': ['Proposed', 'Accepted', 'In Progress', 'Implemented', 'Closed', 'Rejected', 'Deferred'],
         'links_to': ['related_requirements'],  # Bottom-up: CIPs → requirements
         'should_not_have': ['related_backlog'],  # Violates bottom-up
     },
