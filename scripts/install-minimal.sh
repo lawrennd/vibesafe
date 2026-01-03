@@ -306,10 +306,12 @@ setup_whats_next() {
         # If it has PyYAML and is minimal (< 15 packages), it's likely old VibeSafe
         if [ "$has_pyyaml" -gt 0 ] && [ "$package_count" -lt 15 ]; then
           if [ -d ".venv-vibesafe" ]; then
-            echo -e "${YELLOW}Cleaning up orphaned .venv (old VibeSafe venv)...${NC}"
-            rm -rf .venv
-            echo -e "${GREEN}✓ Removed orphaned .venv${NC}"
+            # Orphaned .venv detected (likely from testing) - just warn
+            echo -e "${YELLOW}⚠️  Note: Found orphaned .venv (old VibeSafe venv)${NC}"
+            echo -e "${YELLOW}   .venv-vibesafe already exists and is active${NC}"
+            echo -e "${YELLOW}   You can safely remove .venv manually: rm -rf .venv${NC}"
           else
+            # Normal migration case - remove and recreate
             echo -e "${YELLOW}Migrating old VibeSafe virtual environment...${NC}"
             echo -e "${YELLOW}Removing old .venv (will be recreated as .venv-vibesafe)...${NC}"
             rm -rf .venv
