@@ -3,7 +3,6 @@ created: '2026-01-03'
 id: '0004'
 last_updated: '2026-01-03'
 priority: Medium
-related_backlog: ["2026-01-03_tenets-sustainability-process"]
 related_cips: ["0004", "0011"]
 related_tenets: []
 stakeholders:

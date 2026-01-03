@@ -60,6 +60,34 @@ create_system_template() {
   debug "Created/updated system template: $dir/$file"
 }
 
+# Function to check for and offer ai-requirements migration
+check_ai_requirements_migration() {
+  # Check if ai-requirements exists and contains user files
+  if [ -d "ai-requirements" ] && [ ! -f "ai-requirements/DEPRECATED.md" ]; then
+    echo -e "${YELLOW}"
+    echo "⚠️  AI-Requirements Framework Detected"
+    echo "========================================${NC}"
+    echo ""
+    echo "VibeSafe has simplified its requirements approach (CIP-0011 Phase 1)."
+    echo "The ai-requirements/ framework has been replaced by a simpler requirements/ structure."
+    echo ""
+    echo "What changed:"
+    echo "  - ✅ Simple YAML frontmatter (no complex prompts/patterns required)"
+    echo "  - ✅ Clear WHAT vs HOW distinction"
+    echo "  - ✅ Bottom-up linking (requirements link to tenets)"
+    echo "  - ✅ Patterns moved to docs/ as optional guidance"
+    echo ""
+    echo "Action needed:"
+    echo "  1. Your ai-requirements/ directory will remain unchanged"
+    echo "  2. New requirements/ structure will be created"
+    echo "  3. See ai-requirements/DEPRECATED.md for migration instructions"
+    echo "  4. Migrate your actual requirements manually when ready"
+    echo ""
+    echo -e "${GREEN}Continuing installation...${NC}"
+    echo ""
+  fi
+}
+
 # Function to preserve user content while updating system files
 install_system_files() {
   local templates_dir="$1"
@@ -80,6 +108,7 @@ install_system_files() {
       "tenets/README.md"
       "tenets/tenet_template.md"
       "tenets/combine_tenets.py"
+      "requirements/README.md"
     )
     
     for template in "${system_templates[@]}"; do
@@ -91,22 +120,12 @@ install_system_files() {
       fi
     done
     
-    # Install AI-Requirements framework (always overwrite system files)
-    if [ -d "$templates_dir/templates/ai-requirements" ]; then
-      debug "Installing AI-Requirements framework"
-      
-      # Create structure and copy all system files
-      find "$templates_dir/templates/ai-requirements" -type d | while read -r dir; do
-        target_dir="${dir#$templates_dir/templates/}"
-        debug "Creating directory: $target_dir"
-        mkdir -p "$target_dir"
-      done
-      
-      find "$templates_dir/templates/ai-requirements" -type f | while read -r file; do
-        target_file="${file#$templates_dir/templates/}"
-        debug "Installing AI-Requirements file: $target_file"
-        cp -f "$file" "$target_file"
-      done
+    # Install Requirements framework (replaces AI-Requirements)
+    if [ -d "$templates_dir/templates/requirements" ]; then
+      debug "Installing Requirements framework"
+      mkdir -p requirements
+      cp -f "$templates_dir/templates/requirements/"* requirements/ 2>/dev/null || true
+      echo "  ✅ Requirements framework installed (ai-requirements is deprecated)"
     fi
     
     # Install cursor rules (always overwrite)
@@ -132,7 +151,7 @@ install_minimal_system_files() {
   mkdir -p backlog/{documentation,features,infrastructure,bugs}
   mkdir -p cip
   mkdir -p tenets
-  mkdir -p ai-requirements/{patterns,prompts/{discovery,refinement,validation,testing},integrations,examples,guidance}
+  mkdir -p requirements
   
   # Backlog system files
   create_system_template "backlog" "README.md" "# Backlog System
@@ -718,6 +737,9 @@ install_vibesafe() {
   echo "📁 System files will be updated"
   echo "🛡️  User content will be preserved"
   echo ""
+  
+  # Check for ai-requirements migration
+  check_ai_requirements_migration
   
   local temp_dir=""
   

@@ -3,7 +3,6 @@ created: '2026-01-03'
 id: '0003'
 last_updated: '2026-01-03'
 priority: Medium
-related_backlog: []
 related_tenets:
 - user-autonomy
 - simplicity-of-use

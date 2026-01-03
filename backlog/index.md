@@ -78,8 +78,6 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Phase 5: CIP-0011 Documentation and Testing](features/2026-01-03_cip0011-documentation.md)
 
-- [Phase 1: Requirements Framework Simplification](features/2026-01-03_simplify-requirements-framework.md)
-
 - [Phase 3: Tenets Sustainability Process](features/2026-01-03_tenets-sustainability-process.md)
 
 - [Phase 4: Create Project Summary Tool](features/2026-01-03_project-summary-tool.md)

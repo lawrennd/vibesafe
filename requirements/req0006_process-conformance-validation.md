@@ -3,7 +3,6 @@ created: '2026-01-03'
 id: '0006'
 last_updated: '2026-01-03'
 priority: High
-related_backlog: []
 related_tenets:
 - validation-led-development
 stakeholders:

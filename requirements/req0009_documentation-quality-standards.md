@@ -3,7 +3,6 @@ created: '2026-01-03'
 id: '0009'
 last_updated: '2026-01-03'
 priority: Medium
-related_backlog: []
 related_cips: []
 related_tenets: ["documentation-as-code"]
 stakeholders:

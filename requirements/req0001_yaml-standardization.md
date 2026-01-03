@@ -3,7 +3,6 @@ created: '2026-01-03'
 id: '0001'
 last_updated: '2026-01-03'
 priority: High
-related_backlog: []
 related_tenets: []
 stakeholders:
 - developers
@@ -47,8 +46,8 @@ This standardization is foundational for building unified tools, generating summ
 - `tags`: Array of categorization tags
 
 **Component-Specific Extensions** (links bottom-up):
-- **Requirements**: `priority`, `stakeholders`, `related_tenets`, `related_cips`, `related_backlog`
-- **CIP**: `author`, `related_requirements`, `related_cips`
+- **Requirements**: `priority`, `stakeholders`, `related_tenets`
+- **CIP**: `author`, `related_requirements`, `related_cips`, `blocked_by`, `superseded_by`
 - **Backlog**: `priority`, `category`, `owner`, `dependencies`, `related_cips`
 - **Tenets**: `last_reviewed`, `review_frequency`, `conflicts_with`
 
