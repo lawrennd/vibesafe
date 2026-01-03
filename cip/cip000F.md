@@ -1,20 +1,24 @@
 ---
 id: "2025-07-26_vibesafe-auto-gitignore-protection"
 title: "VibeSafe Auto-Gitignore Protection"
-status: "Proposed"
+status: "Implemented"
 priority: "High"
 created: "2025-07-26"
-last_updated: "2025-07-26"
+last_updated: "2026-01-03"
+related_requirements:
+  - "000A"
 ---
 
 # CIP-000F: VibeSafe Auto-Gitignore Protection
 
 ## Status
-*Implemented* - Phase 1 completed, auto-gitignore protection active
+*Implemented* - Phase 1 completed (2025-07-26), Phase 2/3 documentation deferred
 
 ## Description
 
-Extend the Clean Installation Philosophy (CIP-000E) by automatically protecting VibeSafe system files through `.gitignore` entries during installation. This enhancement enables users to safely use generic git operations (like `git add .`) without accidentally committing VibeSafe infrastructure files.
+Implements REQ-000A (Minimal Version Control Footprint) by automatically protecting VibeSafe system files through `.gitignore` entries during installation. This enhancement enables users to safely use generic git operations (like `git add .`) without accidentally committing VibeSafe infrastructure files.
+
+Extends the Clean Installation Philosophy (CIP-000E) with automatic version control protection.
 
 ## Motivation
 
@@ -128,17 +132,24 @@ docs/yaml_frontmatter_examples.md
 
 ## Implementation Status
 
-- [ ] Create VibeSafe gitignore template
-- [ ] Update `install-minimal.sh` with gitignore management
+### Phase 1: Core Protection System ✅ COMPLETED 2025-07-26
+- [x] Create VibeSafe gitignore template (in `get_vibesafe_gitignore_entries()`)
+- [x] Update `install-minimal.sh` with gitignore management (`add_vibesafe_gitignore()`)
 - [x] ~~Update `vibesafe-update` script~~ (superseded by CIP-000E)
-- [ ] Test installation with existing .gitignore files
-- [ ] Test installation without existing .gitignore files
-- [ ] Update Cursor rules to remove surgical git warnings
+- [x] Implement idempotent updates (check existing section, add only missing entries)
+- [x] Implement coverage checking (`check_gitignore_coverage()`)
+- [x] Test installation with existing .gitignore files (works)
+- [x] Test installation without existing .gitignore files (works)
+- [x] Handle dogfood installs specially (templates/ not ignored for VibeSafe itself)
+- [x] Handle .venv contradiction (resolved with .venv-vibesafe in bug 2026-01-03)
+- [x] Test upgrade path for existing installations (idempotent, safe to rerun)
+
+### Phase 2 & 3: Documentation Updates - DEFERRED
+These are documentation updates that would be nice but aren't blocking functionality:
+- [ ] Update Cursor rules to remove surgical git warnings (still recommend surgical adds)
 - [ ] Update CIP-000E to reference this enhancement
 - [ ] Update README.md installation documentation
-- [ ] Create tests for gitignore management
-- [x] Handle .venv contradiction (resolved with .venv-vibesafe in bug 2026-01-03)
-- [ ] Test upgrade path for existing installations
+- [ ] Create explicit tests for gitignore management (currently manual testing)
 
 ## Technical Considerations
 
@@ -177,12 +188,33 @@ This CIP extends CIP-000E (Clean Installation Philosophy) and will modify:
 
 ## References
 
-- CIP-000E: Clean Installation Philosophy
+- REQ-000A: Minimal Version Control Footprint (WHAT this achieves)
+- CIP-000E: Clean Installation Philosophy (related HOW)
 - VibeSafe General Development Guidelines (`.cursor/rules/vibesafe_general.mdc`)
 - VibeSafe Installation Script (`scripts/install-minimal.sh`)
+
+## Implementation Notes (2026-01-03)
+
+**Phase 1 is complete and working:**
+- The gitignore protection is fully functional in `install-minimal.sh`
+- Users can safely use `git add .` without committing VibeSafe system files
+- The implementation is idempotent and handles edge cases (dogfooding, existing files)
+- REQ-000A acceptance criteria are all met
+
+**Phase 2 & 3 (documentation) are deferred:**
+- The actual behavior works as designed
+- The documentation (cursor rules, README) still recommend "surgical git add"
+- This is conservative/safe but not strictly necessary anymore
+- Could be updated in future but not blocking
+
+**Relationship with REQ-000A:**
+- REQ-000A was created retroactively (2026-01-03) to document the requirement this CIP fulfills
+- This CIP was implemented first (2025-07-26), requirement documented later
+- Normal flow would be: Requirement → CIP → Implementation
+- This case: Implementation → CIP documentation → Requirement documentation (reverse engineering)
 
 ## Author and Date
 
 *Author*: Neil Lawrence
 *Created*: 2025-07-26  
-*Last Updated*: 2025-07-26 
+*Last Updated*: 2026-01-03 
