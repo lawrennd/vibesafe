@@ -3,7 +3,8 @@ created: '2026-01-03'
 id: '0004'
 last_updated: '2026-01-03'
 priority: Medium
-related_backlog: []
+related_backlog: ["2026-01-03_tenets-sustainability-process"]
+related_cips: ["0004", "0011"]
 related_tenets: []
 stakeholders:
 - project-teams
@@ -39,6 +40,8 @@ Tenets should have clear review cycles, usage tracking (which tenets actually in
 - [ ] Review process is lightweight (10-15 minutes per review)
 
 ## Notes
+
+**Building on CIP-0004**: This requirement builds on the basic tenet system implemented in CIP-0004. CIP-0004 provided the foundational structure (templates, documentation, VibeSafe's own tenets, combine_tenets.py). This requirement adds lifecycle management and sustainability features.
 
 **Sustainability Principle**: Tenets should evolve with the project, not become stale dogma.
 

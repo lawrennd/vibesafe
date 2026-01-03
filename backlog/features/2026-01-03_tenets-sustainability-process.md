@@ -8,14 +8,15 @@ last_updated: "2026-01-03"
 category: "features"
 owner: ""
 dependencies: ["2026-01-03_yaml-frontmatter-standardization"]
-related_cips: ["0011"]
+related_cips: ["0004", "0011"]
+related_requirements: ["0004"]
 ---
 
 # Task: Phase 3: Tenets Sustainability Process
 
 ## Description
 
-Implement Phase 3 of CIP-0011: Add sustainability and review process to tenets. Update tenet template with YAML frontmatter, add review metadata, create review process documentation, and add conflict detection to combine_tenets.py.
+Implement Phase 3 of CIP-0011: Add sustainability and review process to tenets. This builds on the basic tenet system implemented in CIP-0004 by adding lifecycle management features: YAML frontmatter, review metadata, review process documentation, and conflict detection in combine_tenets.py.
 
 ## Acceptance Criteria
 
