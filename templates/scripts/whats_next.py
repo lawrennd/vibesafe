@@ -832,11 +832,9 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
                 "Create first requirement (WHAT): Define what needs to be built before planning how (CIP)"
             )
     
-    # Add suggestion to use requirements for CIPs (WHAT → HOW)
-    if requirements_info['has_framework'] and cips_info['by_status'].get('proposed', []):
-        next_steps.append(
-            "Review requirements (WHAT) to refine or create CIPs (HOW) for proposed features"
-        )
+    # Periodic housekeeping suggestion (only if no active work items)
+    # Only suggest requirements review if there are proposed CIPs that lack requirements
+    # This is a lower-priority housekeeping task, not a primary action item
     
     # Check for missing frontmatter
     if cips_info and cips_info.get('without_frontmatter'):
