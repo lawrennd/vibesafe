@@ -1,9 +1,11 @@
 ---
-id: "[id]"
+id: "[kebab-case-id]"
 title: "[Short, descriptive title]"
+status: "Active"  # Active, Under Review, Archived
 created: "[YYYY-MM-DD]"
-last_updated: "[YYYY-MM-DD]"
-version: "[version number]"
+last_reviewed: "[YYYY-MM-DD]"
+review_frequency: "Annual"  # Annual, Quarterly, etc.
+conflicts_with: []  # Optional: Other tenet IDs that may conflict
 tags:
 - tenet
 - "[additional tags]"

@@ -16,6 +16,9 @@ title: "[Title]"
 
 # CIP-XXXX: [Title]
 
+> **Note**: CIPs describe HOW to achieve requirements (WHAT).  
+> Use `related_requirements` to link to the requirements this CIP implements.
+
 ## Status
 
 - [ ] Proposed - Initial idea documented
@@ -28,6 +31,8 @@ title: "[Title]"
 
 ## Summary
 A brief summary of the proposed improvement.
+
+**Which requirements does this CIP address?** List them in `related_requirements` above.
 
 ## Motivation
 Why is this change needed? What problem does it solve?

@@ -5,15 +5,19 @@ status: "Proposed"
 priority: "Medium"
 created: "YYYY-MM-DD"
 last_updated: "YYYY-MM-DD"
+category: "features"  # features, bugs, documentation, infrastructure
+related_cips: []  # Required: CIPs this task implements (IDs like "0011")
 owner: "[Person responsible for the task]"
-github_issue: "[Issue number, if applicable]"
-dependencies: "[List of dependencies]"
+dependencies: []  # Optional: Other task IDs this depends on
 tags:
 - backlog
 - "[additional tags]"
 ---
 
 # Task: [Short Title]
+
+> **Note**: Backlog tasks are DOING the work defined in CIPs (HOW).  
+> Use `related_cips` to link to CIPs. Don't link directly to requirements (bottom-up pattern).
 
 ## Description
 

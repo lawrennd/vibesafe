@@ -13,6 +13,9 @@ related_cips: []  # Optional: Related CIPs (IDs like "0002")
 
 # CIP-XXXX: CIP Title
 
+> **Note**: CIPs describe HOW to achieve requirements (WHAT).  
+> Use `related_requirements` to link to the requirements this CIP implements.
+
 ## Status
 - [ ] Proposed - Initial idea documented
 - [ ] Accepted - Approved, ready to start work
@@ -24,6 +27,8 @@ related_cips: []  # Optional: Related CIPs (IDs like "0002")
 
 ## Description
 Brief overview of the proposed improvement.
+
+**Which requirements does this CIP address?** List them in `related_requirements` above.
 
 ## Motivation
 Why this change is needed.
