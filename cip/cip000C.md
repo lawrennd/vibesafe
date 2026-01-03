@@ -1,8 +1,9 @@
 ---
 created: '2025-05-12'
 id: 000C
-last_updated: '2025-05-14'
-status: Implemented
+last_updated: '2026-01-03'
+status: Rejected
+superseded_by: '0011'
 title: Integrate AI-Requirements Framework into Installation Script
 ---
 
@@ -14,10 +15,36 @@ This CIP proposes integrating the AI-Requirements Framework (from CIP-0009) into
 
 ## Status
 
-- [ ] Proposed
-- [ ] Accepted
-- [x] Implemented
-- [ ] Closed
+- [x] Proposed: 2025-05-12
+- [x] Accepted
+- [x] Implemented: 2025-05-14
+- [x] Rejected: 2026-01-03 (Superseded by CIP-0011)
+
+## Rejection Summary
+
+**Rejected 2026-01-03**: Implementation completed but approach superseded by CIP-0011's simpler design.
+
+**What Was Implemented**:
+- ✅ Integrated ai-requirements/ framework into installation script
+- ✅ Added --requirements-only flag to whats-next script
+- ✅ Created templates/ai-requirements/ with all components
+- ✅ Added AI-Requirements directories to default structure
+- ✅ All functionality working as designed
+
+**Why Rejected/Superseded**:
+While CIP-000C was successfully implemented, CIP-0011 proposes a **fundamentally simpler approach** to requirements:
+- **CIP-000C**: Integrated complex 6-subdirectory ai-requirements framework (patterns, prompts, integrations, examples, guidance)
+- **CIP-0011**: Simplifies to basic `requirements/` directory with just requirement files
+
+**Key Insight from CIP-0011**:
+The complexity of the ai-requirements framework became a case study in how good intentions (thorough requirements) can create complexity that undermines usability. The patterns, prompts, and examples are better as **VibeSafe guidance** (in `docs/patterns/`) rather than **user project structure**.
+
+**Current State**:
+- ai-requirements/ framework is installed and functional in current VibeSafe
+- CIP-0011 (when implemented) will simplify this to just `requirements/`
+- The work CIP-000C did will be replaced, not extended
+
+**Superseded By**: CIP-0011 (Simplify VibeSafe Component Management)
 
 ## Implementation
 
