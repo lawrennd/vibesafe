@@ -1,13 +1,27 @@
 ---
 id: "2025-05-12_backlog-module-refactor"
 title: "Backlog Module Refactor"
-status: "Proposed"
+status: "Deferred"
 priority: "High"
 created: "2025-05-12"
-last_updated: "2025-05-12"
+last_updated: "2026-01-03"
+blocked_by: "0011"
 ---
 
 # CIP-000D: Backlog Module Refactor
+
+## Deferral Notice (2026-01-03)
+
+**Status**: Deferred pending CIP-0011 completion.
+
+**Rationale**: CIP-0011 introduces significant functional changes to what the backlog system should do:
+- YAML frontmatter standardization
+- Bottom-up linking pattern validation (backlog → CIPs → requirements → tenets)
+- New validation requirements
+
+**Recommendation**: Complete CIP-0011's YAML standardization and validation first, then refactor the backlog code to incorporate those requirements. Refactoring before CIP-0011 would mean refactoring twice.
+
+This CIP should be reconsidered after CIP-0011 Phase 0 and Phase 1 are complete. At that point, update this CIP to incorporate CIP-0011's requirements into the refactored structure.
 
 ## Problem Statement
 
