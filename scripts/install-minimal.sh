@@ -355,8 +355,12 @@ chmod +x whats-next
     fi
     
     echo "✅ What's Next script installed"
+    return 0
   else
-    echo -e "${YELLOW}Warning: Could not find whats_next.py script${NC}"
+    echo -e "${RED}❌ Error: Could not find whats_next.py script${NC}"
+    echo -e "${YELLOW}   whats-next script will not be available${NC}"
+    echo -e "${YELLOW}   This is expected with VIBESAFE_SKIP_CLONE=true${NC}"
+    return 1
   fi
 }
 
@@ -793,6 +797,15 @@ install_vibesafe() {
     echo "✅ VibeSafe structure validated"
   elif [ -f "scripts/validate_vibesafe_structure.py" ] && [ -n "$VALIDATION_SKIP_REASON" ]; then
     echo -e "${RED}❌ Validation not run: ${VALIDATION_SKIP_REASON}${NC}"
+  fi
+  
+  # Report whats-next installation status
+  if [ "$VIBESAFE_INSTALL_WHATS_NEXT" = "true" ]; then
+    if [ -f "whats-next" ] && [ -f "scripts/whats_next.py" ]; then
+      echo "✅ What's Next script installed"
+    else
+      echo -e "${RED}❌ What's Next script not installed${NC}"
+    fi
   fi
   echo ""
   echo -e "${YELLOW}Next steps:${NC}"
