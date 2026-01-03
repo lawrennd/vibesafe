@@ -4,7 +4,7 @@ created: '2025-05-05'
 id: 2025-05-05_improved-installation-script
 last_updated: '2025-05-12'
 owner: Neil Lawrence
-priority: completed
+priority: High
 related_cips: []
 status: Completed
 tags:

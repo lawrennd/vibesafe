@@ -1,10 +1,11 @@
 ---
 id: "000B"
 title: "VibeSafe Update Script"
-status: "superseded"
+status: "Closed"
 created: "2025-05-11"
 last_updated: "2025-07-26"
 author: "Neil Lawrence"
+superseded_by: "000E"
 tags:
   - "automation"
   - "tooling"

@@ -6,7 +6,8 @@ last_updated: '2025-05-11'
 owner: lawrennd
 priority: High
 related_cips: []
-status: superseded
+status: Abandoned
+superseded_by: 2025-07-26_clean-installation-implementation
 tags:
 - documentation
 - testing
