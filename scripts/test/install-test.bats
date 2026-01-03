@@ -519,6 +519,7 @@ EOF
 } 
 @test "SCRIPTS: Both user-facing scripts are deployed" {
   # Run real installation (clone from GitHub) to test deployment
+  export VIBESAFE_INSTALL_WHATS_NEXT=true
   run bash "$INSTALL_SCRIPT"
   [ "$status" -eq 0 ]
   
@@ -535,6 +536,7 @@ EOF
 
 @test "SCRIPTS: Validator script works with .venv-vibesafe" {
   # Run real installation to deploy validator
+  export VIBESAFE_INSTALL_WHATS_NEXT=true
   bash "$INSTALL_SCRIPT"
   
   # Verify validator can be run
