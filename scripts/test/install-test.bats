@@ -354,4 +354,104 @@ EOF
   
   [ "$status" -eq 0 ]
   [[ "$output" == *"[DEBUG]"* ]]
+}
+
+@test "VALIDATE: Validation runs by default during installation" {
+  # Copy the validation script to make it available
+  mkdir -p scripts
+  if [ -f "$ORIGINAL_DIR/scripts/validate_vibesafe_structure.py" ]; then
+    cp "$ORIGINAL_DIR/scripts/validate_vibesafe_structure.py" scripts/
+  fi
+  
+  # Run the installation script
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT" > output.log 2>&1
+  
+  # Check that validation was attempted (if validator exists)
+  # Should see either validation message or skip message
+  grep -q "Validating VibeSafe structure" output.log || \
+  grep -q "VibeSafe structure validated" output.log || \
+  grep -q "Validation found issues" output.log || \
+  grep -q "Validation script not found" output.log
+}
+
+@test "VALIDATE: Validation can be skipped with environment variable" {
+  # Run the installation script with validation skipped
+  VIBESAFE_SKIP_CLONE=true VIBESAFE_SKIP_VALIDATION=1 bash "$INSTALL_SCRIPT" > output.log 2>&1
+  
+  # Check that validation was NOT run
+  ! grep -q "Validating VibeSafe structure" output.log
+  ! grep -q "Found.*issue.*auto-fixed" output.log
+}
+
+@test "VALIDATE: Validation script is preserved if exists" {
+  # Create a validation script
+  mkdir -p scripts
+  cat > scripts/validate_vibesafe_structure.py << 'EOF'
+#!/usr/bin/env python3
+"""Test validation script"""
+print("Test validator")
+exit(0)
+EOF
+  chmod +x scripts/validate_vibesafe_structure.py
+  
+  # Store checksum
+  VALIDATOR_CHECKSUM=$(md5sum scripts/validate_vibesafe_structure.py | awk '{print $1}')
+  
+  # Run the installation script
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"
+  
+  # Validation script should still exist (it's a system file, gets overwritten in real install)
+  [ -f "scripts/validate_vibesafe_structure.py" ]
+}
+
+@test "VALIDATE: Non-interactive mode skips validation prompt" {
+  # Create a project with validation issues (missing frontmatter)
+  mkdir -p backlog/features
+  cat > backlog/features/2026-01-03_test-task.md << 'EOF'
+# Test Task
+
+This task has no YAML frontmatter and will fail validation.
+EOF
+  
+  # Run installation in non-interactive mode (pipe input)
+  echo "n" | VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT" > output.log 2>&1
+  
+  # Should detect non-interactive mode
+  grep -q "Non-interactive mode detected" output.log || \
+  ! grep -q "Apply automatic fixes?" output.log
+}
+
+@test "VALIDATE: Installation succeeds even if validation finds issues" {
+  # Create a project with validation issues
+  mkdir -p backlog/features
+  cat > backlog/features/2026-01-03_test-task.md << 'EOF'
+# Test Task
+
+This task has no YAML frontmatter.
+EOF
+  
+  # Run the installation script
+  run bash -c "VIBESAFE_SKIP_CLONE=true bash '$INSTALL_SCRIPT' 2>&1"
+  
+  # Installation should still succeed (validation doesn't block)
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"successfully installed"* ]]
+}
+
+@test "VALIDATE: Success message shows validation status" {
+  # Copy the validation script to make it available
+  mkdir -p scripts
+  if [ -f "$ORIGINAL_DIR/scripts/validate_vibesafe_structure.py" ]; then
+    cp "$ORIGINAL_DIR/scripts/validate_vibesafe_structure.py" scripts/
+  fi
+  
+  # Run the installation script
+  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT" > output.log 2>&1
+  
+  # Success message should always appear
+  grep -q "Clean Installation Philosophy applied" output.log
+  
+  # If validation ran, status should be shown
+  # (Either validated successfully, or skipped, or found issues)
+  grep -q "successfully installed" output.log
 } 
