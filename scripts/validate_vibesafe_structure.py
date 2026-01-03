@@ -166,7 +166,7 @@ def write_frontmatter(file_path, metadata, dry_run=False):
 
 
 def auto_fix_frontmatter(component_type, file_path, frontmatter, result, dry_run=False):
-    """Automatically fix common frontmatter issues."""
+    """Automatically fix common frontmatter issues (safe, single-file fixes)."""
     spec = COMPONENT_SPECS[component_type]
     fixed = False
     fixes_made = []
@@ -245,6 +245,163 @@ def auto_fix_frontmatter(component_type, file_path, frontmatter, result, dry_run
             return True
     
     return False
+
+
+def find_component_file_by_id(root_dir, component_type, target_id):
+    """Find a component file by its ID."""
+    spec = COMPONENT_SPECS[component_type]
+    component_dir = os.path.join(root_dir, spec['dir'])
+    
+    if not os.path.exists(component_dir):
+        return None
+    
+    # Search for file with matching ID
+    for root, dirs, files in os.walk(component_dir):
+        for file in files:
+            if not file.endswith('.md'):
+                continue
+            
+            file_path = os.path.join(root, file)
+            fm = extract_frontmatter(file_path)
+            if fm and fm.get('id') == target_id:
+                return file_path
+    
+    return None
+
+
+def fix_reverse_links(root_dir, result, dry_run=False):
+    """
+    Fix reverse links by moving references to the correct direction.
+    
+    Bottom-up pattern:
+    - Requirements link to Tenets (related_tenets)
+    - CIPs link to Requirements (related_requirements)
+    - Backlog links to CIPs (related_cips)
+    
+    This function detects reverse links and moves them to the correct file.
+    """
+    fixes_applied = 0
+    
+    # Pattern: requirement → tenet (requirement should link UP to tenet)
+    # If tenet has related_requirements, move to requirement's related_tenets
+    for tenet_file in find_component_files(root_dir, 'tenet'):
+        tenet_fm = extract_frontmatter(tenet_file)
+        if not tenet_fm or 'related_requirements' not in tenet_fm:
+            continue
+        
+        tenet_id = tenet_fm.get('id')
+        reverse_links = tenet_fm.get('related_requirements', [])
+        
+        for req_id in reverse_links:
+            req_file = find_component_file_by_id(root_dir, 'requirement', req_id)
+            if not req_file:
+                result.add_warning(f"Cannot fix reverse link: requirement '{req_id}' not found", tenet_file)
+                continue
+            
+            # Update requirement to link to tenet
+            req_fm = extract_frontmatter(req_file)
+            if not req_fm:
+                continue
+            
+            if 'related_tenets' not in req_fm:
+                req_fm['related_tenets'] = []
+            
+            if tenet_id not in req_fm['related_tenets']:
+                req_fm['related_tenets'].append(tenet_id)
+                write_frontmatter(req_file, req_fm, dry_run)
+                result.add_fix(f"Moved link: Added tenet '{tenet_id}' to related_tenets", req_file)
+                fixes_applied += 1
+        
+        # Remove reverse link from tenet
+        tenet_fm_updated = dict(tenet_fm)
+        del tenet_fm_updated['related_requirements']
+        write_frontmatter(tenet_file, tenet_fm_updated, dry_run)
+        result.add_fix(f"Removed reverse link: related_requirements (moved to requirements)", tenet_file)
+    
+    # Pattern: CIP → requirement (CIP should link UP to requirement)
+    # If requirement has related_cips, move to CIP's related_requirements
+    for req_file in find_component_files(root_dir, 'requirement'):
+        req_fm = extract_frontmatter(req_file)
+        if not req_fm or 'related_cips' not in req_fm:
+            continue
+        
+        req_id = req_fm.get('id')
+        reverse_links = req_fm.get('related_cips', [])
+        
+        for cip_id in reverse_links:
+            cip_file = find_component_file_by_id(root_dir, 'cip', cip_id)
+            if not cip_file:
+                result.add_warning(f"Cannot fix reverse link: CIP '{cip_id}' not found", req_file)
+                continue
+            
+            # Update CIP to link to requirement
+            cip_fm = extract_frontmatter(cip_file)
+            if not cip_fm:
+                continue
+            
+            if 'related_requirements' not in cip_fm:
+                cip_fm['related_requirements'] = []
+            
+            if req_id not in cip_fm['related_requirements']:
+                cip_fm['related_requirements'].append(req_id)
+                write_frontmatter(cip_file, cip_fm, dry_run)
+                result.add_fix(f"Moved link: Added requirement '{req_id}' to related_requirements", cip_file)
+                fixes_applied += 1
+        
+        # Remove reverse link from requirement
+        req_fm_updated = dict(req_fm)
+        del req_fm_updated['related_cips']
+        write_frontmatter(req_file, req_fm_updated, dry_run)
+        result.add_fix(f"Removed reverse link: related_cips (moved to CIPs)", req_file)
+    
+    # Pattern: backlog → CIP (backlog should link UP to CIP)
+    # If CIP has related_backlog, move to backlog's related_cips
+    for cip_file in find_component_files(root_dir, 'cip'):
+        cip_fm = extract_frontmatter(cip_file)
+        if not cip_fm or 'related_backlog' not in cip_fm:
+            continue
+        
+        cip_id = cip_fm.get('id')
+        reverse_links = cip_fm.get('related_backlog', [])
+        
+        for backlog_id in reverse_links:
+            backlog_file = find_component_file_by_id(root_dir, 'backlog', backlog_id)
+            if not backlog_file:
+                result.add_warning(f"Cannot fix reverse link: backlog '{backlog_id}' not found", cip_file)
+                continue
+            
+            # Update backlog to link to CIP
+            backlog_fm = extract_frontmatter(backlog_file)
+            if not backlog_fm:
+                continue
+            
+            if 'related_cips' not in backlog_fm:
+                backlog_fm['related_cips'] = []
+            
+            if cip_id not in backlog_fm['related_cips']:
+                backlog_fm['related_cips'].append(cip_id)
+                write_frontmatter(backlog_file, backlog_fm, dry_run)
+                result.add_fix(f"Moved link: Added CIP '{cip_id}' to related_cips", backlog_file)
+                fixes_applied += 1
+        
+        # Remove reverse link from CIP
+        cip_fm_updated = dict(cip_fm)
+        del cip_fm_updated['related_backlog']
+        write_frontmatter(cip_file, cip_fm_updated, dry_run)
+        result.add_fix(f"Removed reverse link: related_backlog (moved to backlog items)", cip_file)
+    
+    # Pattern: backlog → requirement (INVALID - should go through CIP)
+    # If backlog has related_requirements, warn (cannot auto-fix without knowing which CIP)
+    for backlog_file in find_component_files(root_dir, 'backlog'):
+        backlog_fm = extract_frontmatter(backlog_file)
+        if backlog_fm and 'related_requirements' in backlog_fm:
+            result.add_warning(
+                f"Invalid link pattern: backlog has 'related_requirements'. "
+                f"Backlog should link to CIPs, not requirements directly. Manual fix required.",
+                backlog_file
+            )
+    
+    return fixes_applied
 
 
 def validate_file_naming(component_type, file_path, result):
@@ -524,9 +681,14 @@ Examples:
         help='Auto-fix simple issues (capitalization, missing fields)'
     )
     parser.add_argument(
+        '--fix-links',
+        action='store_true',
+        help='Fix reverse links by moving references to correct files (multi-file operation)'
+    )
+    parser.add_argument(
         '--dry-run',
         action='store_true',
-        help='Show what would be fixed without making changes (implies --fix)'
+        help='Show what would be fixed without making changes (implies --fix and --fix-links if specified)'
     )
     parser.add_argument(
         '--no-color',
@@ -544,8 +706,9 @@ Examples:
     if args.no_color:
         Colors.disable()
     
-    # --dry-run implies --fix
+    # --dry-run implies --fix and --fix-links (if specified)
     auto_fix = args.fix or args.dry_run
+    fix_links = args.fix_links or (args.dry_run and args.fix_links)
     dry_run = args.dry_run
     
     root_dir = os.path.abspath(args.root)
@@ -563,10 +726,17 @@ Examples:
     else:
         components_to_validate = ['requirement', 'cip', 'backlog', 'tenet']
     
-    # Collect all IDs for cross-reference validation
+    # Step 1: Fix reverse links first (if requested)
+    # This must happen before validation to avoid false positives
+    if args.fix_links:
+        result.add_info("Fixing reverse links...")
+        fixes_count = fix_reverse_links(root_dir, result, dry_run)
+        result.add_info(f"Reverse link fixes applied: {fixes_count}")
+    
+    # Step 2: Collect all IDs for cross-reference validation
     all_ids = collect_all_ids(root_dir)
     
-    # Validate each component type
+    # Step 3: Validate each component type
     for component_type in components_to_validate:
         files = find_component_files(root_dir, component_type)
         result.add_info(f"Found {len(files)} {component_type} file(s)")

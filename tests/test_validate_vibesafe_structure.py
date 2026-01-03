@@ -22,6 +22,7 @@ from scripts.validate_vibesafe_structure import (
     validate_file_naming,
     validate_yaml_frontmatter,
     validate_cross_references,
+    fix_reverse_links,
     ValidationResult,
     COMPONENT_SPECS,
 )
@@ -493,6 +494,174 @@ class TestComponentSpecs(unittest.TestCase):
         
         # Tenets don't link upward (foundation)
         self.assertEqual(COMPONENT_SPECS['tenet']['links_to'], [])
+
+
+class TestReverseLinkFix(unittest.TestCase):
+    """Test reverse link fixing functionality."""
+    
+    def setUp(self):
+        self.temp_dir = tempfile.mkdtemp()
+        # Create component directories
+        os.makedirs(os.path.join(self.temp_dir, 'requirements'))
+        os.makedirs(os.path.join(self.temp_dir, 'cip'))
+        os.makedirs(os.path.join(self.temp_dir, 'backlog', 'features'), exist_ok=True)
+        os.makedirs(os.path.join(self.temp_dir, 'tenets'))
+    
+    def tearDown(self):
+        shutil.rmtree(self.temp_dir)
+    
+    def test_fix_requirement_to_cip_reverse_link(self):
+        """Test fixing requirement → CIP reverse link (should be CIP → requirement)."""
+        # Create requirement with reverse link (related_cips - wrong direction)
+        req_file = os.path.join(self.temp_dir, 'requirements', 'req0001_test.md')
+        req_content = """---
+id: "0001"
+title: "Test Requirement"
+status: "Proposed"
+priority: "High"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+related_cips: ["0011"]
+related_tenets: []
+stakeholders: []
+---
+
+# Test Requirement
+"""
+        with open(req_file, 'w') as f:
+            f.write(req_content)
+        
+        # Create CIP without link
+        cip_file = os.path.join(self.temp_dir, 'cip', 'cip0011.md')
+        cip_content = """---
+id: "0011"
+title: "Test CIP"
+status: "Proposed"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+---
+
+# Test CIP
+"""
+        with open(cip_file, 'w') as f:
+            f.write(cip_content)
+        
+        # Import fix_reverse_links
+        from scripts.validate_vibesafe_structure import fix_reverse_links, ValidationResult
+        
+        # Fix reverse links
+        result = ValidationResult()
+        fixes = fix_reverse_links(self.temp_dir, result, dry_run=False)
+        
+        # Verify fix was applied
+        self.assertGreater(fixes, 0)
+        
+        # Check requirement no longer has related_cips
+        req_fm = extract_frontmatter(req_file)
+        self.assertNotIn('related_cips', req_fm)
+        
+        # Check CIP now has related_requirements
+        cip_fm = extract_frontmatter(cip_file)
+        self.assertIn('related_requirements', cip_fm)
+        self.assertIn('0001', cip_fm['related_requirements'])
+    
+    def test_fix_tenet_to_requirement_reverse_link(self):
+        """Test fixing tenet → requirement reverse link (should be requirement → tenet)."""
+        # Create tenet with reverse link
+        tenet_file = os.path.join(self.temp_dir, 'tenets', 'test-tenet.md')
+        tenet_content = """---
+id: "test-tenet"
+title: "Test Tenet"
+status: "Active"
+created: "2026-01-03"
+last_reviewed: "2026-01-03"
+review_frequency: "Annual"
+related_requirements: ["0001"]
+---
+
+# Test Tenet
+"""
+        with open(tenet_file, 'w') as f:
+            f.write(tenet_content)
+        
+        # Create requirement without link
+        req_file = os.path.join(self.temp_dir, 'requirements', 'req0001_test.md')
+        req_content = """---
+id: "0001"
+title: "Test Requirement"
+status: "Proposed"
+priority: "High"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+related_tenets: []
+stakeholders: []
+---
+
+# Test Requirement
+"""
+        with open(req_file, 'w') as f:
+            f.write(req_content)
+        
+        from scripts.validate_vibesafe_structure import fix_reverse_links, ValidationResult
+        
+        result = ValidationResult()
+        fixes = fix_reverse_links(self.temp_dir, result, dry_run=False)
+        
+        self.assertGreater(fixes, 0)
+        
+        # Check tenet no longer has related_requirements
+        tenet_fm = extract_frontmatter(tenet_file)
+        self.assertNotIn('related_requirements', tenet_fm)
+        
+        # Check requirement now has related_tenets
+        req_fm = extract_frontmatter(req_file)
+        self.assertIn('test-tenet', req_fm['related_tenets'])
+    
+    def test_dry_run_doesnt_modify_files(self):
+        """Test that dry-run doesn't actually modify files."""
+        req_file = os.path.join(self.temp_dir, 'requirements', 'req0001_test.md')
+        req_content = """---
+id: "0001"
+title: "Test Requirement"
+status: "Proposed"
+priority: "High"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+related_cips: ["0011"]
+related_tenets: []
+stakeholders: []
+---
+
+# Test Requirement
+"""
+        with open(req_file, 'w') as f:
+            f.write(req_content)
+        
+        cip_file = os.path.join(self.temp_dir, 'cip', 'cip0011.md')
+        cip_content = """---
+id: "0011"
+title: "Test CIP"
+status: "Proposed"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+---
+
+# Test CIP
+"""
+        with open(cip_file, 'w') as f:
+            f.write(cip_content)
+        
+        from scripts.validate_vibesafe_structure import fix_reverse_links, ValidationResult
+        
+        result = ValidationResult()
+        fix_reverse_links(self.temp_dir, result, dry_run=True)
+        
+        # Verify files weren't modified
+        req_fm = extract_frontmatter(req_file)
+        self.assertIn('related_cips', req_fm)
+        
+        cip_fm = extract_frontmatter(cip_file)
+        self.assertNotIn('related_requirements', cip_fm)
 
 
 if __name__ == '__main__':
