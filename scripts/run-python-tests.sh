@@ -15,7 +15,7 @@ if ! command -v python3 &>/dev/null; then
 fi
 
 # Create and activate a virtual environment if it doesn't exist
-VENV_DIR=".venv"
+VENV_DIR=".venv-vibesafe"
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating virtual environment..."
     python3 -m venv "$VENV_DIR"

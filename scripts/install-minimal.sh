@@ -304,21 +304,21 @@ setup_whats_next() {
       echo "Creating basic What's Next setup..."
       
       # Create virtual environment if it doesn't exist (preserve if exists)
-      if [ ! -d ".venv" ]; then
-        python3 -m venv .venv
+      if [ ! -d ".venv-vibesafe" ]; then
+        python3 -m venv .venv-vibesafe
         debug "Created virtual environment"
       else
         debug "Preserved existing virtual environment"
       fi
 
 # Install dependencies
-      .venv/bin/pip install -q PyYAML
+      .venv-vibesafe/bin/pip install -q PyYAML
       
       # Create wrapper script (always overwrite - it's a system file)
 cat > whats-next << 'EOF'
 #!/bin/bash
 cd "$(dirname "$0")"
-.venv/bin/python scripts/whats_next.py "$@"
+.venv-vibesafe/bin/python scripts/whats_next.py "$@"
 EOF
 chmod +x whats-next
       debug "Created whats-next wrapper script"
@@ -336,6 +336,9 @@ get_vibesafe_gitignore_entries() {
 
 # VibeSafe System Files (Auto-added during installation)
 # These are VibeSafe infrastructure - not your project content
+
+# VibeSafe virtual environment
+.venv-vibesafe/
 
 # Backlog system files
 backlog/README.md
@@ -499,9 +502,9 @@ generate_tenet_cursor_rules() {
   cleanup_spurious_cursor_rules
   
   # Run tenet processing with Python
-  if [ -d ".venv" ]; then
+  if [ -d ".venv-vibesafe" ]; then
     debug "Using virtual environment for tenet processing"
-    .venv/bin/python tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules
+    .venv-vibesafe/bin/python tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules
   else
     debug "Using system Python for tenet processing"
     python3 tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules

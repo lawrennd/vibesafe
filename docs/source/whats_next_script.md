@@ -142,8 +142,8 @@ The installation script handles the setup process:
 
 ```bash
 # Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv-vibesafe
+source .venv-vibesafe/bin/activate
 
 # Install dependencies
 pip install PyYAML
@@ -198,5 +198,5 @@ Common issues and solutions:
    - Make sure the script is executable: `chmod +x whats-next`
 
 3. **Dependency Issues**
-   - Activate the virtual environment: `source .venv/bin/activate`
+   - Activate the virtual environment: `source .venv-vibesafe/bin/activate`
    - Install dependencies: `pip install PyYAML` 

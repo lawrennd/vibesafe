@@ -113,9 +113,10 @@ docs/yaml_frontmatter_examples.md
 
 ### Phase 3: Edge Case Handling
 
-*1. .venv Handling*
-- Resolve contradiction: current .gitignore ignores .venv, but VibeSafe preserves it
-- Decision: Keep .venv ignored (standard practice) but document preservation behavior
+*1. Virtual Environment Handling*
+- User's `.venv` is preserved (user content) and typically in user's .gitignore
+- VibeSafe's `.venv-vibesafe` is auto-managed (system file) and in VibeSafe gitignore section
+- Clear separation avoids conflicts between user and VibeSafe dependencies
 
 *2. Conflict Resolution*
 - Handle cases where user has custom .gitignore entries that conflict
@@ -136,7 +137,7 @@ docs/yaml_frontmatter_examples.md
 - [ ] Update CIP-000E to reference this enhancement
 - [ ] Update README.md installation documentation
 - [ ] Create tests for gitignore management
-- [ ] Handle .venv contradiction
+- [x] Handle .venv contradiction (resolved with .venv-vibesafe in bug 2026-01-03)
 - [ ] Test upgrade path for existing installations
 
 ## Technical Considerations

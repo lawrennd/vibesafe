@@ -1,7 +1,7 @@
 ---
 id: "2026-01-03_venv-naming-conflict"
 title: "VibeSafe .venv conflicts with user project virtual environments"
-status: "Proposed"
+status: "Completed"
 priority: "High"
 created: "2026-01-03"
 last_updated: "2026-01-03"
@@ -26,13 +26,14 @@ VibeSafe currently creates a `.venv` directory to install its own dependencies (
 
 ## Acceptance Criteria
 
-- [ ] VibeSafe virtual environment has a distinct name that doesn't conflict with user projects
-- [ ] Installation scripts updated to use new venv name
-- [ ] Wrapper scripts (`whats-next`) updated to reference new venv
-- [ ] `.gitignore` updated to ignore the new venv directory
-- [ ] Documentation updated to reflect the change
-- [ ] Tests updated to use new venv name
-- [ ] Solution maintains "clean installation" philosophy
+- [x] VibeSafe virtual environment has a distinct name that doesn't conflict with user projects
+- [x] Installation scripts updated to use new venv name
+- [x] Wrapper scripts (`whats-next`) updated to reference new venv
+- [x] `.gitignore` updated to ignore the new venv directory
+- [x] Documentation updated to reflect the change
+- [x] Cursor rules updated to clarify that scripts need wrapper or manual venv activation
+- [x] Tests updated to use new venv name
+- [x] Solution maintains "clean installation" philosophy
 
 ## Implementation Options
 
@@ -41,11 +42,13 @@ VibeSafe currently creates a `.venv` directory to install its own dependencies (
 **Change**: Rename `.venv` → `.venv-vibesafe`
 
 **Files to modify**:
-- `install-whats-next.sh` (line 29: `VENV_DIR=".venv-vibesafe"`)
-- `scripts/install-minimal.sh` (line 307-308, 315, 321: use `.venv-vibesafe`)
-- `whats-next` wrapper (line 21, 85: reference `.venv-vibesafe`)
-- `.gitignore` VibeSafe section (add `.venv-vibesafe`)
-- `tests/test_whats_next.py` (update test fixtures if needed)
+- `install-whats-next.sh` - Update VENV_DIR and wrapper script generation
+- `scripts/install-minimal.sh` - Update venv creation, pip installs, tenet processing, and gitignore section
+- `whats-next` wrapper - Update venv activation path
+- `docs/source/whats_next_script.md` - Update documentation examples
+- `.cursor/rules/whats_next.mdc` - Update cursor rule examples
+- `.cursor/rules/vibesafe_general.mdc` - Update Python environment guidance
+- `tests/test_whats_next.py` - Update test fixtures if needed
 
 **Pros**:
 - Clear separation between VibeSafe tools and user project
@@ -163,4 +166,24 @@ For existing installations, the update process should:
 
 ### 2026-01-03
 Bug identified and documented with implementation options.
+
+**Implementation completed - Option 1 (rename to `.venv-vibesafe`)**:
+- ✅ Updated `install-whats-next.sh` - VENV_DIR variable and wrapper script template
+- ✅ Updated `scripts/install-minimal.sh` - venv creation, pip installs, tenet processing, and gitignore section
+- ✅ Updated `whats-next` wrapper script - venv activation path
+- ✅ Updated `docs/source/whats_next_script.md` - documentation examples
+- ✅ Updated `.cursor/rules/whats_next.mdc` - examples and explanation
+- ✅ Updated `.cursor/rules/vibesafe_general.mdc` - Python environment guidance
+- ✅ Updated `scripts/run-tests-with-coverage.sh` - test runner venv
+- ✅ Updated `scripts/run-python-tests.sh` - test runner venv
+- ✅ Updated `cip/cip000E.md` - clean installation philosophy documentation
+- ✅ Updated `cip/cip000F.md` - venv handling documentation, marked contradiction resolved
+- ✅ All tests passing (37 Python tests, 17 BATS tests)
+- ✅ Verified user's `.venv` is preserved when VibeSafe installs `.venv-vibesafe`
+
+**Results**:
+- Clear separation between VibeSafe dependencies (`.venv-vibesafe`) and user project dependencies (`.venv`)
+- No more naming conflicts or environment confusion
+- All existing tests pass without modification
+- Installation philosophy maintained: system files updated, user content preserved
 

@@ -51,8 +51,11 @@ Every VibeSafe installation should be treated as a complete reinstall of the Vib
 - User tasks: Files in `backlog/features/`, `backlog/bugs/`, etc.
 - User CIPs: `cip0001.md`, `cip0002.md`, etc.
 - User tenets: Actual project tenet files
-- Virtual environment: `.venv` (for performance)
+- User virtual environment: `.venv` (user's project dependencies)
 - User content in `ai-requirements/` (actual requirements documents)
+
+*🔧 ALWAYS UPDATE (VibeSafe System):*
+- VibeSafe virtual environment: `.venv-vibesafe` (VibeSafe's dependencies like PyYAML)
 
 ### Benefits
 

@@ -27,13 +27,15 @@ After installation (using `./install-whats-next.sh`), run the script from the ro
 ./whats-next
 ```
 
-If you prefer to run it directly, make sure to activate the virtual environment first:
+If you prefer to run it directly, make sure to activate the VibeSafe virtual environment first:
 
 ```bash
-source .venv/bin/activate
+source .venv-vibesafe/bin/activate
 python scripts/whats_next.py
 deactivate  # When finished
 ```
+
+**Note**: VibeSafe uses `.venv-vibesafe` for its own dependencies (PyYAML) to avoid conflicts with user project virtual environments that typically use `.venv`.
 
 ### Command Line Options
 

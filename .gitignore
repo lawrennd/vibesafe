@@ -96,3 +96,4 @@ docs/yaml_frontmatter_examples.md
 # Generated tenet files
 vibesafe-tenets.md
 vibesafe-tenets.yaml
+.venv-vibesafe/

@@ -39,14 +39,21 @@ python3 --version
 echo $VIRTUAL_ENV
 
 # For VibeSafe scripts, usually run from project root:
-./whats-next                    # Uses project's .venv
-python scripts/whats_next.py    # Direct execution
+./whats-next                          # ✅ Wrapper activates .venv-vibesafe automatically
+.venv-vibesafe/bin/python scripts/whats_next.py  # ✅ Direct venv execution
+python scripts/whats_next.py          # ❌ May fail if PyYAML not in system Python
 ```
+
+**📦 VibeSafe Virtual Environment:**
+- VibeSafe uses `.venv-vibesafe` for its dependencies (PyYAML)
+- This avoids conflicts with user project `.venv` directories
+- The `./whats-next` wrapper handles activation/deactivation automatically
+- For direct execution: use wrapper OR activate `.venv-vibesafe` manually
 
 **🤔 When in doubt, ASK THE USER:**
 - "Should I run this in the current environment or activate a virtual environment?"
 - "Which Python environment would you like me to use?"
-- "Should I use the project's .venv or system Python?"
+- "Should I use the project's .venv (yours) or .venv-vibesafe (VibeSafe's)?"
 
 ### 3. Date Accuracy for VibeSafe Components
 
