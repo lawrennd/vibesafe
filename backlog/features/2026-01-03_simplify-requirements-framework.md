@@ -8,8 +8,7 @@ last_updated: "2026-01-03"
 category: "features"
 owner: ""
 dependencies: ["2026-01-03_yaml-frontmatter-standardization"]
-related_cips: ["0011"]
-related_requirements: ["REQ-002"]
+related_cips: ["0011", "000E"]
 ---
 
 # Task: Phase 1: Requirements Framework Simplification
@@ -39,6 +38,12 @@ Implement Phase 1 of CIP-0011: Replace complex ai-requirements framework with si
   - Keep status sync table
 - [ ] Archive ai-requirements framework with deprecation notice
 - [ ] Create migration guide for existing projects
+- [ ] **Update install-minimal.sh for automatic migration (REQ-007)**:
+  - Detect if user has ai-requirements/ directory
+  - Offer migration to requirements/ (with notification)
+  - Update templates to new versions automatically
+  - Preserve all user content during migration
+  - Test migration on VibeSafe itself first (dogfooding!)
 
 ## Implementation Notes
 
