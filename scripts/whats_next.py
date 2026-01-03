@@ -893,10 +893,15 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         next_steps.append("Set up requirements framework to improve requirements gathering")
     
     # Check for accepted CIPs that need implementation
-    # Proper workflow: Accepted CIP → Break into backlog tasks → Implement
+    # Proper workflow: Accepted CIP → Break into backlog tasks → In Progress → Implement
     if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('accepted'):
         cip = cips_info['by_status']['accepted'][0]
-        next_steps.append(f"Break down accepted CIP {cip['id']} ({cip['title']}) into backlog tasks")
+        next_steps.append(f"Break down accepted CIP {cip['id']} ({cip['title']}) into actionable backlog tasks")
+    
+    # Check for in-progress CIPs
+    if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('in_progress'):
+        cip = cips_info['by_status']['in_progress'][0]
+        next_steps.append(f"Continue implementing CIP {cip['id']} ({cip['title']}) backlog tasks")
     
     # Check for in-progress backlog items
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):

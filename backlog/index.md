@@ -16,6 +16,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Document Status Workflow and What](documentation/2026-01-03_document-status-workflow-whats-next.md)
+
 - [Unify Philosophy Documents (about.md and philosophy.md)](documentation/2026-01-03_unify-philosophy-documents.md)
 
 - [Create System-Specific Documentation Guides](documentation/2025-05-05_system-specific-guides.md)
@@ -48,6 +50,8 @@ This file provides an overview of all current backlog items organized by categor
 
 
 ### Proposed
+
+- [Add In Progress Status for CIPs](infrastructure/2026-01-03_cip-in-progress-status.md)
 
 - [Add Deferred Status for CIPs](infrastructure/2026-01-03_cip-deferred-status.md)
 
