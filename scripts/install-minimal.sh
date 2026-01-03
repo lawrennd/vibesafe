@@ -693,16 +693,21 @@ install_vibesafe() {
       debug "Successfully cloned repository from $VIBESAFE_REPO_URL"
       install_system_files "$temp_dir"
       
-      # Copy What's Next script if it exists (system file)
+      # Copy user-facing scripts if they exist (system files)
+      mkdir -p scripts
       if [ -f "$temp_dir/scripts/whats_next.py" ]; then
         debug "Found What's Next script in repository"
-        mkdir -p scripts
         cp "$temp_dir/scripts/whats_next.py" "scripts/whats_next.py"
-        
-        # Copy installation script (system file)
-        if [ -f "$temp_dir/install-whats-next.sh" ]; then
-          cp "$temp_dir/install-whats-next.sh" "install-whats-next.sh"
-        fi
+      fi
+      
+      if [ -f "$temp_dir/scripts/validate_vibesafe_structure.py" ]; then
+        debug "Found validator script in repository"
+        cp "$temp_dir/scripts/validate_vibesafe_structure.py" "scripts/validate_vibesafe_structure.py"
+      fi
+      
+      # Copy installation script (system file)
+      if [ -f "$temp_dir/install-whats-next.sh" ]; then
+        cp "$temp_dir/install-whats-next.sh" "install-whats-next.sh"
       fi
     else
       debug "Failed to clone repository, using minimal system files"
