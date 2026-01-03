@@ -514,6 +514,9 @@ cleanup_spurious_cursor_rules() {
   fi
 }
 
+# Global variable to track validation status
+VALIDATION_RAN=false
+
 # Function to run VibeSafe structure validation
 run_vibesafe_validation() {
   # Skip validation if requested (useful for CI/CD)
@@ -543,6 +546,7 @@ run_vibesafe_validation() {
   # If validation passed (exit code 0), we're done
   if [ $validation_exit -eq 0 ]; then
     echo -e "${GREEN}✓ VibeSafe structure validated successfully${NC}"
+    VALIDATION_RAN=true
     return 0
   fi
   
@@ -581,6 +585,7 @@ run_vibesafe_validation() {
     
     if [ $fix_exit -eq 0 ]; then
       echo -e "${GREEN}✓ Applied ${fix_count} automatic fix(es)${NC}"
+      VALIDATION_RAN=true
     else
       echo -e "${YELLOW}⚠  Some fixes applied, but validation still reports issues${NC}"
       echo -e "${YELLOW}   Run './scripts/validate_vibesafe_structure.py' for details${NC}"
@@ -766,7 +771,7 @@ install_vibesafe() {
   echo "✅ User content preserved"
   echo "✅ VibeSafe gitignore protection enabled"
   echo "✅ Project tenets converted to cursor rules"
-  if [ -z "$VIBESAFE_SKIP_VALIDATION" ] && [ -f "scripts/validate_vibesafe_structure.py" ]; then
+  if [ "$VALIDATION_RAN" = "true" ]; then
     echo "✅ VibeSafe structure validated"
   fi
   echo ""
