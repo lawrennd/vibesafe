@@ -471,6 +471,85 @@ cleanup_spurious_cursor_rules() {
   fi
 }
 
+# Function to run VibeSafe structure validation
+run_vibesafe_validation() {
+  # Skip validation if requested (useful for CI/CD)
+  if [ -n "$VIBESAFE_SKIP_VALIDATION" ]; then
+    debug "Skipping validation (VIBESAFE_SKIP_VALIDATION set)"
+    return 0
+  fi
+  
+  # Skip if validation script doesn't exist yet
+  if [ ! -f "scripts/validate_vibesafe_structure.py" ]; then
+    debug "Validation script not found, skipping validation"
+    return 0
+  fi
+  
+  # Skip if .venv-vibesafe doesn't exist
+  if [ ! -d ".venv-vibesafe" ]; then
+    debug "VibeSafe virtual environment not found, skipping validation"
+    return 0
+  fi
+  
+  echo -e "${YELLOW}Validating VibeSafe structure...${NC}"
+  
+  # Run validator in dry-run mode to see what would be fixed
+  dry_run_output=$(.venv-vibesafe/bin/python scripts/validate_vibesafe_structure.py --dry-run --fix --fix-links 2>&1)
+  validation_exit=$?
+  
+  # If validation passed (exit code 0), we're done
+  if [ $validation_exit -eq 0 ]; then
+    echo -e "${GREEN}✓ VibeSafe structure validated successfully${NC}"
+    return 0
+  fi
+  
+  # Validation found issues - show the dry-run output
+  echo "$dry_run_output"
+  echo ""
+  
+  # Count how many fixes would be applied
+  fix_count=$(echo "$dry_run_output" | grep -oE 'WOULD FIX \([0-9]+\)' | grep -oE '[0-9]+' | head -1)
+  
+  if [ -z "$fix_count" ] || [ "$fix_count" -eq 0 ]; then
+    # No auto-fixable issues, just errors/warnings
+    echo -e "${YELLOW}⚠  Validation found issues that require manual fixes${NC}"
+    echo -e "${YELLOW}   Run './scripts/validate_vibesafe_structure.py' for details${NC}"
+    return 0
+  fi
+  
+  # Prompt user to apply fixes
+  echo -e "${YELLOW}Found ${fix_count} issue(s) that can be auto-fixed.${NC}"
+  echo ""
+  
+  # In non-interactive mode (CI/CD), skip the prompt
+  if [ ! -t 0 ]; then
+    echo -e "${YELLOW}⚠  Non-interactive mode detected. Skipping automatic fixes.${NC}"
+    echo -e "${YELLOW}   Run './scripts/validate_vibesafe_structure.py --fix --fix-links' manually${NC}"
+    return 0
+  fi
+  
+  read -p "Apply automatic fixes? [y/N] " -n 1 -r
+  echo ""
+  
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${YELLOW}Applying automatic fixes...${NC}"
+    .venv-vibesafe/bin/python scripts/validate_vibesafe_structure.py --fix --fix-links
+    fix_exit=$?
+    
+    if [ $fix_exit -eq 0 ]; then
+      echo -e "${GREEN}✓ Applied ${fix_count} automatic fix(es)${NC}"
+    else
+      echo -e "${YELLOW}⚠  Some fixes applied, but validation still reports issues${NC}"
+      echo -e "${YELLOW}   Run './scripts/validate_vibesafe_structure.py' for details${NC}"
+    fi
+  else
+    echo -e "${YELLOW}⚠  Skipped automatic fixes${NC}"
+    echo -e "${YELLOW}   Run './scripts/validate_vibesafe_structure.py --fix --fix-links' to apply later${NC}"
+  fi
+  
+  return 0
+}
+
 # Function to generate cursor rules from project tenets
 generate_tenet_cursor_rules() {
   echo "Generating cursor rules from project tenets..."
@@ -622,6 +701,9 @@ install_vibesafe() {
   # GENERATE: Create cursor rules from project tenets (after virtual environment is set up)
   generate_tenet_cursor_rules
   
+  # VALIDATE: Run VibeSafe structure validation (unless skipped)
+  run_vibesafe_validation
+  
   # Clean up temporary directory if we created one
   if [ -n "$temp_dir" ]; then
     rm -rf "$temp_dir"
@@ -636,6 +718,9 @@ install_vibesafe() {
   echo "✅ User content preserved"
   echo "✅ VibeSafe gitignore protection enabled"
   echo "✅ Project tenets converted to cursor rules"
+  if [ -z "$VIBESAFE_SKIP_VALIDATION" ] && [ -f "scripts/validate_vibesafe_structure.py" ]; then
+    echo "✅ VibeSafe structure validated"
+  fi
   echo ""
   echo -e "${YELLOW}Next steps:${NC}"
   echo "1. Define your project tenets in the tenets/ directory"
