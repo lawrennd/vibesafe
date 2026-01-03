@@ -361,8 +361,8 @@ def scan_backlog() -> Dict[str, Any]:
                     'path': backlog_file
                 }
                 
-                # Add to priority lists
-                if priority in backlog_info['by_priority']:
+                # Add to priority lists (exclude completed and abandoned items)
+                if priority in backlog_info['by_priority'] and status not in ['completed', 'abandoned']:
                     backlog_info['by_priority'][priority].append(item_info)
                 
                 # Add to status lists
@@ -391,8 +391,8 @@ def scan_backlog() -> Dict[str, Any]:
                 
                 backlog_info['without_frontmatter'].append(item_info)
                 
-                # Add to priority lists even without frontmatter
-                if priority in backlog_info['by_priority']:
+                # Add to priority lists even without frontmatter (exclude completed and abandoned items)
+                if priority in backlog_info['by_priority'] and status not in ['completed', 'abandoned']:
                     backlog_info['by_priority'][priority].append(item_info)
                 
                 # Add to status lists even without frontmatter
