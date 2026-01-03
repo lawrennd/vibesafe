@@ -923,11 +923,8 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         next_steps.append("Review and update project roadmap")
         next_steps.append("Consider creating new CIPs for upcoming features")
         if requirements_info['has_framework']:
-            # Suggest using specific patterns
-            if any('goal-decomposition' in pattern for pattern in requirements_info['patterns']):
-                next_steps.append("Use the Goal Decomposition Pattern to break down high-level goals into specific requirements")
-            if any('stakeholder-identification' in pattern for pattern in requirements_info['patterns']):
-                next_steps.append("Use the Stakeholder Identification Pattern to identify all stakeholders for upcoming features")
+            # Suggest general requirements activities (patterns are now optional VibeSafe guidance)
+            next_steps.append("Review existing requirements - are they WHAT (outcomes) not HOW (implementation)?")
     
     return next_steps
 

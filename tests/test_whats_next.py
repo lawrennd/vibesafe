@@ -213,11 +213,11 @@ status: proposed
                 # Test generating next steps with requirements framework
                 next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
                 
-                # Check requirements-related recommendations
-                self.assertTrue(any("Start requirements gathering for proposed CIP" in step for step in next_steps))
-                self.assertTrue(any("requirements" in step.lower() for step in next_steps))
-                self.assertTrue(any("Implement accepted CIP" in step for step in next_steps))
-                self.assertTrue(any("Verify implementation" in step for step in next_steps))
+                # Check requirements-related recommendations (updated for new workflow)
+                self.assertTrue(any("Review proposed CIP" in step and "WHAT vs HOW" in step for step in next_steps))
+                self.assertTrue(any("requirements" in step.lower() or "requirement" in step.lower() for step in next_steps))
+                self.assertTrue(any("Break down accepted CIP" in step and "backlog tasks" in step for step in next_steps))
+                self.assertTrue(any("Verify implementation" in step or "consider closing" in step for step in next_steps))
                 self.assertTrue(any("Continue work on in-progress backlog item" in step for step in next_steps))
                 self.assertTrue(any("Address high priority backlog item" in step for step in next_steps))
                 self.assertTrue(any("Commit 2 pending changes" in step for step in next_steps))
@@ -289,9 +289,10 @@ def test_generate_next_steps_with_requirements():
     
     next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
     
-    # Check that requirements-related steps are included
-    assert any("requirements" in step.lower() for step in next_steps)
-    assert any("requirements" in step.lower() for step in next_steps)
+    # Check that requirement-related steps are included (updated for new workflow)
+    # Should suggest reviewing the proposed CIP to check if it's a requirement
+    assert any("requirement" in step.lower() for step in next_steps)
+    assert any("Review proposed CIP" in step and "WHAT vs HOW" in step for step in next_steps)
 
 def test_generate_next_steps_without_requirements():
     """Test generating next steps when the requirements framework doesn't exist."""
@@ -314,24 +315,20 @@ def test_generate_next_steps_without_requirements():
     assert any("Create requirements directory" in step for step in next_steps)
 
 def test_generate_next_steps_with_empty_requirements():
-    """Test generating next steps when the requirements framework exists but has no template."""
+    """Test generating next steps when the requirements framework exists but has no specific tasks."""
     git_info = {}
     cips_info = {'by_status': {'proposed': []}}
     backlog_info = {'by_status': {'proposed': []}}
     requirements_info = {
         'has_framework': True,
-        'has_template': False,  # No template, so suggest creating first requirement
-        'patterns': [],
-        'prompts': {'discovery': [], 'refinement': [], 'validation': [], 'testing': []},
-        'integrations': [],
-        'examples': [],
-        'guidance': []
+        'has_template': True,  # Simplified requirements framework always has template
     }
     
     next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
     
-    # Check that a step to create first requirement is included
-    assert any("Create first requirement" in step for step in next_steps)
+    # Check that general next steps are provided (updated for simplified requirements)
+    # When nothing specific is pending, suggest reviewing requirements
+    assert any("requirement" in step.lower() for step in next_steps)
 
 def test_cmd_args_requirements_only():
     """Test that the --requirements-only flag works correctly."""
