@@ -297,9 +297,7 @@ setup_whats_next() {
     fi
     
     # Clean up old .venv if it's an orphaned VibeSafe venv
-    debug "Checking for old .venv to clean up..."
     if [ -d ".venv" ]; then
-      debug "Found .venv directory"
       # Check if .venv looks like a VibeSafe venv (has PyYAML but is minimal)
       if [ -f ".venv/bin/python" ]; then
         package_count=$(.venv/bin/pip list 2>/dev/null | wc -l || echo "0")
