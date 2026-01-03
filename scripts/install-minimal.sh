@@ -695,14 +695,14 @@ install_vibesafe() {
       
       # Copy user-facing scripts if they exist (system files)
       mkdir -p scripts
-      if [ -f "$temp_dir/scripts/whats_next.py" ]; then
-        debug "Found What's Next script in repository"
-        cp "$temp_dir/scripts/whats_next.py" "scripts/whats_next.py"
+      if [ -f "$temp_dir/templates/scripts/whats_next.py" ]; then
+        debug "Found What's Next script in templates"
+        cp "$temp_dir/templates/scripts/whats_next.py" "scripts/whats_next.py"
       fi
       
-      if [ -f "$temp_dir/scripts/validate_vibesafe_structure.py" ]; then
-        debug "Found validator script in repository"
-        cp "$temp_dir/scripts/validate_vibesafe_structure.py" "scripts/validate_vibesafe_structure.py"
+      if [ -f "$temp_dir/templates/scripts/validate_vibesafe_structure.py" ]; then
+        debug "Found validator script in templates"
+        cp "$temp_dir/templates/scripts/validate_vibesafe_structure.py" "scripts/validate_vibesafe_structure.py"
       fi
       
       # Copy installation script (system file)
