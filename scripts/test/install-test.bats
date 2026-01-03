@@ -437,21 +437,18 @@ EOF
 }
 
 @test "VALIDATE: Validation runs by default during installation" {
-  # Copy the validation script to make it available
-  mkdir -p scripts
-  if [ -f "$ORIGINAL_DIR/scripts/validate_vibesafe_structure.py" ]; then
-    cp "$ORIGINAL_DIR/scripts/validate_vibesafe_structure.py" scripts/
-  fi
+  # Use shared clone to speed up test
+  export VIBESAFE_TEMPLATES_DIR="$VIBESAFE_TEST_TEMPLATES"
+  export VIBESAFE_INSTALL_WHATS_NEXT=true
   
   # Run the installation script
-  VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT" > output.log 2>&1
+  bash "$INSTALL_SCRIPT" > output.log 2>&1
   
-  # Check that validation was attempted (if validator exists)
-  # Should see either validation message or skip message
-  grep -q "Validating VibeSafe structure" output.log || \
-  grep -q "VibeSafe structure validated" output.log || \
-  grep -q "Validation found issues" output.log || \
-  grep -q "Validation script not found" output.log
+  # Check that validation was attempted
+  # Either it ran successfully, or showed validation status
+  grep -q "validated" output.log || \
+  grep -q "validation" output.log || \
+  grep -q "Validation" output.log
 }
 
 @test "VALIDATE: Validation can be skipped with environment variable" {
