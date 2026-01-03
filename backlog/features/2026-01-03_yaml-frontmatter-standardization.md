@@ -7,9 +7,8 @@ created: "2026-01-03"
 last_updated: "2026-01-03"
 category: "features"
 owner: ""
-dependencies: []
+dependencies: ["2026-01-03_process-conformance-validation"]
 related_cips: ["0011"]
-related_requirements: ["REQ-001"]
 ---
 
 # Task: Phase 0: YAML Frontmatter Standardization
@@ -35,6 +34,7 @@ This is the first phase because all other phases depend on consistent metadata s
 - [ ] Add YAML validation to parsing scripts (soft validation - warnings)
 - [ ] Document YAML schema for each component type
 - [ ] Test: Existing components can be parsed with new schema
+- [ ] **Run validation script**: `scripts/validate_vibesafe.py` should pass with no errors
 
 ## Implementation Notes
 
