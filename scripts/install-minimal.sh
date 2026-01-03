@@ -724,6 +724,23 @@ install_vibesafe() {
   if [ -n "$VIBESAFE_TEMPLATES_DIR" ]; then
     debug "Using provided templates directory: $VIBESAFE_TEMPLATES_DIR"
     install_system_files "$VIBESAFE_TEMPLATES_DIR"
+    
+    # Copy user-facing scripts if they exist (system files)
+    mkdir -p scripts
+    if [ -f "$VIBESAFE_TEMPLATES_DIR/templates/scripts/whats_next.py" ]; then
+      debug "Found What's Next script in templates"
+      cp "$VIBESAFE_TEMPLATES_DIR/templates/scripts/whats_next.py" "scripts/whats_next.py"
+    fi
+    
+    if [ -f "$VIBESAFE_TEMPLATES_DIR/templates/scripts/validate_vibesafe_structure.py" ]; then
+      debug "Found validator script in templates"
+      cp "$VIBESAFE_TEMPLATES_DIR/templates/scripts/validate_vibesafe_structure.py" "scripts/validate_vibesafe_structure.py"
+    fi
+    
+    # Copy installation script (system file)
+    if [ -f "$VIBESAFE_TEMPLATES_DIR/install-whats-next.sh" ]; then
+      cp "$VIBESAFE_TEMPLATES_DIR/install-whats-next.sh" "install-whats-next.sh"
+    fi
   elif [ "$VIBESAFE_SKIP_CLONE" = "true" ]; then
     debug "Skipping repository clone, using minimal system files"
     install_minimal_system_files
