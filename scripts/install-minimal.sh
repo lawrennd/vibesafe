@@ -290,6 +290,7 @@ setup_whats_next() {
   fi
   
   if [ -n "$whats_next_source" ]; then
+    WHATS_NEXT_INSTALLED="true"
     # Copy the script if it's not already in place
     if [ "$whats_next_source" != "scripts/whats_next.py" ]; then
       mkdir -p scripts
