@@ -25,6 +25,7 @@ from scripts.whats_next import (
     normalize_status,
     scan_backlog,
     check_tenet_status,
+    run_validation,
 )
 
 
@@ -393,7 +394,7 @@ def test_cmd_args_requirements_only():
             backlog_only=False, 
             requirements_only=True,
             no_update=True,
-            tenet_review_period=180
+            skip_validation=True
         )
         
         # Setup mock scan_requirements to return a valid result
@@ -410,9 +411,9 @@ def test_cmd_args_requirements_only():
         from scripts.whats_next import main
         main()
         
-        # Verify that generate_next_steps was called with 5 arguments including tenet_info
+        # Verify that generate_next_steps was called with 6 arguments including tenet_info and validation_info
         mock_generate.assert_called_once()
-        _, cips_arg, backlog_arg, req_arg, tenet_arg = mock_generate.call_args[0]
+        _, cips_arg, backlog_arg, req_arg, tenet_arg, validation_arg = mock_generate.call_args[0]
         assert 'by_status' in cips_arg
         assert 'by_status' in backlog_arg
         assert 'by_priority' in backlog_arg
@@ -868,6 +869,95 @@ class TestGenerateNextStepsWithTenets(unittest.TestCase):
         next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, None)
         
         # Should still return next steps (shouldn't crash)
+        self.assertIsInstance(next_steps, list)
+
+
+class TestValidationIntegration(unittest.TestCase):
+    """Test validation integration in whats_next script."""
+    
+    def test_generate_next_steps_with_validation_errors(self):
+        """Test that validation errors appear as first next step."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = None
+        validation_info = {'error_count': 10, 'warning_count': 5, 'has_issues': True, 'exit_code': 1}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info)
+        
+        # Validation errors should be first next step
+        self.assertGreater(len(next_steps), 0)
+        first_step = next_steps[0]
+        self.assertIn('10', first_step)  # Error count
+        self.assertIn('validation', first_step.lower())
+        self.assertIn('--fix', first_step)
+    
+    def test_generate_next_steps_with_validation_warnings_only(self):
+        """Test that validation warnings appear when no errors."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = None
+        validation_info = {'error_count': 0, 'warning_count': 3, 'has_issues': True, 'exit_code': 0}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info)
+        
+        # Should have validation warning step
+        validation_steps = [step for step in next_steps if 'validation' in step.lower() and 'warning' in step.lower()]
+        self.assertGreater(len(validation_steps), 0)
+        self.assertTrue(any('3' in step for step in validation_steps))  # Warning count
+    
+    def test_generate_next_steps_without_validation_issues(self):
+        """Test that no validation step appears when validation passes."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = None
+        validation_info = {'error_count': 0, 'warning_count': 0, 'has_issues': False, 'exit_code': 0}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info)
+        
+        # Should NOT have validation steps
+        validation_steps = [step for step in next_steps if 'validation' in step.lower()]
+        self.assertEqual(len(validation_steps), 0)
+    
+    def test_generate_next_steps_with_validation_error(self):
+        """Test that validation errors are handled gracefully."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = None
+        validation_info = {'error': 'Validator script not found'}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info)
+        
+        # Should still generate next steps (graceful degradation)
+        self.assertIsInstance(next_steps, list)
+        # Should NOT crash or include validation steps
+        validation_steps = [step for step in next_steps if 'validation' in step.lower()]
+        self.assertEqual(len(validation_steps), 0)
+    
+    def test_generate_next_steps_without_validation_info(self):
+        """Test backwards compatibility when validation_info is None."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = None
+        
+        # Call without validation_info (backwards compatibility)
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, None)
+        
+        # Should still work
         self.assertIsInstance(next_steps, list)
 
 

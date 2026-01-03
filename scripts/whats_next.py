@@ -9,7 +9,6 @@ The script provides a comprehensive overview of:
 - CIP (Change Implementation Proposal) status
 - Backlog item status
 - Requirements status
-- Project tenets status and review recommendations
 
 The script accepts status values in multiple formats for backlog items:
 - Lowercase with underscores: "proposed", "in_progress", "completed"
@@ -18,15 +17,14 @@ The script accepts status values in multiple formats for backlog items:
 All formats are normalized internally to lowercase with underscores.
 
 Usage:
-    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only] [--tenet-review-period DAYS]
+    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
 
 Options:
-    --no-git                  Skip Git status information
-    --no-color               Disable colored output
-    --cip-only               Show only CIP status
-    --backlog-only           Show only backlog status
-    --requirements-only      Show only requirements status
-    --tenet-review-period    Days after which tenets should be reviewed (default: 180)
+    --no-git              Skip Git status information
+    --no-color           Disable colored output
+    --cip-only           Show only CIP status
+    --backlog-only       Show only backlog status
+    --requirements-only  Show only requirements status
 
 Returns:
     None. Outputs formatted status information to stdout.
@@ -530,13 +528,77 @@ def check_tenet_status(review_period_days: int = 180) -> Dict[str, Any]:
         "files": [str(f.relative_to(tenets_dir)) for f in project_tenets]
     }
 
+
+def run_validation() -> Dict[str, Any]:
+    """Run VibeSafe structure validation and return summary.
+    
+    Returns:
+        dict: Validation results with keys:
+            - error_count: Number of validation errors
+            - warning_count: Number of validation warnings
+            - has_issues: True if errors or warnings found
+            - exit_code: Validator exit code
+            - error: Error message if validation failed to run
+    """
+    # Get the script directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    validator_path = os.path.join(script_dir, 'validate_vibesafe_structure.py')
+    
+    # Check if validator exists
+    if not os.path.exists(validator_path):
+        return {'error': 'Validator script not found'}
+    
+    try:
+        # Run validator with no-color flag
+        result = subprocess.run(
+            [sys.executable, validator_path, '--no-color'],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        
+        output = result.stdout + result.stderr
+        
+        # Parse output for error and warning counts
+        error_match = re.search(r'ERRORS \((\d+)\)', output)
+        warning_match = re.search(r'WARNINGS \((\d+)\)', output)
+        
+        error_count = int(error_match.group(1)) if error_match else 0
+        warning_count = int(warning_match.group(1)) if warning_match else 0
+        
+        return {
+            'error_count': error_count,
+            'warning_count': warning_count,
+            'has_issues': error_count > 0 or warning_count > 0,
+            'exit_code': result.returncode
+        }
+    except subprocess.TimeoutExpired:
+        return {'error': 'Validation timed out'}
+    except Exception as e:
+        return {'error': str(e)}
+
+
 def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], 
                          backlog_info: Dict[str, Any], requirements_info: Dict[str, Any],
-                         tenet_info: Dict[str, Any] = None) -> List[str]:
+                         tenet_info: Dict[str, Any] = None,
+                         validation_info: Dict[str, Any] = None) -> List[str]:
     """Generate suggested next steps based on the project state."""
     next_steps = []
     
-    # Add suggestion to create tenets if missing
+    # Add validation issues as highest priority if present
+    if validation_info and not validation_info.get('error'):
+        if validation_info.get('error_count', 0) > 0:
+            next_steps.append(
+                f"{Colors.RED}Fix {validation_info['error_count']} validation error(s):{Colors.ENDC} "
+                f"./scripts/validate_vibesafe_structure.py --fix --fix-links"
+            )
+        elif validation_info.get('warning_count', 0) > 0:
+            next_steps.append(
+                f"{Colors.YELLOW}Address {validation_info['warning_count']} validation warning(s):{Colors.ENDC} "
+                f"./scripts/validate_vibesafe_structure.py"
+            )
+    
+    # Add suggestion to create/review tenets if needed
     if tenet_info:
         if tenet_info.get('status') == 'missing':
             next_steps.append("Create tenets directory and define your project's guiding principles")
@@ -632,15 +694,9 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
         next_steps.append(f"Continue work on in-progress backlog item: {backlog_info['by_status']['in_progress'][0]['title']}")
     
-    # Check for high priority backlog items (excluding completed)
+    # Check for high priority backlog items
     if backlog_info and backlog_info.get('by_priority') and backlog_info['by_priority'].get('high'):
-        # Filter out completed items
-        completed_ids = {task['id'] for task in backlog_info.get('by_status', {}).get('completed', [])}
-        high_priority_active = [
-            item for item in backlog_info['by_priority']['high']
-            if item['id'] not in completed_ids
-        ]
-        for item in high_priority_active[:2]:  # Top 2 active high priority items
+        for item in backlog_info['by_priority']['high'][:2]:  # Top 2 high priority items
             if not any(item['title'] in step for step in next_steps):  # Avoid duplicates
                 next_steps.append(f"Address high priority backlog item: {item['title']}")
     
@@ -694,8 +750,7 @@ def main():
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
-    parser.add_argument('--tenet-review-period', type=int, default=180, 
-                        help='Days after which tenets should be reviewed (default: 180 = 6 months)')
+    parser.add_argument('--skip-validation', action='store_true', help='Skip VibeSafe structure validation')
     args = parser.parse_args()
     
     if args.no_color:
@@ -782,16 +837,9 @@ def main():
                 print(f"    - {task['title']} ({task['id']})")
         
         if backlog_info['by_priority']['high']:
-            # Filter out completed items from high priority display
-            completed_ids = {task['id'] for task in backlog_info['by_status']['completed']}
-            high_priority_active = [
-                task for task in backlog_info['by_priority']['high']
-                if task['id'] not in completed_ids
-            ]
-            if high_priority_active:
-                print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(high_priority_active)}")
-                for task in high_priority_active:
-                    print(f"    - {task['title']} ({task['id']})")
+            print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(backlog_info['by_priority']['high'])}")
+            for task in backlog_info['by_priority']['high']:
+                print(f"    - {task['title']} ({task['id']})")
         
         print("")
     
@@ -831,84 +879,23 @@ def main():
         
         print("")
     
-    # Get tenet status
-    tenet_info = check_tenet_status(args.tenet_review_period)
+    # Check tenet status
+    tenet_info = check_tenet_status()
     
-    print(f"{Colors.BOLD}Project Tenets:{Colors.ENDC}")
-    if tenet_info['status'] == 'missing':
-        print(f"  Status: {Colors.RED}No tenets directory found{Colors.ENDC}")
-        print("")
-        print("  Tenets help define guiding principles for your project.")
-        print("")
-        print("  Next steps:")
-        print("    1. Review VibeSafe tenets for inspiration: tenets/vibesafe/")
-        print("    2. Create your first project tenet: cp tenets/tenet_template.md tenets/my-first-tenet.md")
-        print("    3. Edit and define your project's guiding principles")
-        print("")
-    elif tenet_info['status'] == 'empty':
-        print(f"  Status: {Colors.YELLOW}No project tenets found{Colors.ENDC}")
-        print("  (Tenets directory exists but contains only VibeSafe system files)")
-        print("")
-        print("  Next steps:")
-        print("    1. Review VibeSafe tenets for inspiration: tenets/vibesafe/")
-        print("    2. Create your first project tenet: cp tenets/tenet_template.md tenets/my-first-tenet.md")
-        print("    3. Edit and define your project's guiding principles")
-        print("")
-    else:  # status == 'exists'
-        print(f"  Tenets found: {Colors.GREEN}{tenet_info['count']}{Colors.ENDC}")
-        
-        if tenet_info['days_since_modification'] is not None:
-            days = int(tenet_info['days_since_modification'])
-            months = days / 30.44  # Average days per month
-            
-            if days < 90:
-                age_color = Colors.GREEN
-                age_status = "fresh"
-            elif days < 180:
-                age_color = Colors.YELLOW
-                age_status = "recent"
-            else:
-                age_color = Colors.RED
-                age_status = "needs review"
-            
-            if months < 1:
-                age_str = f"{days} days ago"
-            else:
-                age_str = f"{int(months)} months ago ({days} days)"
-            
-            print(f"  Last modified: {age_color}{age_str}{Colors.ENDC}")
-            
-            if tenet_info['needs_review']:
-                print("")
-                print(f"  {Colors.RED}⚠️  Review recommended{Colors.ENDC}")
-                print(f"  Your tenets haven't been reviewed in {int(months)} months.")
-                print("")
-                print("  Consider reviewing your tenets to ensure they still reflect your project's")
-                print("  current practices and goals. Projects evolve, and tenets should too.")
-                print("")
-                print("  Next steps:")
-                print("    1. Review existing tenets: ls tenets/")
-                print("    2. Update tenets that need refinement")
-                print("    3. Add new tenets for emerging patterns")
-                print("    4. Remove or archive tenets that are no longer relevant")
-                print("")
-            else:
-                print(f"  Status: {Colors.GREEN}Up to date{Colors.ENDC}")
-                print("")
+    # Run validation if not skipped
+    validation_info = {}
+    if not args.skip_validation:
+        validation_info = run_validation()
     
     # Generate next steps
-    # Ensure requirements_info has minimal structure for next_steps generation
-    if not requirements_info:
-        requirements_info = {'has_framework': False}
-    
     if args.cip_only:
-        next_steps = generate_next_steps(git_info, cips_info, {}, requirements_info, tenet_info)
+        next_steps = generate_next_steps(git_info, cips_info, {}, {}, tenet_info, validation_info)
     elif args.backlog_only:
-        next_steps = generate_next_steps(git_info, {}, backlog_info, requirements_info, tenet_info)
+        next_steps = generate_next_steps(git_info, {}, backlog_info, {}, tenet_info, validation_info)
     elif args.requirements_only:
-        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info)
+        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info, validation_info)
     else:
-        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info)
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info)
     
     if next_steps:
         print_section("Suggested Next Steps")
