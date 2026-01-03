@@ -1,3 +1,17 @@
+---
+id: "information-exploration-patterns"
+title: "Information Exploration Patterns"
+status: "Active"
+created: "2025-05-05"
+last_reviewed: "2026-01-03"
+review_frequency: "Annual"
+conflicts_with: []
+tags:
+  - information-architecture
+  - navigation
+  - user-experience
+---
+
 ## Tenet: information-exploration-patterns
 
 **Title**: Information Exploration Patterns

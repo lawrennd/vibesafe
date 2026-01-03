@@ -4,8 +4,7 @@ id: '0007'
 last_updated: '2026-01-03'
 priority: High
 related_backlog: []
-related_tenets:
-- clean-installation
+related_tenets: []
 stakeholders:
 - vibesafe-users
 - existing-projects

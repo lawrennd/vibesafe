@@ -1,3 +1,17 @@
+---
+id: "user-autonomy"
+title: "User Autonomy Over Prescription"
+status: "Active"
+created: "2025-05-05"
+last_reviewed: "2026-01-03"
+review_frequency: "Annual"
+conflicts_with: ["simplicity-of-use"]
+tags:
+  - design
+  - philosophy
+  - user-experience
+---
+
 ## Tenet: user-autonomy
 
 **Title**: User Autonomy Over Prescription

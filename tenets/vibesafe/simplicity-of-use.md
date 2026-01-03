@@ -1,3 +1,18 @@
+---
+id: "simplicity-of-use"
+title: "Simplicity at All Levels"
+status: "Active"
+created: "2025-05-05"
+last_reviewed: "2026-01-03"
+review_frequency: "Annual"
+conflicts_with: ["user-autonomy"]
+tags:
+  - design
+  - philosophy
+  - simplicity
+  - dependencies
+---
+
 ## Tenet: simplicity-of-use
 
 **Title**: Simplicity at All Levels

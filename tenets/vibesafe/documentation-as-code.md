@@ -1,3 +1,17 @@
+---
+id: "documentation-as-code"
+title: "Documentation and Implementation as a Unified Whole"
+status: "Active"
+created: "2025-05-05"
+last_reviewed: "2026-01-03"
+review_frequency: "Annual"
+conflicts_with: []
+tags:
+  - documentation
+  - code-quality
+  - maintainability
+---
+
 ## Tenet: documentation-as-code
 
 **Title**: Documentation and Implementation as a Unified Whole
