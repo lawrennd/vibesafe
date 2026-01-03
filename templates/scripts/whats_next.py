@@ -896,8 +896,7 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     # Proper workflow: Accepted CIP → Break into backlog tasks → Implement
     if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('accepted'):
         cip = cips_info['by_status']['accepted'][0]
-        next_steps.append(f"Break down accepted CIP into backlog tasks: {cip['id']} - {cip['title']}")
-        next_steps.append(f"Start implementing {cip['id']} by creating specific, actionable backlog items")
+        next_steps.append(f"Break down accepted CIP {cip['id']} ({cip['title']}) into backlog tasks")
     
     # Check for in-progress backlog items
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
