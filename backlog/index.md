@@ -47,7 +47,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-- [Fix install-whats-next messaging and requirements rule installation in minimal installs](infrastructure/2025-12-15_fix-install-whats-next-docs-link.md)
+- [Fix install-whats-next messaging and requirements rule installation in minimal](infrastructure/2025-12-15_fix-install-whats-next-docs-link.md)
 
 - [Ensure combine_tenets.py Includes Cursor Rules Generation Functionality](infrastructure/2025-07-28_vibesafe-combine-tenets-cursor-rules.md)
 
@@ -101,7 +101,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-- [Fix install-whats-next messaging and requirements rule installation in minimal installs](bugs/2025-12-15_fix-install-whats-next-docs-link.md)
+- [Fix install-whats-next messaging and requirements rule installation in minimal](bugs/2025-12-15_fix-install-whats-next-docs-link.md)
 
 
 ---
@@ -121,4 +121,4 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Abandoned Tasks
 
-*No tasks recently abandoned.*
+- [Implement Easy Installation Method for VibeSafe](features/2025-05-05_easy-installation-method.md)
