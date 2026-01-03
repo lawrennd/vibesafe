@@ -402,10 +402,10 @@ def scan_backlog() -> Dict[str, Any]:
     return backlog_info
 
 def scan_requirements() -> Dict[str, Any]:
-    """Scan the AI-Requirements directory and collect information."""
+    """Scan the requirements directory and collect information."""
     requirements_info = {
-        'has_framework': os.path.isdir('ai-requirements'),
-        'has_template': os.path.exists('ai-requirements/requirement_template.md'),
+        'has_framework': os.path.isdir('requirements'),
+        'has_template': os.path.exists('requirements/requirement_template.md'),
         'patterns': [],
         'prompts': {
             'discovery': [],
@@ -418,70 +418,421 @@ def scan_requirements() -> Dict[str, Any]:
         'guidance': []
     }
     
-    # Check if the AI-Requirements framework is present
+    # Check if the requirements framework is present
     if not requirements_info['has_framework']:
         return requirements_info
     
-    # Scan patterns
-    if os.path.isdir('ai-requirements/patterns'):
-        pattern_files = glob.glob('ai-requirements/patterns/*.md')
-        requirements_info['patterns'] = [os.path.basename(f).replace('.md', '') for f in pattern_files]
-    
-    # Scan prompts
-    for prompt_type in ['discovery', 'refinement', 'validation', 'testing']:
-        prompt_dir = f'ai-requirements/prompts/{prompt_type}'
-        if os.path.isdir(prompt_dir):
-            prompt_files = glob.glob(f'{prompt_dir}/*.md')
-            requirements_info['prompts'][prompt_type] = [os.path.basename(f) for f in prompt_files]
-    
-    # Scan integrations
-    if os.path.isdir('ai-requirements/integrations'):
-        integration_files = glob.glob('ai-requirements/integrations/*.md')
-        requirements_info['integrations'] = [os.path.basename(f).replace('.md', '') for f in integration_files]
-    
-    # Scan examples
-    if os.path.isdir('ai-requirements/examples'):
-        example_files = glob.glob('ai-requirements/examples/*.md')
-        requirements_info['examples'] = [os.path.basename(f) for f in example_files]
-    
-    # Scan guidance
-    if os.path.isdir('ai-requirements/guidance'):
-        guidance_files = glob.glob('ai-requirements/guidance/*.md')
-        requirements_info['guidance'] = [os.path.basename(f) for f in guidance_files]
+    # Note: The old ai-requirements/ structure with patterns/prompts/etc. has been
+    # simplified to just requirements/ with flat or optional categorization.
+    # This scan function is kept for backwards compatibility but will be simplified
+    # in future versions to just check for requirements/*.md files.
     
     return requirements_info
 
+def detect_codebase() -> bool:
+    """Detect if there's a codebase (source code files) in the project.
+    
+    Excludes VibeSafe system files and common non-code directories.
+    """
+    source_extensions = {'.py', '.js', '.ts', '.jsx', '.tsx', '.go', '.rs', '.java', 
+                        '.c', '.cpp', '.h', '.hpp', '.rb', '.php', '.swift', '.kt'}
+    
+    # VibeSafe system directories and other directories to exclude
+    exclude_dirs = {
+        'scripts',  # VibeSafe system scripts
+        'templates',  # VibeSafe templates
+        '.venv', '.venv-vibesafe',  # Virtual environments
+        'node_modules', '__pycache__', '.git',  # Dependencies and system
+        'venv', 'env',  # Other common venv names
+        'cip', 'backlog', 'tenets', 'requirements',  # VibeSafe components
+        'docs', 'doc', 'documentation',  # Documentation
+        '.cursor', '.vscode', '.idea',  # IDE directories
+    }
+    
+    # Check common source directories first
+    source_dirs = ['src', 'lib', 'app', 'pkg', 'internal', 'core']
+    
+    for dir_name in source_dirs:
+        dir_path = Path(dir_name)
+        if dir_path.exists() and dir_path.is_dir():
+            for file in dir_path.rglob('*'):
+                if file.suffix in source_extensions:
+                    return True
+    
+    # Also check for Python packages in root or one level deep (e.g., myproject/myproject/)
+    # This catches cases where the package is organized as: myproject/myproject/__init__.py
+    root = Path('.')
+    
+    # Check root-level Python files (but not VibeSafe scripts)
+    for file in root.glob('*.py'):
+        if file.is_file() and file.name not in {'setup.py', 'conftest.py'}:
+            return True
+    
+    # Check directories in root that might be Python packages or other source directories
+    for item in root.iterdir():
+        if item.is_dir() and item.name not in exclude_dirs and not item.name.startswith('.'):
+            # Check if this directory has source files
+            for file in item.rglob('*'):
+                # Skip excluded subdirectories
+                if any(excluded in file.parts for excluded in exclude_dirs):
+                    continue
+                if file.suffix in source_extensions:
+                    return True
+    
+    return False
+
+
+def detect_component(component_dir: str) -> bool:
+    """Detect if a VibeSafe component exists with user content (not just templates)."""
+    dir_path = Path(component_dir)
+    
+    if not dir_path.exists():
+        return False
+    
+    # Template and system files to ignore
+    system_files = {
+        'README.md', 'readme.md',
+        'task_template.md', 'cip_template.md', 'tenet_template.md', 'requirement_template.md',
+        'combine_tenets.py', 'update_index.py',
+        'index.md',  # Auto-generated
+    }
+    
+    # Check for user content files
+    for file in dir_path.rglob('*.md'):
+        if file.name not in system_files and 'vibesafe' not in str(file.parent):
+            return True
+    
+    return False
+
+
+def detect_gaps() -> Dict[str, bool]:
+    """Detect missing VibeSafe components."""
+    return {
+        'has_codebase': detect_codebase(),
+        'has_tenets': detect_component('tenets'),
+        'has_requirements': detect_component('requirements'),
+        'has_cips': detect_component('cip'),
+        'has_backlog': detect_component('backlog')
+    }
+
+
+def generate_ai_prompts(gaps: Dict[str, bool]) -> List[Dict[str, str]]:
+    """Generate AI prompts based on detected gaps."""
+    prompts = []
+    
+    # Priority 1: Tenets (foundation)
+    if gaps['has_codebase'] and not gaps['has_tenets']:
+        prompts.append({
+            'type': 'create_tenets',
+            'priority': 'high',
+            'title': '📋 Create 3-5 tenets to capture your project\'s guiding principles',
+            'prompt': '''Analyze this codebase and suggest 3-5 foundational tenets that capture
+the project's design philosophy, architecture decisions, and priorities.
+
+Look for:
+- Recurring patterns in code organization
+- Architectural decisions (e.g., modularity, separation of concerns)
+- Design philosophy evident in code structure
+- Trade-offs made (e.g., simplicity vs. features, performance vs. maintainability)
+- User experience priorities
+
+For each tenet, provide:
+1. Title (short, memorable phrase)
+2. Description (1-2 paragraphs explaining the principle)
+3. Quote (one sentence that captures the essence)
+4. Examples from the codebase
+5. Counter-examples (what this tenet avoids)
+
+Output format: tenets/[kebab-case-name].md with YAML frontmatter
+(Use the template at tenets/tenet_template.md)
+
+Once created, run ./whats-next again for next steps.'''
+        })
+    
+    # Priority 2: Requirements (extracted from CIPs if they exist)
+    elif gaps['has_tenets'] and gaps['has_cips'] and not gaps['has_requirements']:
+        prompts.append({
+            'type': 'extract_requirements',
+            'priority': 'high',
+            'title': '📋 Extract requirements (WHAT) from existing CIPs (HOW)',
+            'prompt': '''Extract requirements from existing CIPs to establish WHAT needs to be achieved.
+
+For each CIP, identify:
+- What problem does it solve?
+- What outcome is desired?
+- What should be true after implementation?
+- Which tenets does this support? (WHY)
+
+Output format: requirements/req[XXXX]_short-name.md with YAML frontmatter
+- Use hexadecimal numbering (req0001, req0002, ..., req000A, etc.)
+- Link requirements back to tenets using related_tenets field
+- Focus on desired outcomes (WHAT), not implementation (HOW)
+
+After creating requirements:
+- Update existing CIPs to reference the new requirements (related_requirements field)
+- Run ./scripts/validate_vibesafe_structure.py --fix-links to fix any linking issues
+- Run ./whats-next again for next steps'''
+        })
+    
+    # Priority 3: CIPs (if requirements exist but no CIPs)
+    elif gaps['has_requirements'] and not gaps['has_cips']:
+        prompts.append({
+            'type': 'create_cips',
+            'priority': 'medium',
+            'title': '📋 Create CIPs to design HOW to implement requirements',
+            'prompt': '''Create CIPs (Code Improvement Proposals) to design HOW to implement requirements.
+
+For each high-priority requirement:
+- Design the implementation approach
+- Identify affected components
+- Plan the changes needed
+- Consider trade-offs and alternatives
+
+Output format: cip/cip[XXXX]_short-name.md with YAML frontmatter
+- Use hexadecimal numbering (cip0001, cip0002, ..., cip000A, etc.)
+- Link CIPs to requirements using related_requirements field
+- Include: Description, Motivation, Implementation, Status
+
+After creating CIPs:
+- Run ./whats-next again for next steps'''
+        })
+    
+    # Priority 4: Backlog (if CIPs exist but no backlog)
+    elif gaps['has_cips'] and not gaps['has_backlog']:
+        prompts.append({
+            'type': 'create_backlog',
+            'priority': 'medium',
+            'title': '📋 Break down CIPs into actionable backlog tasks',
+            'prompt': '''Break down CIPs into concrete backlog tasks.
+
+For each CIP:
+- Identify specific implementation steps
+- Create tasks for each step
+- Set priorities based on dependencies
+- Link tasks to CIPs
+
+Output format: backlog/[category]/YYYY-MM-DD_short-name.md with YAML frontmatter
+- Categories: features, bugs, documentation, infrastructure
+- Use today's date for new tasks
+- Link backlog items to CIPs using related_cips field
+
+After creating backlog:
+- Run ./whats-next again to see task priorities'''
+        })
+    
+    # Edge case: No components at all
+    elif not any([gaps['has_tenets'], gaps['has_requirements'], gaps['has_cips'], gaps['has_backlog']]):
+        if gaps['has_codebase']:
+            prompts.append({
+                'type': 'bootstrap_all',
+                'priority': 'high',
+                'title': '📋 Bootstrap VibeSafe: Start with tenets',
+                'prompt': '''Your project has code but no VibeSafe components yet. Let's bootstrap!
+
+Start by creating 3-5 tenets that capture your project's guiding principles.
+(See the create_tenets prompt above for detailed guidance)
+
+Recommended order:
+1. Tenets (WHY) - Guiding principles
+2. Requirements (WHAT) - Desired outcomes
+3. CIPs (HOW) - Implementation plans
+4. Backlog (DOING) - Concrete tasks'''
+            })
+    
+    return prompts
+
+
+def check_tenet_status(review_period_days: int = 180) -> Dict[str, Any]:
+    """Check the status of project tenets.
+    
+    Args:
+        review_period_days: Number of days after which tenets should be reviewed (default: 180 = 6 months)
+    
+    Returns:
+        Dictionary containing tenet status information:
+        - status: 'missing', 'empty', or 'exists'
+        - count: Number of project tenets found
+        - oldest_modification: Timestamp of oldest modification
+        - newest_modification: Timestamp of newest modification
+        - days_since_modification: Days since last modification
+        - needs_review: Boolean indicating if review is recommended
+        - files: List of tenet file paths
+    """
+    tenets_dir = Path("tenets")
+    
+    # Check if tenets directory exists
+    if not tenets_dir.exists():
+        return {
+            "status": "missing",
+            "message": "No tenets directory found",
+            "count": 0,
+            "needs_review": False
+        }
+    
+    # Find project-specific tenet files (not VibeSafe system files)
+    project_tenets = []
+    system_files = ["README.md", "tenet_template.md", "combine_tenets.py", 
+                    "vibesafe-tenets.md", "vibesafe-tenets.yaml"]
+    
+    for file in tenets_dir.rglob("*.md"):
+        # Skip system files and files in vibesafe subdirectory
+        if file.name not in system_files and "vibesafe" not in str(file.parent):
+            project_tenets.append(file)
+    
+    if not project_tenets:
+        return {
+            "status": "empty",
+            "message": "Tenets directory exists but no project tenets found",
+            "count": 0,
+            "needs_review": False
+        }
+    
+    # Check age of tenets
+    oldest_modification = None
+    newest_modification = None
+    
+    for tenet in project_tenets:
+        try:
+            mtime = tenet.stat().st_mtime
+            if oldest_modification is None or mtime < oldest_modification:
+                oldest_modification = mtime
+            if newest_modification is None or mtime > newest_modification:
+                newest_modification = mtime
+        except OSError:
+            continue
+    
+    # Calculate days since last modification
+    days_since_modification = None
+    needs_review = False
+    if newest_modification:
+        days_since_modification = (datetime.now().timestamp() - newest_modification) / (60 * 60 * 24)
+        needs_review = days_since_modification > review_period_days
+    
+    return {
+        "status": "exists",
+        "count": len(project_tenets),
+        "oldest_modification": oldest_modification,
+        "newest_modification": newest_modification,
+        "days_since_modification": days_since_modification,
+        "needs_review": needs_review,
+        "review_period_days": review_period_days,
+        "files": [str(f.relative_to(tenets_dir)) for f in project_tenets]
+    }
+
+
+def run_validation() -> Dict[str, Any]:
+    """Run VibeSafe structure validation and return summary.
+    
+    Returns:
+        dict: Validation results with keys:
+            - error_count: Number of validation errors
+            - warning_count: Number of validation warnings
+            - has_issues: True if errors or warnings found
+            - exit_code: Validator exit code
+            - error: Error message if validation failed to run
+    """
+    # Get the script directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    validator_path = os.path.join(script_dir, 'validate_vibesafe_structure.py')
+    
+    # Check if validator exists
+    if not os.path.exists(validator_path):
+        return {'error': 'Validator script not found'}
+    
+    try:
+        # Run validator with no-color flag
+        result = subprocess.run(
+            [sys.executable, validator_path, '--no-color'],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        
+        output = result.stdout + result.stderr
+        
+        # Parse output for error and warning counts
+        error_match = re.search(r'ERRORS \((\d+)\)', output)
+        warning_match = re.search(r'WARNINGS \((\d+)\)', output)
+        
+        error_count = int(error_match.group(1)) if error_match else 0
+        warning_count = int(warning_match.group(1)) if warning_match else 0
+        
+        return {
+            'error_count': error_count,
+            'warning_count': warning_count,
+            'has_issues': error_count > 0 or warning_count > 0,
+            'exit_code': result.returncode
+        }
+    except subprocess.TimeoutExpired:
+        return {'error': 'Validation timed out'}
+    except Exception as e:
+        return {'error': str(e)}
+
+
 def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], 
-                         backlog_info: Dict[str, Any], requirements_info: Dict[str, Any]) -> List[str]:
+                         backlog_info: Dict[str, Any], requirements_info: Dict[str, Any],
+                         tenet_info: Dict[str, Any] = None,
+                         validation_info: Dict[str, Any] = None,
+                         gaps_info: Dict[str, Any] = None) -> List[str]:
     """Generate suggested next steps based on the project state."""
     next_steps = []
     
-    # Add suggestion to create AI-Requirements framework if missing
+    # Add validation issues as highest priority if present
+    if validation_info and not validation_info.get('error'):
+        if validation_info.get('error_count', 0) > 0:
+            next_steps.append(
+                f"{Colors.RED}Fix {validation_info['error_count']} validation error(s):{Colors.ENDC} "
+                f"./scripts/validate_vibesafe_structure.py --fix --fix-links"
+            )
+        elif validation_info.get('warning_count', 0) > 0:
+            next_steps.append(
+                f"{Colors.YELLOW}Address {validation_info['warning_count']} validation warning(s):{Colors.ENDC} "
+                f"./scripts/validate_vibesafe_structure.py"
+            )
+    
+    # Add gap detection and AI-assisted prompts
+    if gaps_info and gaps_info.get('prompts'):
+        for prompt_info in gaps_info['prompts']:
+            # Format the prompt nicely
+            title = prompt_info['title']
+            prompt_text = prompt_info['prompt']
+            
+            # Add title
+            next_steps.append(f"\n{Colors.BLUE}{title}{Colors.ENDC}")
+            
+            # Add prompt with indentation
+            prompt_lines = prompt_text.strip().split('\n')
+            next_steps.append(f"\n{Colors.YELLOW}   AI Prompt:{Colors.ENDC}")
+            for line in prompt_lines[:10]:  # Show first 10 lines
+                next_steps.append(f"   {line}")
+            if len(prompt_lines) > 10:
+                next_steps.append(f"   ... ({len(prompt_lines) - 10} more lines)")
+            next_steps.append("")  # Empty line for spacing
+    
+    # Add suggestion to create/review tenets if needed (legacy, now handled by gaps)
+    if tenet_info and not gaps_info:
+        if tenet_info.get('status') == 'missing':
+            next_steps.append("Create tenets directory and define your project's guiding principles")
+        elif tenet_info.get('status') == 'empty':
+            next_steps.append("Create your first project tenet to document guiding principles")
+        elif tenet_info.get('needs_review'):
+            next_steps.append("Review and update project tenets to reflect current practices")
+    
+    # Add suggestion to create requirements framework if missing
     if not requirements_info['has_framework']:
         next_steps.append(
-            "Create AI-Requirements framework directory structure: "
-            "mkdir -p ai-requirements/{patterns,prompts/{discovery,refinement,validation,testing},integrations,examples,guidance}"
+            "Create requirements directory: mkdir -p requirements"
         )
     # Check if requirement template exists
     elif not requirements_info.get('has_template'):
         next_steps.append(
-            "Create requirements template: cp templates/ai-requirements/requirement_template.md ai-requirements/"
-        )
-    # Add suggestion if no patterns exist
-    elif not requirements_info['patterns']:
-        next_steps.append(
-            "Create requirements patterns in ai-requirements/patterns/"
-        )
-    # Add suggestion if no prompts exist in any category
-    elif all(not prompts for prompts in requirements_info['prompts'].values()):
-        next_steps.append(
-            "Create requirements prompts in ai-requirements/prompts/"
+            "Create first requirement using template: cp requirements/requirement_template.md requirements/req0001_my-requirement.md"
         )
     
     # Add suggestion to use requirements for backlog tasks
     if requirements_info['has_framework'] and backlog_info['by_status']['proposed']:
         next_steps.append(
-            "Use AI-Requirements patterns to refine proposed backlog tasks"
+            "Review requirements to refine proposed backlog tasks"
         )
     
     # Check for missing frontmatter
@@ -518,7 +869,7 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
         if proposed_cips_needing_requirements:
             cip = proposed_cips_needing_requirements[0]
             next_steps.append(f"Start requirements gathering for proposed CIP: {cip['id']} - {cip['title']}")
-            next_steps.append("Use AI-Requirements framework prompts and patterns for structured requirements discovery")
+            next_steps.append("Document requirements (WHAT) before implementation (HOW)")
             
         # Remind about checking for requirements drift for implemented CIPs
         implemented_cips = []
@@ -531,13 +882,13 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
             next_steps.append("Check for requirements drift - ensure code aligns with specified requirements")
     else:
         # If requirements framework doesn't exist, suggest setting it up
-        next_steps.append("Set up AI-Requirements framework to improve requirements gathering")
+        next_steps.append("Set up requirements framework to improve requirements gathering")
     
     # Check for accepted CIPs that need implementation
     if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('accepted'):
         next_steps.append(f"Implement accepted CIP: {cips_info['by_status']['accepted'][0]['id']} - {cips_info['by_status']['accepted'][0]['title']}")
         # Add requirements reminder for implementation
-        next_steps.append("Start implementation by reviewing requirements from the AI-Requirements framework")
+        next_steps.append("Start implementation by reviewing requirements")
     
     # Check for in-progress backlog items
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):
@@ -573,7 +924,7 @@ def run_update_scripts() -> List[str]:
         'backlog/update_index.py',
         'cip/update_index.py',
         'tenets/update_index.py',
-        'ai-requirements/update_index.py'
+        'requirements/update_index.py'
     ]
     
     results = []
@@ -599,6 +950,7 @@ def main():
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
+    parser.add_argument('--skip-validation', action='store_true', help='Skip VibeSafe structure validation')
     args = parser.parse_args()
     
     if args.no_color:
@@ -696,7 +1048,7 @@ def main():
     if not args.cip_only and not args.backlog_only or args.requirements_only:
         requirements_info = scan_requirements()
         
-        print(f"{Colors.BOLD}AI-Requirements Framework:{Colors.ENDC}")
+        print(f"{Colors.BOLD}Requirements Framework:{Colors.ENDC}")
         if requirements_info['has_framework']:
             print(f"  Framework installed: {Colors.GREEN}Yes{Colors.ENDC}")
             
@@ -727,15 +1079,31 @@ def main():
         
         print("")
     
+    # Check tenet status
+    tenet_info = check_tenet_status()
+    
+    # Run validation if not skipped
+    validation_info = {}
+    if not args.skip_validation:
+        validation_info = run_validation()
+    
+    # Detect gaps and generate AI prompts
+    gaps = detect_gaps()
+    ai_prompts = generate_ai_prompts(gaps)
+    gaps_info = {
+        'gaps': gaps,
+        'prompts': ai_prompts
+    }
+    
     # Generate next steps
     if args.cip_only:
-        next_steps = generate_next_steps(git_info, cips_info, {}, {})
+        next_steps = generate_next_steps(git_info, cips_info, {}, {}, tenet_info, validation_info, gaps_info)
     elif args.backlog_only:
-        next_steps = generate_next_steps(git_info, {}, backlog_info, {})
+        next_steps = generate_next_steps(git_info, {}, backlog_info, {}, tenet_info, validation_info, gaps_info)
     elif args.requirements_only:
-        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info)
+        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info, validation_info, gaps_info)
     else:
-        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info, gaps_info)
     
     if next_steps:
         print_section("Suggested Next Steps")

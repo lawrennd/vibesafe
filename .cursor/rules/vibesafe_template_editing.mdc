@@ -11,6 +11,9 @@ These are the source files that get copied to user projects during installation:
 ```
 templates/
 ├── .cursor/rules/              # ← Edit cursor rules HERE
+├── scripts/                    # ← Edit user-facing scripts HERE
+│   ├── whats_next.py          # ← Edit whats-next script HERE
+│   └── validate_vibesafe_structure.py  # ← Edit validator HERE
 ├── backlog/
 │   ├── README.md              # ← Edit backlog docs HERE
 │   ├── task_template.md       # ← Edit task template HERE
@@ -22,7 +25,7 @@ templates/
 │   ├── README.md              # ← Edit tenet docs HERE
 │   ├── tenet_template.md      # ← Edit tenet template HERE
 │   └── combine_tenets.py      # ← Edit tenet script HERE
-└── ai-requirements/           # ← Edit requirements framework HERE
+└── requirements/              # ← Edit requirements framework HERE
 ```
 
 ### 📦 Deployed Files (NEVER EDIT THESE DIRECTLY)
@@ -94,12 +97,25 @@ Before editing a VibeSafe system file, ask yourself:
 These files are unique to the VibeSafe repo and should be edited directly:
 
 - `README.md` (root) - VibeSafe project README
-- `scripts/whats_next.py` - Gets copied but edit in scripts/
 - `scripts/install-minimal.sh` - Installation script
 - `install-whats-next.sh` - Installation script
+- `scripts/add_*.py` - VibeSafe development tools (not deployed)
 - CIP files (`cip000*.md`) - VibeSafe's own CIPs
 - Backlog tasks (`backlog/*/YYYY-MM-DD_*.md`) - VibeSafe's own tasks
 - Tenet files (actual tenets, not template) - VibeSafe's own tenets
+
+### ⚠️ Special Case: User-Facing Scripts
+
+User-facing scripts (`whats_next.py`, `validate_vibesafe_structure.py`) should be:
+1. **Edited in `scripts/`** (for dogfooding)
+2. **Copied to `templates/scripts/`** (for user deployment)
+3. **Both kept in sync**
+
+After editing these scripts, always copy to templates:
+```bash
+cp scripts/whats_next.py templates/scripts/
+cp scripts/validate_vibesafe_structure.py templates/scripts/
+```
 
 ### 🔄 Dogfooding Process
 
