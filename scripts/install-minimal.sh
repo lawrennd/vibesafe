@@ -514,27 +514,32 @@ cleanup_spurious_cursor_rules() {
   fi
 }
 
-# Global variable to track validation status
+# Global variables to track validation status
 VALIDATION_RAN=false
+VALIDATION_SKIP_REASON=""
 
 # Function to run VibeSafe structure validation
 run_vibesafe_validation() {
   # Skip validation if requested (useful for CI/CD)
   if [ -n "$VIBESAFE_SKIP_VALIDATION" ]; then
+    VALIDATION_SKIP_REASON="skipped via VIBESAFE_SKIP_VALIDATION"
     debug "Skipping validation (VIBESAFE_SKIP_VALIDATION set)"
     return 0
   fi
   
   # Skip if validation script doesn't exist yet
   if [ ! -f "scripts/validate_vibesafe_structure.py" ]; then
+    VALIDATION_SKIP_REASON="validator script not installed"
     debug "Validation script not found, skipping validation"
     return 0
   fi
   
   # Skip if .venv-vibesafe doesn't exist
   if [ ! -d ".venv-vibesafe" ]; then
-    debug "VibeSafe virtual environment not found, skipping validation"
-    return 0
+    VALIDATION_SKIP_REASON="VibeSafe virtual environment not found (.venv-vibesafe missing)"
+    echo -e "${RED}⚠️  Cannot run validation: .venv-vibesafe not found${NC}"
+    echo -e "${YELLOW}   Run './install-whats-next.sh' to set up the environment${NC}"
+    return 1
   fi
   
   echo -e "${YELLOW}Validating VibeSafe structure...${NC}"
@@ -771,8 +776,12 @@ install_vibesafe() {
   echo "✅ User content preserved"
   echo "✅ VibeSafe gitignore protection enabled"
   echo "✅ Project tenets converted to cursor rules"
+  
+  # Report validation status
   if [ "$VALIDATION_RAN" = "true" ]; then
     echo "✅ VibeSafe structure validated"
+  elif [ -f "scripts/validate_vibesafe_structure.py" ] && [ -n "$VALIDATION_SKIP_REASON" ]; then
+    echo -e "${RED}❌ Validation not run: ${VALIDATION_SKIP_REASON}${NC}"
   fi
   echo ""
   echo -e "${YELLOW}Next steps:${NC}"
