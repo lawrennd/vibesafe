@@ -9,7 +9,6 @@ category: "features"
 owner: ""
 dependencies: ["2026-01-03_yaml-frontmatter-standardization", "2026-01-03_simplify-requirements-framework", "2026-01-03_tenets-sustainability-process"]
 related_cips: ["0011"]
-related_requirements: ["REQ-005", "REQ-006"]
 ---
 
 # Task: Phase 4: Create Project Summary Tool

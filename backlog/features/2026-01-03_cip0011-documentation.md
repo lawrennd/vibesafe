@@ -9,7 +9,6 @@ category: "features"
 owner: ""
 dependencies: ["2026-01-03_simplify-requirements-framework", "2026-01-03_patterns-to-vibesafe-guidance", "2026-01-03_tenets-sustainability-process", "2026-01-03_project-summary-tool"]
 related_cips: ["0011"]
-related_requirements: ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005"]
 ---
 
 # Task: Phase 5: CIP-0011 Documentation and Testing

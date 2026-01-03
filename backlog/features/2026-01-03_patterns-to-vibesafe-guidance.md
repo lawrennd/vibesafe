@@ -9,7 +9,6 @@ category: "features"
 owner: ""
 dependencies: ["2026-01-03_simplify-requirements-framework"]
 related_cips: ["0011"]
-related_requirements: ["REQ-003"]
 ---
 
 # Task: Phase 2: Move Patterns to VibeSafe Guidance

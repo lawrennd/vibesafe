@@ -9,7 +9,6 @@ category: "features"
 owner: ""
 dependencies: ["2026-01-03_yaml-frontmatter-standardization"]
 related_cips: ["0011"]
-related_requirements: ["REQ-004"]
 ---
 
 # Task: Phase 3: Tenets Sustainability Process
