@@ -1,15 +1,19 @@
-# VibeSafe Principles
+# VibeSafe Tenets
 
-**These are VibeSafe's framework-level guiding principles**, not project-specific tenets.
+**These are VibeSafe's own tenets** - the guiding principles for how VibeSafe itself works.
 
-## Terminology Distinction
+## Naming: "Tenets" Here, "Principles" When Deployed
 
-| Term | Scope | Purpose | Location | Deployment |
-|------|-------|---------|----------|------------|
-| **VibeSafe Principles** | Framework | Guidance for how VibeSafe projects work | `tenets/vibesafe/` | `vibesafe-principles.mdc` → all projects |
-| **Project Tenets** | Project-specific | User's own project values | `tenets/projectname/` | `project_tenet_*.mdc` per tenet |
+In this repo, these are **tenets** (like any project's tenets). When deployed to user projects, they're packaged as **"VibeSafe Principles"** to avoid confusion with the user's own "Project Tenets".
 
-## VibeSafe Principles
+| Perspective | Name | Location | Why |
+|-------------|------|----------|-----|
+| **In VibeSafe repo** | VibeSafe Tenets | `tenets/vibesafe/` | VibeSafe's own guiding principles |
+| **In user projects** | VibeSafe Principles | `.cursor/rules/vibesafe-principles.mdc` | Avoid namespace collision with user's tenets |
+
+It's a packaging choice, not a fundamental difference.
+
+## VibeSafe's Tenets
 
 These principles guide how VibeSafe itself works and provide guidance to all projects using VibeSafe:
 
@@ -20,23 +24,26 @@ These principles guide how VibeSafe itself works and provide guidance to all pro
 5. **shared-information-landmarks**: Create explicit reference points for collaboration
 6. **information-exploration-patterns**: Support different patterns of information exploration
 
-## How They're Deployed
+## How They're Deployed to User Projects
 
 When users install VibeSafe:
-1. `combine_tenets.py` generates `vibesafe-principles.md` (combined markdown)
-2. `combine_tenets.py` generates `templates/.cursor/rules/vibesafe-principles.mdc` (combined cursor rule)
+1. `scripts/generate_vibesafe_principles.py` reads VibeSafe's tenets from `tenets/vibesafe/`
+2. Generates `templates/.cursor/rules/vibesafe-principles.mdc` (combined cursor rule, renamed to avoid confusion)
 3. `install-minimal.sh` deploys to user projects → `.cursor/rules/vibesafe-principles.mdc`
-4. AI assistants in user projects follow VibeSafe Principles automatically
+4. AI assistants in user projects follow VibeSafe's guidance automatically
 
-This is different from project tenets (CIP-0010), which are user-created and deployed individually.
+Meanwhile, the user's own project tenets:
+- Live in `tenets/projectname/`
+- Combined via `combine_tenets.py` (same tool VibeSafe uses)
+- Deployed as individual `project_tenet_*.mdc` files (per CIP-0010)
 
 ## Maintenance
 
-These principles are reviewed annually (see `review_frequency` in each principle's YAML frontmatter).
+These tenets are reviewed annually (see `review_frequency` in each tenet's YAML frontmatter).
 
-When adding a new principle:
+When adding a new tenet:
 1. Create file in `tenets/vibesafe/`
-2. Run `combine_tenets.py` to regenerate combined files
-3. Commit both the new principle AND the generated files
+2. Run `scripts/generate_vibesafe_principles.py` to regenerate `vibesafe-principles.mdc`
+3. Commit both the new tenet AND the generated cursor rule
 4. Next `install-minimal.sh` will deploy to user projects
 
