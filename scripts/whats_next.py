@@ -451,6 +451,219 @@ def scan_requirements() -> Dict[str, Any]:
     
     return requirements_info
 
+def detect_codebase() -> bool:
+    """Detect if there's a codebase (source code files) in the project.
+    
+    Excludes VibeSafe system files and common non-code directories.
+    """
+    source_extensions = {'.py', '.js', '.ts', '.jsx', '.tsx', '.go', '.rs', '.java', 
+                        '.c', '.cpp', '.h', '.hpp', '.rb', '.php', '.swift', '.kt'}
+    
+    # VibeSafe system directories and other directories to exclude
+    exclude_dirs = {
+        'scripts',  # VibeSafe system scripts
+        'templates',  # VibeSafe templates
+        '.venv', '.venv-vibesafe',  # Virtual environments
+        'node_modules', '__pycache__', '.git',  # Dependencies and system
+        'venv', 'env',  # Other common venv names
+        'cip', 'backlog', 'tenets', 'requirements', 'ai-requirements',  # VibeSafe components
+        'docs', 'doc', 'documentation',  # Documentation
+        '.cursor', '.vscode', '.idea',  # IDE directories
+    }
+    
+    # Check common source directories first
+    source_dirs = ['src', 'lib', 'app', 'pkg', 'internal', 'core']
+    
+    for dir_name in source_dirs:
+        dir_path = Path(dir_name)
+        if dir_path.exists() and dir_path.is_dir():
+            for file in dir_path.rglob('*'):
+                if file.suffix in source_extensions:
+                    return True
+    
+    # Also check for Python packages in root or one level deep (e.g., myproject/myproject/)
+    # This catches cases where the package is organized as: myproject/myproject/__init__.py
+    root = Path('.')
+    
+    # Check root-level Python files (but not VibeSafe scripts)
+    for file in root.glob('*.py'):
+        if file.is_file() and file.name not in {'setup.py', 'conftest.py'}:
+            return True
+    
+    # Check directories in root that might be Python packages or other source directories
+    for item in root.iterdir():
+        if item.is_dir() and item.name not in exclude_dirs and not item.name.startswith('.'):
+            # Check if this directory has source files
+            for file in item.rglob('*'):
+                # Skip excluded subdirectories
+                if any(excluded in file.parts for excluded in exclude_dirs):
+                    continue
+                if file.suffix in source_extensions:
+                    return True
+    
+    return False
+
+
+def detect_component(component_dir: str) -> bool:
+    """Detect if a VibeSafe component exists with user content (not just templates)."""
+    dir_path = Path(component_dir)
+    
+    if not dir_path.exists():
+        return False
+    
+    # Template and system files to ignore
+    system_files = {
+        'README.md', 'readme.md',
+        'task_template.md', 'cip_template.md', 'tenet_template.md', 'requirement_template.md',
+        'combine_tenets.py', 'update_index.py',
+        'index.md',  # Auto-generated
+    }
+    
+    # Check for user content files
+    for file in dir_path.rglob('*.md'):
+        if file.name not in system_files and 'vibesafe' not in str(file.parent):
+            return True
+    
+    return False
+
+
+def detect_gaps() -> Dict[str, bool]:
+    """Detect missing VibeSafe components."""
+    return {
+        'has_codebase': detect_codebase(),
+        'has_tenets': detect_component('tenets'),
+        'has_requirements': detect_component('requirements'),
+        'has_cips': detect_component('cip'),
+        'has_backlog': detect_component('backlog')
+    }
+
+
+def generate_ai_prompts(gaps: Dict[str, bool]) -> List[Dict[str, str]]:
+    """Generate AI prompts based on detected gaps."""
+    prompts = []
+    
+    # Priority 1: Tenets (foundation)
+    if gaps['has_codebase'] and not gaps['has_tenets']:
+        prompts.append({
+            'type': 'create_tenets',
+            'priority': 'high',
+            'title': '📋 Create 3-5 tenets to capture your project\'s guiding principles',
+            'prompt': '''Analyze this codebase and suggest 3-5 foundational tenets that capture
+the project's design philosophy, architecture decisions, and priorities.
+
+Look for:
+- Recurring patterns in code organization
+- Architectural decisions (e.g., modularity, separation of concerns)
+- Design philosophy evident in code structure
+- Trade-offs made (e.g., simplicity vs. features, performance vs. maintainability)
+- User experience priorities
+
+For each tenet, provide:
+1. Title (short, memorable phrase)
+2. Description (1-2 paragraphs explaining the principle)
+3. Quote (one sentence that captures the essence)
+4. Examples from the codebase
+5. Counter-examples (what this tenet avoids)
+
+Output format: tenets/[kebab-case-name].md with YAML frontmatter
+(Use the template at tenets/tenet_template.md)
+
+Once created, run ./whats-next again for next steps.'''
+        })
+    
+    # Priority 2: Requirements (extracted from CIPs if they exist)
+    elif gaps['has_tenets'] and gaps['has_cips'] and not gaps['has_requirements']:
+        prompts.append({
+            'type': 'extract_requirements',
+            'priority': 'high',
+            'title': '📋 Extract requirements (WHAT) from existing CIPs (HOW)',
+            'prompt': '''Extract requirements from existing CIPs to establish WHAT needs to be achieved.
+
+For each CIP, identify:
+- What problem does it solve?
+- What outcome is desired?
+- What should be true after implementation?
+- Which tenets does this support? (WHY)
+
+Output format: requirements/req[XXXX]_short-name.md with YAML frontmatter
+- Use hexadecimal numbering (req0001, req0002, ..., req000A, etc.)
+- Link requirements back to tenets using related_tenets field
+- Focus on desired outcomes (WHAT), not implementation (HOW)
+
+After creating requirements:
+- Update existing CIPs to reference the new requirements (related_requirements field)
+- Run ./scripts/validate_vibesafe_structure.py --fix-links to fix any linking issues
+- Run ./whats-next again for next steps'''
+        })
+    
+    # Priority 3: CIPs (if requirements exist but no CIPs)
+    elif gaps['has_requirements'] and not gaps['has_cips']:
+        prompts.append({
+            'type': 'create_cips',
+            'priority': 'medium',
+            'title': '📋 Create CIPs to design HOW to implement requirements',
+            'prompt': '''Create CIPs (Code Improvement Proposals) to design HOW to implement requirements.
+
+For each high-priority requirement:
+- Design the implementation approach
+- Identify affected components
+- Plan the changes needed
+- Consider trade-offs and alternatives
+
+Output format: cip/cip[XXXX]_short-name.md with YAML frontmatter
+- Use hexadecimal numbering (cip0001, cip0002, ..., cip000A, etc.)
+- Link CIPs to requirements using related_requirements field
+- Include: Description, Motivation, Implementation, Status
+
+After creating CIPs:
+- Run ./whats-next again for next steps'''
+        })
+    
+    # Priority 4: Backlog (if CIPs exist but no backlog)
+    elif gaps['has_cips'] and not gaps['has_backlog']:
+        prompts.append({
+            'type': 'create_backlog',
+            'priority': 'medium',
+            'title': '📋 Break down CIPs into actionable backlog tasks',
+            'prompt': '''Break down CIPs into concrete backlog tasks.
+
+For each CIP:
+- Identify specific implementation steps
+- Create tasks for each step
+- Set priorities based on dependencies
+- Link tasks to CIPs
+
+Output format: backlog/[category]/YYYY-MM-DD_short-name.md with YAML frontmatter
+- Categories: features, bugs, documentation, infrastructure
+- Use today's date for new tasks
+- Link backlog items to CIPs using related_cips field
+
+After creating backlog:
+- Run ./whats-next again to see task priorities'''
+        })
+    
+    # Edge case: No components at all
+    elif not any([gaps['has_tenets'], gaps['has_requirements'], gaps['has_cips'], gaps['has_backlog']]):
+        if gaps['has_codebase']:
+            prompts.append({
+                'type': 'bootstrap_all',
+                'priority': 'high',
+                'title': '📋 Bootstrap VibeSafe: Start with tenets',
+                'prompt': '''Your project has code but no VibeSafe components yet. Let's bootstrap!
+
+Start by creating 3-5 tenets that capture your project's guiding principles.
+(See the create_tenets prompt above for detailed guidance)
+
+Recommended order:
+1. Tenets (WHY) - Guiding principles
+2. Requirements (WHAT) - Desired outcomes
+3. CIPs (HOW) - Implementation plans
+4. Backlog (DOING) - Concrete tasks'''
+            })
+    
+    return prompts
+
+
 def check_tenet_status(review_period_days: int = 180) -> Dict[str, Any]:
     """Check the status of project tenets.
     
@@ -581,7 +794,8 @@ def run_validation() -> Dict[str, Any]:
 def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any], 
                          backlog_info: Dict[str, Any], requirements_info: Dict[str, Any],
                          tenet_info: Dict[str, Any] = None,
-                         validation_info: Dict[str, Any] = None) -> List[str]:
+                         validation_info: Dict[str, Any] = None,
+                         gaps_info: Dict[str, Any] = None) -> List[str]:
     """Generate suggested next steps based on the project state."""
     next_steps = []
     
@@ -598,8 +812,27 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
                 f"./scripts/validate_vibesafe_structure.py"
             )
     
-    # Add suggestion to create/review tenets if needed
-    if tenet_info:
+    # Add gap detection and AI-assisted prompts
+    if gaps_info and gaps_info.get('prompts'):
+        for prompt_info in gaps_info['prompts']:
+            # Format the prompt nicely
+            title = prompt_info['title']
+            prompt_text = prompt_info['prompt']
+            
+            # Add title
+            next_steps.append(f"\n{Colors.BLUE}{title}{Colors.ENDC}")
+            
+            # Add prompt with indentation
+            prompt_lines = prompt_text.strip().split('\n')
+            next_steps.append(f"\n{Colors.YELLOW}   AI Prompt:{Colors.ENDC}")
+            for line in prompt_lines[:10]:  # Show first 10 lines
+                next_steps.append(f"   {line}")
+            if len(prompt_lines) > 10:
+                next_steps.append(f"   ... ({len(prompt_lines) - 10} more lines)")
+            next_steps.append("")  # Empty line for spacing
+    
+    # Add suggestion to create/review tenets if needed (legacy, now handled by gaps)
+    if tenet_info and not gaps_info:
         if tenet_info.get('status') == 'missing':
             next_steps.append("Create tenets directory and define your project's guiding principles")
         elif tenet_info.get('status') == 'empty':
@@ -887,15 +1120,23 @@ def main():
     if not args.skip_validation:
         validation_info = run_validation()
     
+    # Detect gaps and generate AI prompts
+    gaps = detect_gaps()
+    ai_prompts = generate_ai_prompts(gaps)
+    gaps_info = {
+        'gaps': gaps,
+        'prompts': ai_prompts
+    }
+    
     # Generate next steps
     if args.cip_only:
-        next_steps = generate_next_steps(git_info, cips_info, {}, {}, tenet_info, validation_info)
+        next_steps = generate_next_steps(git_info, cips_info, {}, {}, tenet_info, validation_info, gaps_info)
     elif args.backlog_only:
-        next_steps = generate_next_steps(git_info, {}, backlog_info, {}, tenet_info, validation_info)
+        next_steps = generate_next_steps(git_info, {}, backlog_info, {}, tenet_info, validation_info, gaps_info)
     elif args.requirements_only:
-        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info, validation_info)
+        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info, validation_info, gaps_info)
     else:
-        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info)
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info, gaps_info)
     
     if next_steps:
         print_section("Suggested Next Steps")

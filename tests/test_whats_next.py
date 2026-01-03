@@ -6,6 +6,7 @@ properly analyzes the repository status, CIPs, and backlog items.
 """
 
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -26,6 +27,10 @@ from scripts.whats_next import (
     scan_backlog,
     check_tenet_status,
     run_validation,
+    detect_codebase,
+    detect_component,
+    detect_gaps,
+    generate_ai_prompts,
 )
 
 
@@ -384,6 +389,8 @@ def test_cmd_args_requirements_only():
          mock.patch('scripts.whats_next.print_section'), \
          mock.patch('scripts.whats_next.generate_next_steps') as mock_generate, \
          mock.patch('scripts.whats_next.run_update_scripts'), \
+         mock.patch('scripts.whats_next.detect_gaps') as mock_gaps, \
+         mock.patch('scripts.whats_next.generate_ai_prompts') as mock_prompts, \
          mock.patch('builtins.print'):
         
         # Setup mock args with requirements_only=True
@@ -407,13 +414,18 @@ def test_cmd_args_requirements_only():
             'guidance': []
         }
         
+        # Setup mock gap detection
+        mock_gaps.return_value = {'has_codebase': True, 'has_tenets': True, 'has_requirements': True, 
+                                  'has_cips': True, 'has_backlog': True}
+        mock_prompts.return_value = []
+        
         # Run the main function
         from scripts.whats_next import main
         main()
         
-        # Verify that generate_next_steps was called with 6 arguments including tenet_info and validation_info
+        # Verify that generate_next_steps was called with 7 arguments including tenet_info, validation_info, and gaps_info
         mock_generate.assert_called_once()
-        _, cips_arg, backlog_arg, req_arg, tenet_arg, validation_arg = mock_generate.call_args[0]
+        _, cips_arg, backlog_arg, req_arg, tenet_arg, validation_arg, gaps_arg = mock_generate.call_args[0]
         assert 'by_status' in cips_arg
         assert 'by_status' in backlog_arg
         assert 'by_priority' in backlog_arg
@@ -959,6 +971,289 @@ class TestValidationIntegration(unittest.TestCase):
         
         # Should still work
         self.assertIsInstance(next_steps, list)
+
+
+class TestGapDetection(unittest.TestCase):
+    """Test gap detection and AI prompt generation."""
+    
+    def setUp(self):
+        """Set up test environment."""
+        self.original_dir = Path.cwd()
+        self.test_dir = Path(tempfile.mkdtemp(prefix="test_gap_"))
+        os.chdir(self.test_dir)
+    
+    def tearDown(self):
+        """Clean up test environment."""
+        os.chdir(self.original_dir)
+        if self.test_dir.exists():
+            shutil.rmtree(self.test_dir)
+    
+    def test_detect_codebase_with_python_files(self):
+        """Test codebase detection with Python files."""
+        # Create source directory with Python files
+        src_dir = Path("src")
+        src_dir.mkdir()
+        (src_dir / "main.py").write_text("print('hello')")
+        
+        self.assertTrue(detect_codebase())
+    
+    def test_detect_codebase_with_javascript_files(self):
+        """Test codebase detection with JavaScript files."""
+        # Create app directory with JS files
+        app_dir = Path("app")
+        app_dir.mkdir()
+        (app_dir / "index.js").write_text("console.log('hello');")
+        
+        self.assertTrue(detect_codebase())
+    
+    def test_detect_codebase_without_source_files(self):
+        """Test codebase detection without source files."""
+        # Create only documentation
+        Path("README.md").write_text("# Project")
+        
+        self.assertFalse(detect_codebase())
+    
+    def test_detect_codebase_with_package_structure(self):
+        """Test codebase detection with Python package structure."""
+        # Create myproject/myproject/__init__.py structure
+        package_dir = Path("myproject") / "myproject"
+        package_dir.mkdir(parents=True)
+        (package_dir / "__init__.py").write_text("# Package")
+        (package_dir / "core.py").write_text("def main(): pass")
+        
+        self.assertTrue(detect_codebase())
+    
+    def test_detect_codebase_excludes_vibesafe_scripts(self):
+        """Test that VibeSafe scripts directory doesn't count as user codebase."""
+        # Create VibeSafe scripts directory
+        scripts_dir = Path("scripts")
+        scripts_dir.mkdir()
+        (scripts_dir / "whats_next.py").write_text("# VibeSafe script")
+        (scripts_dir / "validate_vibesafe_structure.py").write_text("# VibeSafe script")
+        
+        # Should NOT detect codebase (these are VibeSafe system files)
+        self.assertFalse(detect_codebase())
+    
+    def test_detect_codebase_excludes_venv(self):
+        """Test that virtual environment doesn't count as codebase."""
+        # Create .venv-vibesafe with Python files
+        venv_dir = Path(".venv-vibesafe") / "lib" / "python3.9"
+        venv_dir.mkdir(parents=True)
+        (venv_dir / "site.py").write_text("# Python stdlib")
+        
+        self.assertFalse(detect_codebase())
+    
+    def test_detect_codebase_with_user_code_and_vibesafe(self):
+        """Test codebase detection when both user code and VibeSafe exist."""
+        # Create VibeSafe scripts
+        scripts_dir = Path("scripts")
+        scripts_dir.mkdir()
+        (scripts_dir / "whats_next.py").write_text("# VibeSafe script")
+        
+        # Create user code
+        src_dir = Path("src")
+        src_dir.mkdir()
+        (src_dir / "app.py").write_text("# User code")
+        
+        # Should detect codebase (user has source code)
+        self.assertTrue(detect_codebase())
+    
+    def test_detect_component_missing(self):
+        """Test component detection when directory doesn't exist."""
+        self.assertFalse(detect_component('tenets'))
+    
+    def test_detect_component_empty(self):
+        """Test component detection with only system files."""
+        tenets_dir = Path("tenets")
+        tenets_dir.mkdir()
+        (tenets_dir / "README.md").write_text("# Tenets")
+        (tenets_dir / "tenet_template.md").write_text("# Template")
+        
+        self.assertFalse(detect_component('tenets'))
+    
+    def test_detect_component_with_user_content(self):
+        """Test component detection with user content."""
+        tenets_dir = Path("tenets")
+        tenets_dir.mkdir()
+        (tenets_dir / "README.md").write_text("# Tenets")
+        (tenets_dir / "my-tenet.md").write_text("# My Tenet")
+        
+        self.assertTrue(detect_component('tenets'))
+    
+    def test_detect_gaps_all_missing(self):
+        """Test gap detection when all components are missing."""
+        gaps = detect_gaps()
+        
+        self.assertFalse(gaps['has_codebase'])
+        self.assertFalse(gaps['has_tenets'])
+        self.assertFalse(gaps['has_requirements'])
+        self.assertFalse(gaps['has_cips'])
+        self.assertFalse(gaps['has_backlog'])
+    
+    def test_detect_gaps_with_codebase_only(self):
+        """Test gap detection with codebase but no VibeSafe components."""
+        src_dir = Path("src")
+        src_dir.mkdir()
+        (src_dir / "main.py").write_text("print('hello')")
+        
+        gaps = detect_gaps()
+        
+        self.assertTrue(gaps['has_codebase'])
+        self.assertFalse(gaps['has_tenets'])
+        self.assertFalse(gaps['has_requirements'])
+        self.assertFalse(gaps['has_cips'])
+        self.assertFalse(gaps['has_backlog'])
+    
+    def test_detect_gaps_with_all_components(self):
+        """Test gap detection when all components exist."""
+        # Create codebase
+        src_dir = Path("src")
+        src_dir.mkdir()
+        (src_dir / "main.py").write_text("print('hello')")
+        
+        # Create all components with user content
+        for component_dir in ['tenets', 'requirements', 'cip', 'backlog/features']:
+            Path(component_dir).mkdir(parents=True)
+            (Path(component_dir) / "user-file.md").write_text("# User Content")
+        
+        gaps = detect_gaps()
+        
+        self.assertTrue(gaps['has_codebase'])
+        self.assertTrue(gaps['has_tenets'])
+        self.assertTrue(gaps['has_requirements'])
+        self.assertTrue(gaps['has_cips'])
+        self.assertTrue(gaps['has_backlog'])
+    
+    def test_generate_ai_prompts_for_tenets(self):
+        """Test AI prompt generation for missing tenets."""
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': False,
+            'has_requirements': False,
+            'has_cips': False,
+            'has_backlog': False
+        }
+        
+        prompts = generate_ai_prompts(gaps)
+        
+        self.assertEqual(len(prompts), 1)
+        self.assertEqual(prompts[0]['type'], 'create_tenets')
+        self.assertEqual(prompts[0]['priority'], 'high')
+        self.assertIn('tenets', prompts[0]['title'].lower())
+        self.assertIn('codebase', prompts[0]['prompt'].lower())
+    
+    def test_generate_ai_prompts_for_requirements(self):
+        """Test AI prompt generation for extracting requirements from CIPs."""
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': True,
+            'has_requirements': False,
+            'has_cips': True,
+            'has_backlog': False
+        }
+        
+        prompts = generate_ai_prompts(gaps)
+        
+        self.assertEqual(len(prompts), 1)
+        self.assertEqual(prompts[0]['type'], 'extract_requirements')
+        self.assertEqual(prompts[0]['priority'], 'high')
+        self.assertIn('requirements', prompts[0]['title'].lower())
+        self.assertIn('WHAT', prompts[0]['prompt'])
+    
+    def test_generate_ai_prompts_for_cips(self):
+        """Test AI prompt generation for creating CIPs."""
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': True,
+            'has_requirements': True,
+            'has_cips': False,
+            'has_backlog': False
+        }
+        
+        prompts = generate_ai_prompts(gaps)
+        
+        self.assertEqual(len(prompts), 1)
+        self.assertEqual(prompts[0]['type'], 'create_cips')
+        self.assertEqual(prompts[0]['priority'], 'medium')
+        self.assertIn('CIP', prompts[0]['title'])
+        self.assertIn('HOW', prompts[0]['prompt'])
+    
+    def test_generate_ai_prompts_for_backlog(self):
+        """Test AI prompt generation for creating backlog."""
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': True,
+            'has_requirements': True,
+            'has_cips': True,
+            'has_backlog': False
+        }
+        
+        prompts = generate_ai_prompts(gaps)
+        
+        self.assertEqual(len(prompts), 1)
+        self.assertEqual(prompts[0]['type'], 'create_backlog')
+        self.assertEqual(prompts[0]['priority'], 'medium')
+        self.assertIn('backlog', prompts[0]['title'].lower())
+        self.assertIn('tasks', prompts[0]['prompt'].lower())
+    
+    def test_generate_ai_prompts_bootstrap_all(self):
+        """Test AI prompt generation for bootstrapping from scratch."""
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': False,
+            'has_requirements': False,
+            'has_cips': False,
+            'has_backlog': False
+        }
+        
+        prompts = generate_ai_prompts(gaps)
+        
+        self.assertEqual(len(prompts), 1)
+        self.assertEqual(prompts[0]['type'], 'create_tenets')  # Should suggest starting with tenets
+        self.assertIn('tenets', prompts[0]['title'].lower())
+    
+    def test_generate_ai_prompts_no_suggestions(self):
+        """Test AI prompt generation when no suggestions needed."""
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': True,
+            'has_requirements': True,
+            'has_cips': True,
+            'has_backlog': True
+        }
+        
+        prompts = generate_ai_prompts(gaps)
+        
+        self.assertEqual(len(prompts), 0)
+    
+    def test_generate_next_steps_with_gaps(self):
+        """Test that gap detection appears in next steps."""
+        git_info = {}
+        cips_info = {'by_status': {'proposed': [], 'accepted': []}}
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        tenet_info = None
+        validation_info = None
+        
+        gaps = {
+            'has_codebase': True,
+            'has_tenets': False,
+            'has_requirements': False,
+            'has_cips': False,
+            'has_backlog': False
+        }
+        ai_prompts = generate_ai_prompts(gaps)
+        gaps_info = {'gaps': gaps, 'prompts': ai_prompts}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, 
+                                        tenet_info, validation_info, gaps_info)
+        
+        # Should have AI prompt suggestions
+        self.assertGreater(len(next_steps), 0)
+        # Should contain tenet-related suggestions
+        next_steps_text = ' '.join(next_steps)
+        self.assertIn('tenet', next_steps_text.lower())
 
 
 if __name__ == "__main__":
