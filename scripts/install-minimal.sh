@@ -306,8 +306,9 @@ setup_whats_next() {
         # If it has PyYAML and is minimal (< 15 packages), it's likely old VibeSafe
         if [ "$has_pyyaml" -gt 0 ] && [ "$package_count" -lt 15 ]; then
           echo -e "${YELLOW}Migrating old VibeSafe virtual environment...${NC}"
-          mv .venv .venv-vibesafe
-          echo -e "${GREEN}✓ Migrated .venv → .venv-vibesafe${NC}"
+          echo -e "${YELLOW}Removing old .venv (will be recreated as .venv-vibesafe)...${NC}"
+          rm -rf .venv
+          echo -e "${GREEN}✓ Removed old .venv (VibeSafe will create .venv-vibesafe)${NC}"
         else
           echo -e "${YELLOW}Note: Found existing .venv (appears to be project venv)${NC}"
           echo -e "${YELLOW}      Creating .venv-vibesafe for VibeSafe scripts${NC}"
