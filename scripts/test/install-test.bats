@@ -151,6 +151,12 @@ teardown() {
   [ -d ".venv" ]
   [ ! -d ".venv-vibesafe" ]
   
+  # Copy whats-next script so migration logic runs
+  mkdir -p scripts
+  if [ -f "$ORIGINAL_DIR/scripts/whats_next.py" ]; then
+    cp "$ORIGINAL_DIR/scripts/whats_next.py" scripts/
+  fi
+  
   # Run the installation script with whats-next enabled
   export VIBESAFE_SKIP_CLONE=true
   export VIBESAFE_INSTALL_WHATS_NEXT=true
@@ -172,6 +178,12 @@ teardown() {
   PYTHON_PATH=$(ls .venv/bin/python* | head -1)
   [ -f "$PYTHON_PATH" ]
   
+  # Copy whats-next script so migration logic runs
+  mkdir -p scripts
+  if [ -f "$ORIGINAL_DIR/scripts/whats_next.py" ]; then
+    cp "$ORIGINAL_DIR/scripts/whats_next.py" scripts/
+  fi
+  
   # Run the installation script with whats-next enabled
   export VIBESAFE_SKIP_CLONE=true
   export VIBESAFE_INSTALL_WHATS_NEXT=true
@@ -190,6 +202,12 @@ teardown() {
   .venv/bin/pip install -q PyYAML python-frontmatter
   python3 -m venv .venv-vibesafe
   .venv-vibesafe/bin/pip install -q PyYAML python-frontmatter
+  
+  # Copy whats-next script so migration logic runs
+  mkdir -p scripts
+  if [ -f "$ORIGINAL_DIR/scripts/whats_next.py" ]; then
+    cp "$ORIGINAL_DIR/scripts/whats_next.py" scripts/
+  fi
   
   # Run the installation script with whats-next enabled
   export VIBESAFE_SKIP_CLONE=true
