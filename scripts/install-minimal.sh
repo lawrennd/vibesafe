@@ -826,11 +826,13 @@ install_vibesafe() {
   fi
   echo ""
   echo -e "${YELLOW}Next steps:${NC}"
-  echo "1. Define your project tenets in the tenets/ directory"
-  echo "2. Use the backlog to track tasks"
-  echo "3. Document code improvements using CIPs"
-  if [ "$VIBESAFE_INSTALL_WHATS_NEXT" = "true" ] && [ -f "whats-next" ]; then
-    echo "4. Run the 'What's Next' script to see project status: ./whats-next"
+  if [ "$WHATS_NEXT_INSTALLED" = "true" ]; then
+    echo "Run the 'What's Next' script to see your project status and recommended actions:"
+    echo "  ${GREEN}./whats-next${NC}"
+  else
+    echo "1. Define your project tenets in the tenets/ directory"
+    echo "2. Use the backlog to track tasks"
+    echo "3. Document code improvements using CIPs"
   fi
   echo ""
   echo "For more information, visit: https://github.com/lawrennd/vibesafe"
