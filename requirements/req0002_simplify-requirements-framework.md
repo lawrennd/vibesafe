@@ -1,5 +1,5 @@
 ---
-id: "REQ-002"
+id: "0002"
 title: "Simple and Accessible Requirements Framework"
 status: "Ready"
 priority: "High"
@@ -16,7 +16,7 @@ tags:
   - cognitive-load
 ---
 
-# REQ-002: Simple and Accessible Requirements Framework
+# Requirement 0002: Simple and Accessible Requirements Framework
 
 ## Description
 

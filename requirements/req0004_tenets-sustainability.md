@@ -1,5 +1,5 @@
 ---
-id: "REQ-004"
+id: "0004"
 title: "Sustainable and Relevant Tenets"
 status: "Ready"
 priority: "Medium"
@@ -15,7 +15,7 @@ tags:
   - maintenance
 ---
 
-# REQ-004: Sustainable and Relevant Tenets
+# Requirement 0004: Sustainable and Relevant Tenets
 
 ## Description
 

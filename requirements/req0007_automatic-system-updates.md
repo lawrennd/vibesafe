@@ -1,5 +1,5 @@
 ---
-id: "REQ-007"
+id: "0007"
 title: "Automatic System Updates on Installation"
 status: "Ready"
 priority: "High"
@@ -16,7 +16,7 @@ tags:
   - backwards-compatibility
 ---
 
-# REQ-007: Automatic System Updates on Installation
+# Requirement 0007: Automatic System Updates on Installation
 
 ## Description
 

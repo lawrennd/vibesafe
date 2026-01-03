@@ -1,5 +1,5 @@
 ---
-id: "REQ-005"
+id: "0005"
 title: "Clear Understanding of Project Status"
 status: "Ready"
 priority: "High"
@@ -15,7 +15,7 @@ tags:
   - context
 ---
 
-# REQ-005: Clear Understanding of Project Status
+# Requirement 0005: Clear Understanding of Project Status
 
 ## Description
 

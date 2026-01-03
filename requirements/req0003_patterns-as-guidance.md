@@ -1,5 +1,5 @@
 ---
-id: "REQ-003"
+id: "0003"
 title: "Accessible Guidance Without Prescriptive Structure"
 status: "Ready"
 priority: "Medium"
@@ -16,7 +16,7 @@ tags:
   - pedagogy
 ---
 
-# REQ-003: Accessible Guidance Without Prescriptive Structure
+# Requirement 0003: Accessible Guidance Without Prescriptive Structure
 
 ## Description
 

@@ -1,5 +1,5 @@
 ---
-id: "REQ-006"
+id: "0006"
 title: "Automated Process Conformance Validation"
 status: "Ready"
 priority: "High"
@@ -15,7 +15,7 @@ tags:
   - dogfooding
 ---
 
-# REQ-006: Automated Process Conformance Validation
+# Requirement 0006: Automated Process Conformance Validation
 
 ## Description
 

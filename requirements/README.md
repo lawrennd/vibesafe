@@ -8,7 +8,7 @@ Each requirement uses YAML frontmatter for metadata and a simple structure:
 
 ```yaml
 ---
-id: "REQ-XXX"
+id: "XXXX"
 title: "Requirement Title"
 status: "Proposed|Ready|In Progress|Implemented|Validated"
 priority: "High|Medium|Low"

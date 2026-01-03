@@ -1,5 +1,5 @@
 ---
-id: "REQ-001"
+id: "0001"
 title: "Standardize YAML Frontmatter Across VibeSafe Components"
 status: "Ready"
 priority: "High"
@@ -15,7 +15,7 @@ tags:
   - tooling
 ---
 
-# REQ-001: Standardized Component Metadata
+# Requirement 0001: Standardized Component Metadata
 
 ## Description
 
