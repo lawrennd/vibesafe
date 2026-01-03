@@ -26,7 +26,7 @@ set -e
 echo "Installing 'What's Next' Script..."
 
 # Create and activate a virtual environment if it doesn't exist
-VENV_DIR=".venv"
+VENV_DIR=".venv-vibesafe"
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating virtual environment..."
     python3 -m venv "$VENV_DIR"
@@ -82,7 +82,7 @@ cat > whats-next << 'EOF'
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Activate the virtual environment
-source "${SCRIPT_DIR}/.venv/bin/activate"
+source "${SCRIPT_DIR}/.venv-vibesafe/bin/activate"
 
 # Run the actual script
 "${SCRIPT_DIR}/scripts/whats_next.py" "$@"
