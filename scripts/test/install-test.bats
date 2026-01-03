@@ -518,7 +518,7 @@ EOF
   grep -q "successfully installed" output.log
 } 
 @test "SCRIPTS: Both user-facing scripts are deployed" {
-  export VIBESAFE_SKIP_CLONE=true
+  # Run real installation (clone from GitHub) to test deployment
   run bash "$INSTALL_SCRIPT"
   [ "$status" -eq 0 ]
   
@@ -534,7 +534,7 @@ EOF
 }
 
 @test "SCRIPTS: Validator script works with .venv-vibesafe" {
-  export VIBESAFE_SKIP_CLONE=true
+  # Run real installation to deploy validator
   bash "$INSTALL_SCRIPT"
   
   # Verify validator can be run
