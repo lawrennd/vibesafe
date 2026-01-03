@@ -27,7 +27,7 @@ title: Evaluate Documentation Systems Compatible with VibeSafe Tenets
 - **Last Updated**: 2025-05-05
 - **Owner**: lawrennd
 - **GitHub Issue**: N/A
-- **Dependencies**: CIP-0005
+- **Dependencies**: REQ-0009 (formerly CIP-0005, converted to requirement)
 
 ## Description
 

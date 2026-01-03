@@ -16,6 +16,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Unify Philosophy Documents (about.md and philosophy.md)](documentation/2026-01-03_unify-philosophy-documents.md)
+
 - [Create System-Specific Documentation Guides](documentation/2025-05-05_system-specific-guides.md)
 
 - [Create VibeSafe Documentation Style Guide](documentation/2025-05-05_documentation-style-guide.md)

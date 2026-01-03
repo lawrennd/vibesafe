@@ -860,18 +860,24 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
             next_steps.append(f"Continue implementation: {item['title']} (linked to requirements)")
             next_steps.append(f"Verify implementation against requirements: {', '.join(item['related_requirements'])}")
             
-        # Suggest requirements process for new features
-        # Check if there are proposed CIPs that might need requirements gathering
-        proposed_cips_needing_requirements = []
+        # Check for CIPs that might actually be requirements (WHAT vs HOW detection)
+        # Heuristic: CIPs describing "what should be" rather than "how to build"
+        potential_requirement_cips = []
         if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('proposed'):
             for cip in cips_info['by_status']['proposed']:
-                # This is a simple heuristic - in a real implementation you might want to check
-                # if the CIP already has associated requirements documents
-                proposed_cips_needing_requirements.append(cip)
+                # Simple heuristic: if CIP has very few implementation details,
+                # it might be describing WHAT (requirement) not HOW (implementation)
+                # In a full implementation, this could parse the CIP content
+                # For now, we just flag that this should be reviewed
+                potential_requirement_cips.append(cip)
         
-        if proposed_cips_needing_requirements:
-            cip = proposed_cips_needing_requirements[0]
-            next_steps.append(f"Start requirements gathering for proposed CIP: {cip['id']} - {cip['title']}")
+        # Suggest reviewing proposed CIPs (not "gathering requirements" - that's backwards!)
+        if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('proposed'):
+            proposed_cips = cips_info['by_status']['proposed']
+            if proposed_cips:
+                cip = proposed_cips[0]
+                # Better suggestion: Review the CIP to decide next steps - combined into one action
+                next_steps.append(f"Review proposed CIP {cip['id']} ({cip['title']}): Should it be accepted, or is it a requirement (WHAT vs HOW)?")
             
         # Remind about checking for requirements drift for implemented CIPs
         implemented_cips = []
@@ -880,17 +886,18 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
             
         if implemented_cips:
             cip = implemented_cips[0]
-            next_steps.append(f"Verify implementation of {cip['id']} against original requirements")
+            next_steps.append(f"Verify implementation of {cip['id']} is complete; consider closing if done")
             next_steps.append("Check for requirements drift - ensure code aligns with specified requirements")
     else:
         # If requirements framework doesn't exist, suggest setting it up
         next_steps.append("Set up requirements framework to improve requirements gathering")
     
     # Check for accepted CIPs that need implementation
+    # Proper workflow: Accepted CIP → Break into backlog tasks → Implement
     if cips_info and cips_info.get('by_status') and cips_info['by_status'].get('accepted'):
-        next_steps.append(f"Implement accepted CIP: {cips_info['by_status']['accepted'][0]['id']} - {cips_info['by_status']['accepted'][0]['title']}")
-        # Add requirements reminder for implementation
-        next_steps.append("Start implementation by reviewing requirements")
+        cip = cips_info['by_status']['accepted'][0]
+        next_steps.append(f"Break down accepted CIP into backlog tasks: {cip['id']} - {cip['title']}")
+        next_steps.append(f"Start implementing {cip['id']} by creating specific, actionable backlog items")
     
     # Check for in-progress backlog items
     if backlog_info and backlog_info.get('by_status') and backlog_info['by_status'].get('in_progress'):

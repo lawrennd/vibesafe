@@ -25,7 +25,7 @@ title: Create System-Specific Documentation Guides
 - **Last Updated**: 2025-05-05
 - **Owner**: lawrennd
 - **GitHub Issue**: N/A
-- **Dependencies**: CIP-0005, 2025-05-05_documentation-style-guide
+- **Dependencies**: REQ-0009 (formerly CIP-0005), 2025-05-05_documentation-style-guide
 
 ## Description
 
