@@ -42,7 +42,7 @@ When working with VibeSafe projects, be aware of the distinction between system 
 ### 🔧 VibeSafe System Files (Don't commit these unless updating VibeSafe itself)
 - `cip/README.md` - System documentation 
 - `cip/cip_template.md` - Template file
-- `.cursor/rules/*` - Cursor AI rules (all files)
+- `.cursor/rules/*`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` - AI assistant context files
 - `scripts/whats_next.py` - Status script
 - `install-whats-next.sh` - Installation script
 - `whats-next` - Wrapper script
@@ -88,7 +88,7 @@ vim cip/README.md
 
 ## Using CIPs in Code Creation
 
-This "Cursor Rule" is a recommended workflow for using CIPs effectively in your development process:
+These guidelines provide a recommended workflow for using CIPs effectively in your development process:
 
 ### 1. Plan First, Code Second
 

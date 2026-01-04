@@ -425,10 +425,12 @@ backlog/index.md
 cip/README.md
 cip/cip_template.md
 
-# Cursor AI rules (VibeSafe-managed)
+# AI assistant context files (VibeSafe-managed, CIP-0012)
 .cursor/rules/
-# Generated project tenet cursor rules
 .cursor/rules/project_tenet_*.mdc
+.github/copilot-instructions.md
+CLAUDE.md
+AGENTS.md
 
 # VibeSafe scripts and tools
 scripts/whats_next.py

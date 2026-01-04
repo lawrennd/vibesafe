@@ -50,7 +50,7 @@ When working with VibeSafe projects, be aware of the distinction between system 
 - `backlog/task_template.md` - Template file
 - `backlog/update_index.py` - Index generation script
 - `backlog/index.md` - Auto-generated index (updates frequently)
-- `.cursor/rules/*` - Cursor AI rules (all files)
+- `.cursor/rules/*`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` - AI assistant context files
 - `scripts/whats_next.py` - Status script
 - `install-whats-next.sh` - Installation script
 - `whats-next` - Wrapper script

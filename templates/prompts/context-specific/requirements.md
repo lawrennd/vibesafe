@@ -161,7 +161,7 @@ See `docs/patterns/README.md` for full pattern catalog and usage guidance.
 
 ### 🔧 VibeSafe System Files (Don't commit unless updating VibeSafe)
 - `templates/requirements/requirement_template.md` - Template
-- `.cursor/rules/requirements_rule.mdc` - This file
+- `.cursor/rules/*`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` - AI assistant context files
 
 ### 📝 User Content (Always commit)
 - `requirements/reqXXXX_*.md` - Your actual requirements

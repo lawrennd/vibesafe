@@ -217,7 +217,7 @@ Backlog tasks indirectly benefit from tenets through requirements and CIPs.
 ### 🔧 VibeSafe System Files (Don't commit these unless updating VibeSafe itself)
 - `templates/tenets/tenet_template.md` - Template file
 - `templates/tenets/README.md` - System documentation
-- `.cursor/rules/*` - Cursor AI rules (all files)
+- `.cursor/rules/*`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` - AI assistant context files
 
 ### 📝 User Content (Always commit these)
 - `tenets/[project]/*.md` - Your actual project tenets

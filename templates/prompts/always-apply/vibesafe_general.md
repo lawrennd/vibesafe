@@ -90,7 +90,7 @@ last_updated: "2025-07-26"
 **🔧 System Files (Don't commit to user projects):**
 - `backlog/README.md`, `cip/README.md` - VibeSafe documentation
 - `task_template.md`, `cip_template.md` - VibeSafe templates  
-- `.cursor/rules/*` - VibeSafe cursor rules
+- `.cursor/rules/*`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` - AI assistant context files
 - `scripts/whats_next.py`, `update_index.py` - VibeSafe tools
 
 **📝 User Content (Always commit):**
