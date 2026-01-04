@@ -180,14 +180,18 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 
 Each CIP should include these sections:
 
-1. *Header* - CIP number and title (e.g., `# CIP-0042: Authentication Refactoring`)
-2. *Status* - Current state of the implementation
-3. *Description* - Brief overview of the proposal
-4. *Motivation* - Why this change is needed
-5. *Implementation* - Specific changes to be made
-6. *Implementation Status* - Checklist of completed items
-7. *References* - Links to relevant documentation or discussions
-8. *Author and Date* - Attribution and timing information
+1. *YAML Frontmatter* - Metadata (author, created, last_updated, status, related_requirements, related_cips, tags)
+2. *Header* - CIP number and title (e.g., `# CIP-0042: Authentication Refactoring`)
+3. *Status* - Current state checklist (Proposed, Accepted, In Progress, Implemented, Closed, Rejected, Deferred)
+4. *Summary* - Brief overview of the proposed improvement and which requirements it addresses
+5. *Motivation* - Why this change is needed, what problem it solves
+6. *Detailed Description* - Technical details and architectural explanation
+7. *Implementation Plan* - Step-by-step plan with specific tasks
+8. *Backward Compatibility* - Impact on existing users and systems
+9. *Testing Strategy* - How changes will be tested and validated
+10. *Related Requirements* - Links to requirements (WHAT) that this CIP implements (HOW)
+11. *Implementation Status* - Checklist of completed implementation tasks
+12. *References* - Links to relevant documentation, code, or discussions
 
 The template file (`cip_template.md`) contains placeholders for all these sections and provides guidance on what information to include.
 
