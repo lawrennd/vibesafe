@@ -155,10 +155,11 @@ related_requirements: ["0001", "0007"]
 
 VibeSafe provides thinking tools in `docs/patterns/` (optional reference):
 - **Goal Decomposition**: Breaking high-level goals into requirements
-- **Stakeholder Analysis**: Identifying who benefits from requirements
-- **Constraint Mapping**: Understanding limitations and tradeoffs
+- **Stakeholder Identification**: Identifying who benefits from requirements
 
 These are VibeSafe guidance documents, not required user project structure. Consult them when stuck.
+
+See `docs/patterns/README.md` for full pattern catalog and usage guidance.
 
 ## VibeSafe File Classification
 

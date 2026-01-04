@@ -74,8 +74,6 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
-- [Phase 2: Move Patterns to VibeSafe Guidance](features/2026-01-03_patterns-to-vibesafe-guidance.md)
-
 - [Phase 5: CIP-0011 Documentation and Testing](features/2026-01-03_cip0011-documentation.md)
 
 - [Phase 3: Tenets Sustainability Process](features/2026-01-03_tenets-sustainability-process.md)
@@ -110,9 +108,9 @@ This file provides an overview of all current backlog items organized by categor
 
 - [Add Deferred Status for CIPs](infrastructure/2026-01-03_cip-deferred-status.md)
 
-- [Phase 0: YAML Frontmatter Standardization](features/2026-01-03_yaml-frontmatter-standardization.md)
+- [Phase 2: Move Patterns to VibeSafe Guidance](features/2026-01-03_patterns-to-vibesafe-guidance.md)
 
-- [Phase 0c: Integrate Validator into What](features/2026-01-03_integrate-validator-whats-next.md)
+- [Phase 0: YAML Frontmatter Standardization](features/2026-01-03_yaml-frontmatter-standardization.md)
 
 
 ## Recently Abandoned Tasks
