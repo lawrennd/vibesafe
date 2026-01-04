@@ -27,6 +27,7 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
   - [ ] Cursor: `.cursor/rules/` (verified)
   - [ ] GitHub Copilot: `.github/copilot/prompts/` (verify correct path)
   - [ ] Claude Code: `.claude/context/` (verify correct path or research)
+  - [ ] Codex: Research discovery path and format requirements
   - [ ] Document findings in CIP-0012 or implementation notes
 - [ ] Create `templates/prompts/` directory structure
 - [ ] Convert existing cursor rules to base prompts:
@@ -41,6 +42,7 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
   - [ ] `generate_cursor_rules()` stub
   - [ ] `generate_copilot_prompts()` stub
   - [ ] `generate_claude_context()` stub
+  - [ ] `generate_codex_context()` stub
   - [ ] `generate_generic_context()` stub
 
 ## Implementation Notes

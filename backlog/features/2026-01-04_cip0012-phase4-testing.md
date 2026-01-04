@@ -27,6 +27,7 @@ Test multi-platform installation and validate that VibeSafe works correctly with
   - [ ] Test `.cursor/rules/` generation (backward compatibility)
   - [ ] Test `.github/copilot/prompts/` generation
   - [ ] Test `.claude/context/` generation (if path confirmed)
+  - [ ] Test Codex path generation (if path confirmed)
   - [ ] Test platform selection via `VIBESAFE_PLATFORM` env var
   - [ ] Verify content consistency across platforms
 - [ ] Test with Cursor AI:
@@ -41,7 +42,11 @@ Test multi-platform installation and validate that VibeSafe works correctly with
   - [ ] Verify Copilot can discover context files
   - [ ] Verify core functionality works
   - [ ] Document any platform-specific quirks
-- [ ] Test with another platform (Codex, Cody, etc.) if possible
+- [ ] Test with Codex (if available):
+  - [ ] Verify Codex can discover context files
+  - [ ] Verify core functionality works
+  - [ ] Document any platform-specific quirks
+- [ ] Test with another platform (Cody, etc.) if possible
 - [ ] Backward compatibility testing:
   - [ ] Existing VibeSafe installations upgrade smoothly
   - [ ] No breaking changes for Cursor users

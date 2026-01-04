@@ -34,12 +34,16 @@ Implement platform-specific generators that transform base prompts into the corr
 - [ ] Implement `generate_claude_context()` function:
   - [ ] Adapt format for Claude Code (research needed)
   - [ ] Install to `.claude/context/`
+- [ ] Implement `generate_codex_context()` function:
+  - [ ] Adapt format for Codex (research needed)
+  - [ ] Determine correct installation path (research needed)
+  - [ ] Install to appropriate location
 - [ ] Implement `generate_generic_context()` function:
   - [ ] Plain markdown files
-  - [ ] Install to `.ai/context/` (if this path makes sense)
+  - [ ] Install to `.ai/context/` (generic fallback)
 - [ ] Add platform detection/selection:
   - [ ] Support `VIBESAFE_PLATFORM` environment variable
-  - [ ] Options: `cursor`, `copilot`, `claude`, `all` (default)
+  - [ ] Options: `cursor`, `copilot`, `claude`, `codex`, `all` (default)
   - [ ] Document in README
 - [ ] Update `combine_tenets.py`:
   - [ ] Rename `--generate-cursor-rules` → `--generate-prompts`
@@ -52,6 +56,7 @@ Implement platform-specific generators that transform base prompts into the corr
 - **Cursor**: YAML with `description`, `globs`, `alwaysApply`
 - **Copilot**: TBD (research needed)
 - **Claude Code**: TBD (research needed)
+- **Codex**: TBD (research needed)
 
 **Default Behavior**: Generate for ALL platforms by default (only a few KB, respects user autonomy).
 
