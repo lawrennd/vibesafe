@@ -15,6 +15,7 @@ VibeSafe currently uses **path-specific prompts** with separate concerns:
 | `backlog.mdc` | `globs: backlog/**/*.md` | Backlog-specific guidance |
 | `cip.mdc` | `globs: cip/**/*.md` | CIP-specific guidance |
 | `requirements_rule.mdc` | `globs: requirements/**/*.md` | Requirements-specific guidance |
+| `tenets.mdc` | **MISSING!** Should be `globs: tenets/**/*.md` | Tenets-specific guidance |
 | `vibesafe_general.mdc` | `globs: "**/*"` | Project-wide best practices |
 | `vibesafe_update.mdc` | Likely general | Update/maintenance guidance |
 | `whats_next.mdc` | Likely general | Project status tool guidance |
@@ -64,6 +65,7 @@ Based on research, here's what each platform supports:
 ├── backlog.instructions.md     # applyTo: ["backlog/**/*.md"]
 ├── cip.instructions.md          # applyTo: ["cip/**/*.md"]
 ├── requirements.instructions.md # applyTo: ["requirements/**/*.md"]
+├── tenets.instructions.md       # applyTo: ["tenets/**/*.md"]
 └── general.instructions.md      # applyTo: ["**/*"]
 ```
 
@@ -123,7 +125,7 @@ AGENTS.md  # All sections combined
 
 **Claude Code**: 
 - `CLAUDE.md` (general + always-apply guidance)
-- `.claude/commands/` (on-demand, topic-specific)
+- `.claude/commands/backlog.md`, `cip.md`, `requirements.md`, `tenets.md` (on-demand, topic-specific)
 
 **Codex**: Single combined (no path-specific support)
 
@@ -153,8 +155,8 @@ AGENTS.md  # All sections combined
 
 3. **Claude Code** (memory + commands):
    - `CLAUDE.md` for always-apply guidance (general, update, whats-next)
-   - `.claude/commands/backlog.md`, `cip.md`, `requirements.md` for on-demand
-   - User invokes with `/backlog` when working in backlog/
+   - `.claude/commands/backlog.md`, `cip.md`, `requirements.md`, `tenets.md` for on-demand
+   - User invokes with `/backlog`, `/cip`, `/requirements`, `/tenets` when working in those areas
 
 4. **Codex** (single file only):
    - `AGENTS.md` combined file
@@ -177,7 +179,8 @@ templates/prompts/
 └── context-specific/      # Guidance for specific contexts
     ├── backlog.md
     ├── cip.md
-    └── requirements.md
+    ├── requirements.md
+    └── tenets.md          # NEW: Currently missing!
 ```
 
 ### Platform Generation (Phase 2)
@@ -199,6 +202,8 @@ done
 mkdir -p .github/instructions
 create_copilot_instruction "backlog" "backlog/**/*.md" > .github/instructions/backlog.instructions.md
 create_copilot_instruction "cip" "cip/**/*.md" > .github/instructions/cip.instructions.md
+create_copilot_instruction "requirements" "requirements/**/*.md" > .github/instructions/requirements.instructions.md
+create_copilot_instruction "tenets" "tenets/**/*.md" > .github/instructions/tenets.instructions.md
 create_copilot_instruction "general" "**/*" > .github/instructions/general.instructions.md
 ```
 

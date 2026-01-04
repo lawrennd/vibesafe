@@ -50,6 +50,7 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
   - [ ] `context-specific/backlog.md` (strip YAML)
   - [ ] `context-specific/cip.md` (strip YAML)
   - [ ] `context-specific/requirements.md` (strip YAML)
+  - [ ] `context-specific/tenets.md` ← **CREATE NEW!** (currently missing from templates/.cursor/rules/)
 - [ ] Create platform adapter function stubs in `install-minimal.sh`:
   - [ ] `generate_prompts_for_platform()` dispatcher function
   - [ ] `generate_cursor_rules()` stub
@@ -61,6 +62,13 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
 ## Implementation Notes
 
 **Key Principle**: Separate content from delivery format. Base prompts should be pure markdown with clear section headers, no platform-specific metadata.
+
+**⚠️ MISSING: `tenets.mdc`**: Currently, there's no cursor rule for tenets guidance, despite:
+- `tenets/` directory exists with structure
+- `templates/tenets/` has README.md, tenet_template.md, combine_tenets.py
+- Other VibeSafe components (backlog, cip, requirements) all have cursor rules
+
+Phase 1 should **create** `templates/prompts/context-specific/tenets.md` to document tenets system guidance.
 
 **Discovery Path Research** ✅ COMPLETE:
 
