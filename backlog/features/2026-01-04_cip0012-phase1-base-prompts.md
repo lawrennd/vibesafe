@@ -106,11 +106,11 @@ Task created. CIP-0012 accepted and ready for implementation.
 
 Ready to proceed with base prompts creation and platform adapter implementation.
 
-**Composition Strategy Defined**: Created design doc `cip/cip0012-prompt-composition-strategy.md` defining:
+**Composition Strategy Defined**: See CIP-0012 "Detailed Description" section for complete strategy:
 - **Option 3 (Hybrid)** recommended: Use each platform's capabilities fully
 - **Base structure**: `always-apply/` vs `context-specific/`
 - **Platform mapping**: Multi-file for Cursor, path-specific for Copilot, commands for Claude, combined for Codex
 - **Key insight**: VibeSafe already uses path-specific prompts (globs in frontmatter)!
 
-See design doc for complete implementation mapping.
+See CIP-0012 for platform capabilities analysis and complete implementation mapping.
 

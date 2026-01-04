@@ -40,6 +40,11 @@ Why is this change needed? What problem does it solve?
 ## Detailed Description
 More detailed explanation of the proposed improvement, including technical details.
 
+> **Important**: CIPs should be self-contained design documents (REQ-000D).  
+> Include all design rationale, architecture decisions, and technical analysis HERE in this section.  
+> Don't create separate design documents like `cip0012-design.md` or `cip0012-architecture.md`.  
+> If you need supplementary materials (research notes, alternatives), use a subdirectory: `cip/cip0012/`
+
 ## Implementation Plan
 Step-by-step plan for implementing the improvement:
 

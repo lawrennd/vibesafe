@@ -104,6 +104,23 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 ❌ Write code → Document after → Try to explain decisions retrospectively
 ```
 
+### 1a. CIPs Are Self-Contained Design Documents
+
+*Rule*: Include all design rationale and architectural decisions IN the CIP itself (REQ-000D).
+
+```
+✅ Add design details to "Detailed Description" section of CIP
+✅ Expand existing CIP sections to include architecture analysis
+❌ Create separate files like cip0012-design.md or cip0012-architecture.md
+❌ Create standalone DESIGN.md or ARCHITECTURE.md files
+
+If supplementary materials needed:
+✅ Create cip/cip0012/ subdirectory for research notes
+✅ Keep core design decisions in the CIP itself
+```
+
+**Why?** This prevents documentation drift and maintains a single source of truth. Aligns with "Documentation and Implementation as a Unified Whole" tenet.
+
 ### 2. One Improvement, One CIP
 
 *Rule*: Each significant improvement should have its own CIP with a unique identifier.
