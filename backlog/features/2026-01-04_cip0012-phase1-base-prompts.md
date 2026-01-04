@@ -40,14 +40,16 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
     - Global instructions: `~/.codex/instructions.md`
     - Project docs: `codex.md` OR `AGENTS.md`
     - Override via: `experimental_instructions_file=<path>` config flag
-- [ ] Create `templates/prompts/` directory structure
+- [ ] Create `templates/prompts/` directory structure (per composition strategy):
+  - [ ] `templates/prompts/always-apply/` (general, update, whats-next)
+  - [ ] `templates/prompts/context-specific/` (backlog, cip, requirements)
 - [ ] Convert existing cursor rules to base prompts:
-  - [ ] `backlog.md` (strip YAML frontmatter, keep markdown content)
-  - [ ] `cip.md` (strip YAML frontmatter)
-  - [ ] `requirements.md` (strip YAML frontmatter)
-  - [ ] `vibesafe_general.md`
-  - [ ] `vibesafe_update.md`
-  - [ ] `whats_next.md`
+  - [ ] `always-apply/vibesafe_general.md` (strip YAML, keep markdown)
+  - [ ] `always-apply/vibesafe_update.md` (strip YAML)
+  - [ ] `always-apply/whats_next.md` (strip YAML)
+  - [ ] `context-specific/backlog.md` (strip YAML)
+  - [ ] `context-specific/cip.md` (strip YAML)
+  - [ ] `context-specific/requirements.md` (strip YAML)
 - [ ] Create platform adapter function stubs in `install-minimal.sh`:
   - [ ] `generate_prompts_for_platform()` dispatcher function
   - [ ] `generate_cursor_rules()` stub
@@ -95,4 +97,12 @@ Task created. CIP-0012 accepted and ready for implementation.
 - Codex: `codex.md` / `AGENTS.md` + `~/.codex/instructions.md`
 
 Ready to proceed with base prompts creation and platform adapter implementation.
+
+**Composition Strategy Defined**: Created design doc `cip/cip0012-prompt-composition-strategy.md` defining:
+- **Option 3 (Hybrid)** recommended: Use each platform's capabilities fully
+- **Base structure**: `always-apply/` vs `context-specific/`
+- **Platform mapping**: Multi-file for Cursor, path-specific for Copilot, commands for Claude, combined for Codex
+- **Key insight**: VibeSafe already uses path-specific prompts (globs in frontmatter)!
+
+See design doc for complete implementation mapping.
 
