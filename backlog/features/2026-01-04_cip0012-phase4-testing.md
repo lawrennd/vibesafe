@@ -34,18 +34,18 @@ Test multi-platform installation and validate that VibeSafe works correctly with
   - [x] Verify Cursor can still read `.cursor/rules/` ✅ 17 .mdc files generated
   - [x] Verify core functionality (CIPs, backlog, requirements, tenets) ✅ Currently using Cursor in this session
   - [x] Check that context is provided correctly ✅ This conversation is proof!
-- [ ] Test with Claude Code (if available):
-  - [ ] Verify Claude Code can discover context files (CLAUDE.md generated, needs manual test)
-  - [ ] Verify core functionality works
-  - [ ] Document any platform-specific quirks
+- [x] Test with Claude Code:
+  - [x] Verify Claude Code can discover context files ✅ CLAUDE.md read successfully
+  - [x] Verify core functionality works ✅ Full session: explore codebase, run scripts, edit files, commit
+  - [x] Document any platform-specific quirks ✅ None found - works seamlessly
 - [ ] Test with GitHub Copilot (if available):
   - [ ] Verify Copilot can discover context files (.github/copilot-instructions.md generated, needs manual test)
   - [ ] Verify core functionality works
   - [ ] Document any platform-specific quirks
-- [ ] Test with Codex (if available):
-  - [ ] Verify Codex can discover context files (AGENTS.md generated, needs manual test)
-  - [ ] Verify core functionality works
-  - [ ] Document any platform-specific quirks
+- [x] Test with Codex (if available):
+  - [x] Verify Codex can discover context files (AGENTS.md generated, manual test complete)
+  - [x] Verify core functionality works
+  - [x] Document any platform-specific quirks (none observed)
 - [ ] Test with another platform (Cody, etc.) if possible
 - [x] Backward compatibility testing:
   - [x] Existing VibeSafe installations upgrade smoothly ✅ Re-ran install multiple times
@@ -98,7 +98,13 @@ Task created. Testing begins after Phase 2 (generation logic) is complete.
 
 **REQ-000C Compliance Updated**:
 - Score improved from 4/8 (50%) to 7/8 (87.5%)
-- Only pending: Manual testing with Claude Code, Copilot, Codex (requires users with those tools)
+- Only pending: Manual testing with Claude Code, Copilot (requires users with those tools)
 
 **Recommendation**: CIP-0012 should be marked as "Implemented" (awaiting community testing for full validation)
 
+### 2026-01-04
+**Codex Manual Testing Complete**
+
+- ✅ Codex discovered `AGENTS.md`
+- ✅ Core functionality verified in Codex session
+- ✅ No platform-specific quirks observed
