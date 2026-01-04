@@ -176,6 +176,54 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 ❌ Implement → Request review → Try to retroactively adjust plan
 ```
 
+### 9. Natural Breakpoints for AI Assistants
+
+*Rule*: AI assistants should pause for user or a potential break in coding at key CIP workflow transitions.
+
+**These are natural stopping points** where the assistant should:
+1. Summarize what was done
+2. Show the current state (run `./whats-next`)
+3. Ask the user if they want to proceed
+
+```
+Natural Breakpoints:
+
+1. ✋ After creating a CIP (status: Proposed)
+   → Pause: Let user review the design before accepting
+
+2. ✋ After accepting a CIP (status: Proposed → Accepted)
+   → Pause: Ask if user wants to create backlog tasks now
+
+3. ✋ After creating backlog tasks (status: Accepted → In Progress)
+   → Pause: Let user review progress before implementing
+
+4. ✋ After completing implementation (status: In Progress → Implemented)
+   → Pause: Let user test/validate before closing
+
+5. ✋ After validation (status: Implemented → Closed)
+   → Done: CIP complete, commit and celebrate!
+```
+
+**Why?** These transitions are:
+- Monitored by `./whats-next` script
+- Key decision points requiring human judgment
+- Natural places to review, test, and adjust course
+
+**Don't do this:**
+```
+❌ Create CIP → Accept → Create tasks → Start coding → Complete → Close
+   (All in one go without pausing)
+```
+
+**Do this:**
+```
+✅ Create CIP (Proposed) → 🛑 PAUSE (user reviews design)
+✅ Accept CIP (Proposed → Accepted) → 🛑 PAUSE (ask about creating tasks)
+✅ Create tasks & start (Accepted → In Progress) → 🛑 PAUSE (user reviews progress)
+✅ Complete implementation (In Progress → Implemented) → 🛑 PAUSE (user tests/validates)
+✅ Validate & close (Implemented → Closed) → ✅ Done!
+```
+
 ## CIP Template Structure
 
 Each CIP should include these sections:
