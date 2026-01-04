@@ -1,7 +1,7 @@
 ---
 id: "2026-01-04_cip0012-phase1-base-prompts"
 title: "CIP-0012 Phase 1: Base Prompts Infrastructure"
-status: "Ready"
+status: "Completed"
 priority: "High"
 created: "2026-01-04"
 last_updated: "2026-01-04"
@@ -40,24 +40,24 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
     - Global instructions: `~/.codex/instructions.md`
     - Project docs: `codex.md` OR `AGENTS.md`
     - Override via: `experimental_instructions_file=<path>` config flag
-- [ ] Create `templates/prompts/` directory structure (per composition strategy):
-  - [ ] `templates/prompts/always-apply/` (general, update, whats-next)
-  - [ ] `templates/prompts/context-specific/` (backlog, cip, requirements)
-- [ ] Convert existing cursor rules to base prompts:
-  - [ ] `always-apply/vibesafe_general.md` (strip YAML, keep markdown)
-  - [ ] `always-apply/vibesafe_update.md` (strip YAML)
-  - [ ] `always-apply/whats_next.md` (strip YAML)
-  - [ ] `context-specific/backlog.md` (strip YAML)
-  - [ ] `context-specific/cip.md` (strip YAML)
-  - [ ] `context-specific/requirements.md` (strip YAML)
-  - [ ] `context-specific/tenets.md` ← **CREATE NEW!** (currently missing from templates/.cursor/rules/)
-- [ ] Create platform adapter function stubs in `install-minimal.sh`:
-  - [ ] `generate_prompts_for_platform()` dispatcher function
-  - [ ] `generate_cursor_rules()` stub
-  - [ ] `generate_copilot_prompts()` stub
-  - [ ] `generate_claude_context()` stub
-  - [ ] `generate_codex_context()` stub
-  - [ ] `generate_generic_context()` stub
+- [x] Create `templates/prompts/` directory structure (per composition strategy):
+  - [x] `templates/prompts/always-apply/` (general, update, whats-next)
+  - [x] `templates/prompts/context-specific/` (backlog, cip, requirements)
+- [x] Convert existing cursor rules to base prompts:
+  - [x] `always-apply/vibesafe_general.md` (strip YAML, keep markdown)
+  - [x] `always-apply/vibesafe_update.md` (strip YAML)
+  - [x] `always-apply/whats_next.md` (strip YAML)
+  - [x] `context-specific/backlog.md` (strip YAML)
+  - [x] `context-specific/cip.md` (strip YAML)
+  - [x] `context-specific/requirements.md` (strip YAML)
+  - [x] `context-specific/tenets.md` ← **CREATED!** (was missing from templates/.cursor/rules/)
+- [x] Create platform adapter function stubs in `install-minimal.sh`:
+  - [x] `generate_prompts_for_platform()` dispatcher function
+  - [x] `generate_cursor_rules()` stub
+  - [x] `generate_copilot_prompts()` stub
+  - [x] `generate_claude_context()` stub
+  - [x] `generate_codex_context()` stub
+  - [x] `generate_generic_context()` stub
 
 ## Implementation Notes
 
@@ -113,4 +113,37 @@ Ready to proceed with base prompts creation and platform adapter implementation.
 - **Key insight**: VibeSafe already uses path-specific prompts (globs in frontmatter)!
 
 See CIP-0012 for platform capabilities analysis and complete implementation mapping.
+
+### 2026-01-04 (later)
+**Phase 1 COMPLETED!** ✅
+
+All acceptance criteria met:
+1. ✅ Created `templates/prompts/always-apply/` directory
+2. ✅ Created `templates/prompts/context-specific/` directory
+3. ✅ Converted 3 always-apply prompts (vibesafe_general, vibesafe_update, whats_next)
+4. ✅ Converted 3 context-specific prompts (backlog, cip, requirements)
+5. ✅ **Created NEW `tenets.md`** - comprehensive guidance for tenet system
+6. ✅ Added platform adapter function stubs to `install-minimal.sh`:
+   - `generate_prompts_for_platform()` - dispatcher
+   - `generate_cursor_rules()` - stub for Phase 2
+   - `generate_copilot_prompts()` - stub for Phase 2
+   - `generate_claude_context()` - stub for Phase 2
+   - `generate_codex_context()` - stub for Phase 2
+   - `generate_generic_context()` - stub for Phase 2
+
+**Base prompts created** (7 total files):
+- `templates/prompts/always-apply/vibesafe_general.md` (11.7 KB)
+- `templates/prompts/always-apply/vibesafe_update.md` (500 B)
+- `templates/prompts/always-apply/whats_next.md` (3.3 KB)
+- `templates/prompts/context-specific/backlog.md` (7.0 KB)
+- `templates/prompts/context-specific/cip.md` (9.1 KB)
+- `templates/prompts/context-specific/requirements.md` (5.7 KB)
+- `templates/prompts/context-specific/tenets.md` (8.0 KB) ← **NEW!**
+
+**Platform adapter stubs** added to `scripts/install-minimal.sh` (lines 641-724):
+- Dispatcher pattern for multi-platform support
+- Placeholder implementations with debug output
+- Ready for Phase 2 implementation
+
+**Ready for Phase 2**: Platform Generation Logic implementation.
 

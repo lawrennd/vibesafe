@@ -1,0 +1,175 @@
+---
+
+# VibeSafe Requirements Process
+
+## What Are Requirements?
+
+Requirements define **WHAT** needs to be built - the desired outcomes and states, not implementation details.
+
+## WHAT vs HOW vs DO
+
+VibeSafe uses a clear hierarchy:
+
+| Level | Purpose | Question | Component |
+|-------|---------|----------|-----------|
+| **WHY** | Foundation principles | Why does this matter? | Tenets |
+| **WHAT** | Desired outcomes | What should be true? | **Requirements** (this file) |
+| **HOW** | Design approach | How will we achieve it? | CIPs |
+| **DO** | Execution tasks | What are we doing now? | Backlog |
+
+### Decision Guide: Am I Writing WHAT or HOW?
+
+When working with requirements, ask:
+
+1. **Does this describe an outcome or a method?**
+   - Outcome → Requirement (WHAT)
+   - Method → CIP (HOW)
+
+2. **Could multiple approaches achieve this?**
+   - Yes → Requirement (WHAT)
+   - No, it's specific → CIP or Backlog (HOW/DO)
+
+3. **Does it start with a verb describing work?**
+   - "Create...", "Implement...", "Add..." → Usually HOW/DO
+   - "Users can...", "System should...", "X must be..." → Usually WHAT
+
+### Good vs Bad Requirements
+
+✅ **Good Requirements (WHAT)**:
+- "Users can install VibeSafe with a single command"
+- "Project tenets are automatically available to AI assistants"
+- "Documentation stays synchronized with implementation"
+- "System files don't clutter user repositories"
+
+❌ **Bad Requirements (HOW in disguise)**:
+- "Create install-minimal.sh script" ← Implementation (CIP/Backlog)
+- "Use PyYAML for parsing" ← Design decision (CIP)
+- "Add --no-color flag to whats-next" ← Specific task (Backlog)
+
+## Requirements Directory Structure
+
+```
+requirements/
+├── README.md                          # Process overview
+├── reqXXXX_short-name.md              # Individual requirements (4-digit hex)
+└── (optional subdirectories for organization)
+```
+
+## Requirements Format
+
+Each requirement uses YAML frontmatter:
+
+```yaml
+---
+id: "XXXX"  # 4-digit hexadecimal (0001-FFFF)
+title: "Requirement Title"
+status: "Proposed"  # See statuses below
+priority: "Medium"  # High, Medium, Low
+created: "YYYY-MM-DD"
+last_updated: "YYYY-MM-DD"
+related_tenets: []  # Bottom-up: Which tenets inform this?
+stakeholders: []  # Optional: Who cares about this?
+tags: []  # Optional: Categorization
+---
+```
+
+## Requirements Status
+
+- **Proposed**: Initial requirement, needs refinement
+- **Ready**: Fully defined, ready for CIP creation
+- **In Progress**: CIPs and backlog tasks being executed
+- **Implemented**: Code complete, needs validation
+- **Validated**: Implementation verified against acceptance criteria
+- **Deferred**: Postponed (document why)
+- **Rejected**: Will not be implemented (document why)
+
+## Bottom-Up Linking Pattern
+
+Requirements link to tenets (WHY), not to CIPs or backlog:
+
+```
+Tenets (WHY) ──informs──> Requirements (WHAT) ──guides──> CIPs (HOW) ──breaks into──> Backlog (DO)
+```
+
+**In YAML frontmatter**:
+- Requirements have `related_tenets` field (bottom-up)
+- CIPs have `related_requirements` field (they reference requirements)
+- Backlog has `related_cips` field (they reference CIPs)
+
+**Don't do this**:
+- ❌ Requirements with `related_cips` or `related_backlog`
+- ❌ CIPs with `related_backlog`
+
+**Instead**: Query down from requirements:
+- "Which CIPs implement this requirement?" → Query CIPs where `related_requirements` contains this requirement ID
+- "Which tasks execute this requirement?" → Query through CIPs to their backlog tasks
+
+## Using Requirements
+
+### 1. Check Requirements Status
+
+```bash
+./whats-next  # Shows all component statuses including requirements
+```
+
+### 2. Create a New Requirement
+
+```bash
+# Copy template
+cp templates/requirements/requirement_template.md requirements/reqXXXX_short-name.md
+
+# Fill out YAML and description (focus on WHAT, not HOW)
+```
+
+### 3. Connect to Tenets (WHY)
+
+Identify which tenets inform this requirement:
+
+```yaml
+related_tenets: ["simplicity-of-use", "user-autonomy"]
+```
+
+### 4. Create CIPs (HOW) to Implement
+
+Once a requirement is "Ready", create CIPs that describe HOW to achieve it:
+
+```yaml
+# In CIP YAML frontmatter:
+related_requirements: ["0001", "0007"]
+```
+
+### 5. Status Synchronization
+
+| Requirements Status | CIP Status | Backlog Status |
+|---------------------|------------|----------------|
+| Proposed/Ready | Proposed | Not Created |
+| In Progress | Accepted/In Progress | In Progress |
+| Implemented | Implemented | Completed |
+| Validated | Closed | Completed |
+
+## Need Help Writing Requirements?
+
+VibeSafe provides thinking tools in `docs/patterns/` (optional reference):
+- **Goal Decomposition**: Breaking high-level goals into requirements
+- **Stakeholder Identification**: Identifying who benefits from requirements
+
+These are VibeSafe guidance documents, not required user project structure. Consult them when stuck.
+
+See `docs/patterns/README.md` for full pattern catalog and usage guidance.
+
+## VibeSafe File Classification
+
+### 🔧 VibeSafe System Files (Don't commit unless updating VibeSafe)
+- `templates/requirements/requirement_template.md` - Template
+- `.cursor/rules/requirements_rule.mdc` - This file
+
+### 📝 User Content (Always commit)
+- `requirements/reqXXXX_*.md` - Your actual requirements
+
+## Benefits of the Requirements Process
+
+- **Improved planning**: Understand WHAT before deciding HOW
+- **Better traceability**: Clear links from WHY → WHAT → HOW → DO
+- **Reduced rework**: Validate outcomes before implementation
+- **Higher quality**: Clear acceptance criteria
+- **Better communication**: Stakeholders understand outcomes, not just implementation

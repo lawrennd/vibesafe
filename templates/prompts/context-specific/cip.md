@@ -1,0 +1,264 @@
+
+# Code Improvement Plans (CIPs)
+
+## What is a CIP?
+
+A Code Improvement Plan (CIP) is a structured approach to proposing, documenting, and implementing meaningful improvements to the codebase. CIPs serve as:
+
+1. *Documentation* for design decisions and architectural changes
+2. *Project management* tools to track implementation progress
+3. *Communication* mechanisms for sharing ideas with collaborators
+4. *Historical records* of why and how code evolved over time
+
+## When to Create a CIP
+
+Create a CIP when you want to make changes that:
+
+- Affect multiple parts of the codebase
+- Change fundamental architecture or design patterns
+- Introduce new features with significant impact
+- Require substantial refactoring or restructuring
+- Need coordination across multiple contributors
+
+## CIP Directory Structure
+
+The `cip/` directory in the repository contains all Code Improvement Plans and follows this structure:
+
+```
+cip/
+├── README.md                 # Overview of the CIP process
+├── cip_template.md           # Template for creating new CIPs
+├── cip0001.md                # First CIP
+├── cip0002.md                # Second CIP
+└── ...                       # Additional CIPs
+```
+
+## VibeSafe File Classification
+
+**⚠️ IMPORTANT: VibeSafe System vs User Files**
+
+When working with VibeSafe projects, be aware of the distinction between system files and user content:
+
+### 🔧 VibeSafe System Files (Don't commit these unless updating VibeSafe itself)
+- `cip/README.md` - System documentation 
+- `cip/cip_template.md` - Template file
+- `.cursor/rules/*` - Cursor AI rules (all files)
+- `scripts/whats_next.py` - Status script
+- `install-whats-next.sh` - Installation script
+- `whats-next` - Wrapper script
+
+### 📝 User Content (Always commit these)
+- `cip0001.md`, `cip0002.md`, etc. - User-created CIPs
+- Any CIP files following the `cip[XXXX].md` pattern (hexadecimal numbering)
+
+**Tip**: Focus on committing your actual CIPs rather than VibeSafe infrastructure files.
+
+### Numbering System
+
+CIPs use a hexadecimal numbering system:
+
+- Starting at `0001` (not `0000`)
+- Expressed as four hexadecimal digits (0-9, A-F)
+- Examples: `0001`, `000A`, `00FF`, `0100`, etc.
+- File naming convention: `cip[number].md` (e.g., `cip0001.md`, `cip00AF.md`)
+
+The hexadecimal system allows for up to 65,535 CIPs (FFFF in hex), which should be more than sufficient for most projects.
+
+### Using the Template
+
+To create a new CIP:
+
+1. Copy the `cip_template.md` file
+2. Assign the next available hexadecimal number
+3. Name the file `cip[number].md` (e.g., `cip0042.md`)
+4. Fill out all required sections following the template structure
+5. Add the CIP to the list in `README.md`
+
+Example:
+```bash
+# Copy the template
+cp cip/cip_template.md cip/cip000F.md
+
+# Edit the new CIP
+vim cip/cip000F.md
+
+# Update the README
+vim cip/README.md
+```
+
+## Using CIPs in Code Creation
+
+This "Cursor Rule" is a recommended workflow for using CIPs effectively in your development process:
+
+### 1. Plan First, Code Second
+
+*Rule*: Create a CIP before writing any substantial code for the improvement.
+
+```
+✅ Create CIP → Get feedback → Refine plan → Implement code
+❌ Write code → Document after → Try to explain decisions retrospectively
+```
+
+### 1a. CIPs Are Self-Contained Design Documents
+
+*Rule*: Include all design rationale and architectural decisions IN the CIP itself (REQ-000D).
+
+```
+✅ Add design details to "Detailed Description" section of CIP
+✅ Expand existing CIP sections to include architecture analysis
+❌ Create separate files like cip0012-design.md or cip0012-architecture.md
+❌ Create standalone DESIGN.md or ARCHITECTURE.md files
+
+If supplementary materials needed:
+✅ Create cip/cip0012/ subdirectory for research notes
+✅ Keep core design decisions in the CIP itself
+```
+
+**Why?** This prevents documentation drift and maintains a single source of truth. Aligns with "Documentation and Implementation as a Unified Whole" tenet.
+
+### 2. One Improvement, One CIP
+
+*Rule*: Each significant improvement should have its own CIP with a unique identifier.
+
+```
+✅ CIP-0001: Documentation Improvements
+✅ CIP-0002: Test Coverage Enhancement
+❌ CIP-0003: Various Code Cleanups and Improvements
+```
+
+### 3. Status Tracking
+
+*Rule*: Keep the CIP status accurate and updated as the implementation progresses.
+
+```
+- [ ] Proposed → Initial documentation complete
+- [ ] Accepted → Plan reviewed and approved
+- [ ] Implemented → Code changes complete
+- [ ] Closed → Implementation reviewed and merged
+```
+
+### 4. Create Backlog Tasks When Accepted
+
+*Rule*: Create backlog tasks only when a CIP moves from Proposed to Accepted.
+
+```
+✅ CIP Proposed → Design and discussion, no tasks yet
+✅ CIP Accepted → Break down into backlog tasks for implementation
+❌ CIP Proposed → Don't create implementation tasks prematurely
+```
+
+**Why?** Wait for design approval before creating specific implementation tasks. This avoids wasted effort if the CIP changes or is rejected.
+
+### 5. Branch Naming Convention
+
+*Rule*: Name branches after the CIP they implement.
+
+```
+✅ git checkout -b cip000F-refactor-authentication
+❌ git checkout -b auth-refactor
+```
+
+### 6. Commit Messages
+
+*Rule*: Reference the CIP in your commit messages.
+
+```
+✅ CIP-000F: Implement JWT authentication service
+❌ Add auth service
+```
+
+### 7. Implementation Status Updates
+
+*Rule*: Update the CIP document as you complete implementation steps.
+
+```
+## Implementation Status
+- [x] Design database schema
+- [x] Create migration scripts
+- [ ] Implement service layer
+- [ ] Add API endpoints
+```
+
+### 8. CIP Review Process
+
+*Rule*: Solicit feedback on CIPs before full implementation.
+
+```
+✅ Share CIP draft → Get feedback → Revise → Implement
+❌ Implement → Request review → Try to retroactively adjust plan
+```
+
+### 9. Natural Breakpoints for AI Assistants
+
+*Rule*: AI assistants should pause for user or a potential break in coding at key CIP workflow transitions.
+
+**These are natural stopping points** where the assistant should:
+1. Summarize what was done
+2. Show the current state (run `./whats-next`)
+3. Ask the user if they want to proceed
+
+```
+Natural Breakpoints:
+
+1. ✋ After creating a CIP (status: Proposed)
+   → Pause: Let user review the design before accepting
+
+2. ✋ After accepting a CIP (status: Proposed → Accepted)
+   → Pause: Ask if user wants to create backlog tasks now
+
+3. ✋ After creating backlog tasks (status: Accepted → In Progress)
+   → Pause: Let user review progress before implementing
+
+4. ✋ After completing implementation (status: In Progress → Implemented)
+   → Pause: Let user test/validate before closing
+
+5. ✋ After validation (status: Implemented → Closed)
+   → Done: CIP complete, commit and celebrate!
+```
+
+**Why?** These transitions are:
+- Monitored by `./whats-next` script
+- Key decision points requiring human judgment
+- Natural places to review, test, and adjust course
+
+**Don't do this:**
+```
+❌ Create CIP → Accept → Create tasks → Start coding → Complete → Close
+   (All in one go without pausing)
+```
+
+**Do this:**
+```
+✅ Create CIP (Proposed) → 🛑 PAUSE (user reviews design)
+✅ Accept CIP (Proposed → Accepted) → 🛑 PAUSE (ask about creating tasks)
+✅ Create tasks & start (Accepted → In Progress) → 🛑 PAUSE (user reviews progress)
+✅ Complete implementation (In Progress → Implemented) → 🛑 PAUSE (user tests/validates)
+✅ Validate & close (Implemented → Closed) → ✅ Done!
+```
+
+## CIP Template Structure
+
+Each CIP should include these sections:
+
+1. *YAML Frontmatter* - Metadata (author, created, last_updated, status, related_requirements, related_cips, tags)
+2. *Header* - CIP number and title (e.g., `# CIP-0042: Authentication Refactoring`)
+3. *Status* - Current state checklist (Proposed, Accepted, In Progress, Implemented, Closed, Rejected, Deferred)
+4. *Summary* - Brief overview of the proposed improvement and which requirements it addresses
+5. *Motivation* - Why this change is needed, what problem it solves
+6. *Detailed Description* - Technical details and architectural explanation
+7. *Implementation Plan* - Step-by-step plan with specific tasks
+8. *Backward Compatibility* - Impact on existing users and systems
+9. *Testing Strategy* - How changes will be tested and validated
+10. *Related Requirements* - Links to requirements (WHAT) that this CIP implements (HOW)
+11. *Implementation Status* - Checklist of completed implementation tasks
+12. *References* - Links to relevant documentation, code, or discussions
+
+The template file (`cip_template.md`) contains placeholders for all these sections and provides guidance on what information to include.
+
+## Benefits of Following the CIP Process
+
+- *Improved planning* leads to more cohesive implementations
+- *Better communication* among team members about significant changes
+- *Higher-quality code* through thoughtful design before implementation
+- *Historical record* of why changes were made for future reference
+- *Reduced rework* by identifying issues before implementation 

@@ -638,6 +638,96 @@ run_vibesafe_validation() {
   return 0
 }
 
+# ==============================================================================
+# Platform Adapter Functions (CIP-0012 Phase 1)
+# ==============================================================================
+# These functions generate platform-specific AI context files from base prompts
+# in templates/prompts/. Implemented as stubs in Phase 1, full implementation
+# in Phase 2.
+
+# Main dispatcher function for platform-specific prompt generation
+generate_prompts_for_platform() {
+  local platform="$1"
+  local base_dir="${2:-.}"
+  
+  debug "Generating prompts for platform: $platform"
+  
+  case "$platform" in
+    cursor)
+      generate_cursor_rules "$base_dir"
+      ;;
+    copilot)
+      generate_copilot_prompts "$base_dir"
+      ;;
+    claude)
+      generate_claude_context "$base_dir"
+      ;;
+    codex)
+      generate_codex_context "$base_dir"
+      ;;
+    all)
+      generate_cursor_rules "$base_dir"
+      generate_copilot_prompts "$base_dir"
+      generate_claude_context "$base_dir"
+      generate_codex_context "$base_dir"
+      ;;
+    *)
+      echo -e "${YELLOW}Warning: Unknown platform '$platform', using generic context${NC}"
+      generate_generic_context "$base_dir"
+      ;;
+  esac
+}
+
+# Generate Cursor-specific .mdc files with YAML frontmatter
+generate_cursor_rules() {
+  local base_dir="${1:-.}"
+  debug "Generating Cursor rules (stub - Phase 2 implementation pending)"
+  
+  # Phase 2: Read from templates/prompts/ and generate to .cursor/rules/
+  # For now, existing logic in install_vibesafe_structure() handles this
+}
+
+# Generate GitHub Copilot instructions
+generate_copilot_prompts() {
+  local base_dir="${1:-.}"
+  debug "Generating Copilot prompts (stub - Phase 2 implementation pending)"
+  
+  # Phase 2: Generate .github/copilot-instructions.md and .github/instructions/*.instructions.md
+  # mkdir -p .github/instructions
+  # ... generate from templates/prompts/
+}
+
+# Generate Claude Code context files
+generate_claude_context() {
+  local base_dir="${1:-.}"
+  debug "Generating Claude context (stub - Phase 2 implementation pending)"
+  
+  # Phase 2: Generate CLAUDE.md and .claude/commands/*.md
+  # ... generate from templates/prompts/
+}
+
+# Generate Codex context files  
+generate_codex_context() {
+  local base_dir="${1:-.}"
+  debug "Generating Codex context (stub - Phase 2 implementation pending)"
+  
+  # Phase 2: Generate AGENTS.md (combined file)
+  # ... generate from templates/prompts/
+}
+
+# Generate generic AI context (fallback)
+generate_generic_context() {
+  local base_dir="${1:-.}"
+  debug "Generating generic context (stub - Phase 2 implementation pending)"
+  
+  # Phase 2: Generate .ai/context/*.md
+  # ... generate from templates/prompts/
+}
+
+# ==============================================================================
+# End Platform Adapter Functions
+# ==============================================================================
+
 # Function to generate cursor rules from project tenets
 generate_tenet_cursor_rules() {
   echo "Generating cursor rules from project tenets..."

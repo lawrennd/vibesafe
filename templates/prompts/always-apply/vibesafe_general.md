@@ -1,0 +1,306 @@
+# VibeSafe General Development Guidelines
+
+## 🔧 Essential Development Practices
+
+### 1. Git Operations - Surgical Precision Required
+
+**❌ NEVER use generic git adds:**
+```bash
+git add .          # ❌ Too broad, commits unintended files
+git add -A         # ❌ Too broad, commits unintended files  
+git add *          # ❌ Too broad, commits unintended files
+```
+
+**✅ ALWAYS add files surgically:**
+```bash
+git add specific-file.md                    # ✅ Targeted
+git add backlog/features/my-task.md         # ✅ Specific user content
+git add cip/cip0001.md scripts/my-script.py # ✅ Multiple specific files
+```
+
+**Why:** VibeSafe projects contain both system files (templates, generated files) and user content. Generic adds can accidentally commit VibeSafe infrastructure files that shouldn't be in your project repository.
+
+### 2. Python Environment Awareness
+
+**⚠️ ALWAYS verify Python environment before running scripts:**
+
+```bash
+# Check current Python and environment
+which python3
+python3 --version
+
+# Check if you're in a virtual environment
+echo $VIRTUAL_ENV
+
+# For VibeSafe scripts, usually run from project root:
+./whats-next                          # ✅ Wrapper activates .venv-vibesafe automatically
+.venv-vibesafe/bin/python scripts/whats_next.py  # ✅ Direct venv execution
+python scripts/whats_next.py          # ❌ May fail if PyYAML not in system Python
+```
+
+**📦 VibeSafe Virtual Environment:**
+- VibeSafe uses `.venv-vibesafe` for its dependencies (PyYAML)
+- This avoids conflicts with user project `.venv` directories
+- The `./whats-next` wrapper handles activation/deactivation automatically
+- For direct execution: use wrapper OR activate `.venv-vibesafe` manually
+
+**🤔 When in doubt, ASK THE USER:**
+- "Should I run this in the current environment or activate a virtual environment?"
+- "Which Python environment would you like me to use?"
+- "Should I use the project's .venv (yours) or .venv-vibesafe (VibeSafe's)?"
+
+### 3. Date Accuracy for VibeSafe Components
+
+**📅 ALWAYS verify today's date before creating:**
+
+**✅ Check date automatically with shell commands:**
+```bash
+# Get today's date in YYYY-MM-DD format
+date +%Y-%m-%d
+
+# Alternative formats if needed
+date +%Y%m%d           # 20250726 format
+date "+%B %d, %Y"      # July 26, 2025 format
+```
+
+**For Backlog Tasks:**
+```bash
+# Task naming: YYYY-MM-DD_description.md
+# Example: 2025-07-26_implement-feature.md
+TODAY=$(date +%Y-%m-%d)
+echo "Today: $TODAY"
+```
+
+**For CIPs:**
+```yaml
+# YAML frontmatter requires accurate dates
+created: "2025-07-26"
+last_updated: "2025-07-26"
+```
+
+**🗓️ Process:**
+- ✅ **Run `date +%Y-%m-%d`** to get today's date automatically
+- ✅ **Use in file naming** and YAML frontmatter
+- 🤔 **Only ask user** if date seems wrong or if creating retroactive entries
+
+### 4. VibeSafe File Classification Awareness
+
+**Always distinguish between:**
+
+**🔧 System Files (Don't commit to user projects):**
+- `backlog/README.md`, `cip/README.md` - VibeSafe documentation
+- `task_template.md`, `cip_template.md` - VibeSafe templates  
+- `.cursor/rules/*` - VibeSafe cursor rules
+- `scripts/whats_next.py`, `update_index.py` - VibeSafe tools
+
+**📝 User Content (Always commit):**
+- `README.md` (project root) - User's project documentation
+- `backlog/features/YYYY-MM-DD_task.md` - User's tasks
+- `cip0001.md`, `cip0002.md` - User's CIPs
+- User's actual requirements and project files
+
+### 5. Before Making Changes
+
+**✅ ALWAYS:**
+- Check current working directory (`pwd`)
+- Verify you're in the right branch (`git branch`)
+- Understand what type of files you're working with (system vs user)
+- Ask for clarification if unsure about environment or scope
+
+**❌ NEVER:**
+- Make assumptions about the current environment
+- Commit files without understanding their purpose
+- Use broad git operations without explicit permission
+- Create dated files without confirming the date
+
+### 6. Testing Before Commits
+
+**🧪 ALWAYS TEST BEFORE COMMITTING:**
+
+**✅ Required Testing Points:**
+```bash
+# After implementing new features
+# Run appropriate test suite for your project
+npm test                    # Node.js projects
+python -m pytest tests/ -v  # Python projects
+bats scripts/test/*.bats    # Shell script projects
+go test ./...              # Go projects
+cargo test                 # Rust projects
+# etc.
+
+# After modifying installation scripts
+bats scripts/test/install-test.bats
+
+# After changing core functionality
+# Run comprehensive test suite with verbose output
+
+# Before staging any changes
+# Ensure all tests pass: npm test && echo "✅ All tests passed"
+```
+
+**🎯 Testing Checklist:**
+- ✅ **Unit tests pass** for modified modules
+- ✅ **Integration tests pass** for affected systems
+- ✅ **Installation tests pass** for script changes
+- ✅ **No new test failures** introduced
+- ✅ **Test coverage maintained** or improved
+
+**⚠️ Why Testing Matters:**
+- **Quality**: Ensures changes work as expected
+- **Regression Prevention**: Catches unintended side effects
+- **Confidence**: Validates implementation against requirements
+- **Documentation**: Tests serve as working examples
+
+### 7. Documentation Lifecycle - VibeSafe System First, Formal Docs After
+
+**📚 DOCUMENTATION FOLLOWS A NATURAL LIFECYCLE:**
+
+VibeSafe distinguishes between **active design** (still being discussed) and **finalized documentation** (implementation complete and validated).
+
+**🎯 The Three Phases of Documentation:**
+
+**Phase 1: Design & Discussion → Use VibeSafe System**
+- **When**: Planning, designing, discussing architecture
+- **Where**: CIPs, backlog tasks, requirements
+- **Why**: Flexible, collaborative, easy to update during iteration
+
+**Phase 2: Implementation → Self-Documenting Code**
+- **When**: Writing code to implement the design
+- **Where**: Clear naming, type hints, docstrings, comments
+- **Why**: Code itself explains behavior without separate docs
+
+**Phase 3: Finalization → Update Formal Documentation**
+- **When**: After implementation is complete, tested, and validated
+- **Where**: Sphinx, ReadTheDocs, or other formal doc systems
+- **Why**: Creates permanent reference for finalized decisions
+
+**❌ NEVER create separate design/architecture docs during discussion:**
+```bash
+❌ docs/architecture.md          # Use CIPs instead while designing
+❌ docs/implementation-plan.md   # Use backlog tasks instead  
+❌ DESIGN.md                     # Use CIPs instead while planning
+❌ TODO.md                       # Use backlog instead
+❌ CONTRIBUTING.md               # Document in CIPs/tenets first
+```
+
+**✅ The VibeSafe Documentation Flow:**
+
+```bash
+# ✅ PHASE 1: Design/Discussion → VibeSafe System
+# Create CIP for architecture decisions
+cp cip/cip_template.md cip/cip0001.md
+# Edit CIP with design rationale, implementation plan
+# Iterate on the CIP as discussion evolves
+
+# ✅ PHASE 2: Implementation → Self-Documenting Code
+# Write clear, well-named code with good docstrings
+def calculate_user_score(user_id: str, period: str) -> float:
+    """Calculate aggregated score for a user over a time period.
+    
+    Args:
+        user_id: Unique identifier for the user
+        period: Time period ('daily', 'weekly', 'monthly')
+        
+    Returns:
+        Aggregated score as a float between 0.0 and 100.0
+    """
+    # Implementation with clear variable names and structure
+
+# ✅ PHASE 3: After implementation complete → Formal Documentation
+# Update Sphinx docs with finalized API
+git add docs/source/api.rst
+git commit -m "Update API documentation after completing user scoring feature"
+```
+
+**✅ Table: Where Documentation Belongs by Phase**
+
+| What to Document | Discussion Phase | Implementation Phase | After Finalization |
+|---|---|---|---|
+| **Architecture decisions** | CIPs | Self-documenting code | Sphinx/formal docs |
+| **Design rationale** | CIP "Motivation" | Self-documenting code | Sphinx/formal docs |
+| **Implementation plans** | CIP "Implementation" | Self-documenting code | Sphinx/formal docs |
+| **Tasks and TODOs** | Backlog tasks | Self-documenting code | N/A (remove when done) |
+| **Requirements** | ai-requirements/ | Self-documenting code | Sphinx/formal docs |
+| **API behavior** | CIP sketches | Self-documenting code | Sphinx/formal docs |
+| **Guiding principles** | Tenets | N/A | Tenets (permanent) |
+
+**🎯 Key Principle: Don't Duplicate Work**
+
+- **During design**: Use VibeSafe system (easy to change)
+- **During implementation**: Code should explain itself
+- **After finalization**: Formalize in Sphinx/docs (permanent reference)
+
+**Never create architecture docs that duplicate what's in CIPs while design is still evolving. Wait until implementation is complete and validated, then formalize.**
+
+**✅ Acceptable Standalone Documentation:**
+- `README.md` (project root) - Brief overview, links to VibeSafe system and formal docs
+- `docs/` with Sphinx - Formal documentation for finalized, implemented features
+- `docs/source/` - API reference, user guides, tutorials (post-implementation)
+
+**🤔 When in Doubt:**
+- Still designing/discussing? → **Use CIPs, backlog, requirements**
+- Implementing? → **Make code self-documenting**
+- Implementation done and tested? → **Update formal docs (Sphinx)**
+- Never create standalone design docs that duplicate CIPs during active development
+
+### 8. Git Workflow and Regular Commits
+
+**🔄 COMMIT EARLY AND OFTEN:**
+
+**✅ Required Commit Points:**
+```bash
+# After creating documentation
+git add backlog/features/2025-07-26_my-task.md
+git commit -m "Add backlog task for feature implementation"
+
+# After creating CIPs
+git add cip/cip000F.md cip/README.md
+git commit -m "Add CIP-000F for new feature architecture"
+
+# Before major structural changes
+git add src/module.py tests/test_module.py
+git commit -m "Checkpoint before refactoring module structure"
+
+# After completing implementation
+git add src/ tests/ docs/
+git commit -m "Complete feature implementation with tests"
+```
+
+**📅 Natural Commit Rhythm:**
+- ✅ **After planning**: Create backlog/CIP → commit
+- ✅ **Before refactoring**: Save current state → commit  
+- ✅ **After implementation**: Complete feature → commit
+- ✅ **After testing**: Fix tests and bugs → commit
+- ✅ **Before major changes**: Create checkpoint → commit
+
+**🎯 Commit Message Format:**
+```bash
+# Good commit messages
+git commit -m "Add normalize_status() function to update_index.py"
+git commit -m "Fix test failures for status normalization"
+git commit -m "Update backlog task status to completed"
+
+# Reference related items when appropriate
+git commit -m "Implement CIP-000E clean installation philosophy"
+git commit -m "Complete backlog task: 2025-07-26_feature-name"
+```
+
+**⚠️ Why Regular Commits Matter:**
+- **Safety**: Easy to revert problematic changes
+- **Progress**: Clear development history and milestones
+- **Collaboration**: Others can follow your progress
+- **Documentation**: Commit messages tell the story of development
+
+## 🎯 Quick Reference
+
+| Action | Rule | Example |
+|--------|------|---------|
+| **Git Add** | Always surgical | `git add backlog/features/task.md` |
+| **Git Commit** | Regular checkpoints | After backlogs, CIPs, before refactoring |
+| **Python Exec** | Verify environment first | `which python3` then ask if unsure |
+| **Create Task** | Confirm date | "Today is 2025-12-23, correct?" |
+| **File Changes** | Know system vs user | Check file classification guides |
+| **Testing** | Test before committing | `npm test` or `pytest tests/` before `git add` |
+| **Documentation** | Follow lifecycle | Design→CIPs, Implement→Self-doc, Done→Sphinx |
+
+These guidelines help ensure clean, predictable, and professional VibeSafe development practices.
