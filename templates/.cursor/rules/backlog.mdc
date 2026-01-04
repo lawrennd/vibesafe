@@ -175,13 +175,23 @@ Changed to In Progress as implementation has started.
 
 ### 7. Integration with CIPs
 
-*Rule*: Link backlog tasks to related CIPs when applicable.
+*Rule*: Create backlog tasks only when a CIP is **Accepted**, not when it's Proposed.
+
+**Workflow**:
+- **CIP Proposed** → Design and discussion phase, no backlog tasks yet
+- **CIP Accepted** → Break down into specific backlog tasks for implementation
+- **Backlog tasks** → Link back to the CIP they implement
 
 ```
+✅ CIP-0012: Accepted → Create backlog tasks for each phase
+❌ CIP-0012: Proposed → Wait for acceptance before creating tasks
+
 ## Related
 
 - CIP: 0002
 ```
+
+**Why?** Don't create implementation tasks until the design is approved. This avoids wasted effort if the CIP changes or is rejected.
 
 ## Task Template Structure
 

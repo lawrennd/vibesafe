@@ -125,7 +125,19 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 - [ ] Closed → Implementation reviewed and merged
 ```
 
-### 4. Branch Naming Convention
+### 4. Create Backlog Tasks When Accepted
+
+*Rule*: Create backlog tasks only when a CIP moves from Proposed to Accepted.
+
+```
+✅ CIP Proposed → Design and discussion, no tasks yet
+✅ CIP Accepted → Break down into backlog tasks for implementation
+❌ CIP Proposed → Don't create implementation tasks prematurely
+```
+
+**Why?** Wait for design approval before creating specific implementation tasks. This avoids wasted effort if the CIP changes or is rejected.
+
+### 5. Branch Naming Convention
 
 *Rule*: Name branches after the CIP they implement.
 
@@ -134,7 +146,7 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 ❌ git checkout -b auth-refactor
 ```
 
-### 5. Commit Messages
+### 6. Commit Messages
 
 *Rule*: Reference the CIP in your commit messages.
 
@@ -143,7 +155,7 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 ❌ Add auth service
 ```
 
-### 6. Implementation Status Updates
+### 7. Implementation Status Updates
 
 *Rule*: Update the CIP document as you complete implementation steps.
 
@@ -155,7 +167,7 @@ This "Cursor Rule" is a recommended workflow for using CIPs effectively in your 
 - [ ] Add API endpoints
 ```
 
-### 7. CIP Review Process
+### 8. CIP Review Process
 
 *Rule*: Solicit feedback on CIPs before full implementation.
 
