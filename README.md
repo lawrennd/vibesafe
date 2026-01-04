@@ -43,7 +43,15 @@ Following our core tenets of *User Autonomy* and *Simplicity*, VibeSafe:
 
 VibeSafe's components (CIPs, Backlog, Requirements, Tenets) are stored as standard markdown files with YAML frontmatter. Any AI assistant that can read project files will understand your VibeSafe structure and use it to provide context-aware suggestions.
 
-We provide tailored prompts such as cursor rules for Cursor users, the same content works with other platforms – they just discover it through different paths. See [REQ-000C](requirements/req000C_ai-assistant-framework-independence.md) and [CIP-0012](cip/cip0012.md) for our framework independence approach.
+During installation, VibeSafe generates platform-specific prompt files from a single source of truth:
+- **Cursor**: `.cursor/rules/*.mdc` (multi-file with YAML frontmatter)
+- **GitHub Copilot**: `.github/copilot-instructions.md` (single combined file)
+- **Claude Code**: `CLAUDE.md` (project memory file)
+- **Codex**: `AGENTS.md` (project documentation file)
+
+By default, VibeSafe generates prompts for **all platforms** (respecting user autonomy). You can customize this using the `VIBESAFE_PLATFORM` environment variable (see Advanced Usage below).
+
+See [REQ-000C](requirements/req000C_ai-assistant-framework-independence.md) and [CIP-0012](cip/cip0012.md) for our framework independence approach.
 
 ## What's Inside
 
@@ -107,6 +115,12 @@ VIBESAFE_TEMPLATES_DIR=/path/to/templates bash install-script.sh
 
 # Skip What's Next script installation
 VIBESAFE_INSTALL_WHATS_NEXT=false bash install-script.sh
+
+# Choose AI assistant platform (CIP-0012: Framework Independence)
+# Options: cursor, copilot, claude, codex, all (default: all)
+VIBESAFE_PLATFORM=cursor bash install-script.sh    # Cursor only
+VIBESAFE_PLATFORM=copilot bash install-script.sh   # GitHub Copilot only
+VIBESAFE_PLATFORM=all bash install-script.sh       # All platforms (default)
 ```
 
 ### Why This Approach?

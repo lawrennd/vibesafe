@@ -965,50 +965,59 @@ generate_generic_context() {
 # End Platform Adapter Functions
 # ==============================================================================
 
-# Function to generate cursor rules from project tenets
-generate_tenet_cursor_rules() {
-  echo "Generating cursor rules from project tenets..."
+# Function to generate AI prompts from project tenets (CIP-0012 Phase 2)
+# Renamed from generate_tenet_cursor_rules() for platform independence
+generate_tenet_ai_prompts() {
+  local platform="${VIBESAFE_PLATFORM:-cursor}"
+  
+  echo "Generating AI prompts from project tenets for platform: $platform..."
   
   # Check if Python 3 is available
   if ! command_exists python3; then
     echo -e "${YELLOW}Warning: Python 3 is required for tenet processing but not found.${NC}"
-    echo "Cursor rules will not be generated from tenets."
+    echo "AI prompts will not be generated from tenets."
     return 1
   fi
   
   # Check if tenets directory exists
   if [ ! -d "tenets" ]; then
-    debug "No tenets directory found, skipping cursor rule generation"
+    debug "No tenets directory found, skipping AI prompt generation"
     return 0
   fi
   
   # Check if combine_tenets.py exists
   if [ ! -f "tenets/combine_tenets.py" ]; then
     echo -e "${YELLOW}Warning: tenets/combine_tenets.py not found.${NC}"
-    echo "Cursor rules will not be generated from tenets."
+    echo "AI prompts will not be generated from tenets."
     return 1
   fi
   
-  # Create .cursor/rules directory if it doesn't exist
+  # Create .cursor/rules directory if it doesn't exist (for backward compatibility)
   mkdir -p .cursor/rules
   
   # Clean up spurious cursor rules before generating new ones
   cleanup_spurious_cursor_rules
   
-  # Run tenet processing with Python
+  # Run tenet processing with Python using new --generate-prompts flag
   if [ -d ".venv-vibesafe" ]; then
     debug "Using virtual environment for tenet processing"
-    .venv-vibesafe/bin/python tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules
+    .venv-vibesafe/bin/python tenets/combine_tenets.py --generate-prompts --platform "$platform" --tenets-dir tenets --output-dir .cursor/rules
   else
     debug "Using system Python for tenet processing"
-    python3 tenets/combine_tenets.py --generate-cursor-rules --tenets-dir tenets --output-dir .cursor/rules
+    python3 tenets/combine_tenets.py --generate-prompts --platform "$platform" --tenets-dir tenets --output-dir .cursor/rules
   fi
   
   if [ $? -eq 0 ]; then
-    echo "✅ Cursor rules generated from project tenets"
+    echo "✅ AI prompts generated from project tenets for $platform"
   else
-    echo -e "${YELLOW}Warning: Failed to generate cursor rules from tenets${NC}"
+    echo -e "${YELLOW}Warning: Failed to generate AI prompts from tenets${NC}"
   fi
+}
+
+# Legacy function name for backward compatibility
+generate_tenet_cursor_rules() {
+  debug "generate_tenet_cursor_rules() called - redirecting to generate_tenet_ai_prompts()"
+  generate_tenet_ai_prompts
 }
 
 # Function to add VibeSafe gitignore protection
@@ -1138,8 +1147,8 @@ install_vibesafe() {
     setup_whats_next
   fi
   
-  # GENERATE: Create cursor rules from project tenets (after virtual environment is set up)
-  generate_tenet_cursor_rules
+  # GENERATE: Create AI prompts from project tenets (CIP-0012 Phase 2 - platform independent)
+  generate_tenet_ai_prompts
   
   # VALIDATE: Run VibeSafe structure validation (unless skipped)
   run_vibesafe_validation
@@ -1159,7 +1168,7 @@ install_vibesafe() {
   echo "✅ VibeSafe system files updated to latest version"
   echo "✅ User content preserved"
   echo "✅ VibeSafe gitignore protection enabled"
-  echo "✅ Project tenets converted to cursor rules"
+  echo "✅ Project tenets converted to AI prompts"
   
   # Report validation status
   if [ "$VALIDATION_RAN" = "true" ]; then

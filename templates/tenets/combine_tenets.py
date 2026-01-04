@@ -182,17 +182,40 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description='Process project tenets')
+    
+    # New platform-neutral flag (CIP-0012 Phase 2)
+    parser.add_argument('--generate-prompts', action='store_true',
+                       help='Generate AI prompts from project tenets (platform-neutral base format)')
+    
+    # Legacy flag for backward compatibility (deprecated)
     parser.add_argument('--generate-cursor-rules', action='store_true',
-                       help='Generate cursor rules from project tenets')
+                       help='(Deprecated: use --generate-prompts) Generate cursor rules from project tenets')
+    
+    parser.add_argument('--platform', default='cursor',
+                       choices=['cursor', 'copilot', 'claude', 'codex', 'all'],
+                       help='Target platform for prompt generation (default: cursor for backward compatibility)')
+    
     parser.add_argument('--tenets-dir', default='.',
                        help='Directory containing tenet files (default: current directory)')
-    parser.add_argument('--output-dir', default='.cursor/rules',
-                       help='Output directory for cursor rules (default: .cursor/rules)')
+    
+    parser.add_argument('--output-dir', default=None,
+                       help='Output directory (default: .cursor/rules for legacy compatibility)')
     
     args = parser.parse_args()
     
+    # Handle legacy flag with deprecation warning
     if args.generate_cursor_rules:
-        print("Generating cursor rules from project tenets...")
+        print("⚠️  Warning: --generate-cursor-rules is deprecated, use --generate-prompts instead")
+        args.generate_prompts = True
+        if args.output_dir is None:
+            args.output_dir = '.cursor/rules'  # Legacy default
+    
+    # Set default output directory based on mode
+    if args.output_dir is None:
+        args.output_dir = '.cursor/rules'  # Default for backward compatibility
+    
+    if args.generate_prompts or args.generate_cursor_rules:
+        print(f"Generating prompts from project tenets for platform: {args.platform}...")
         generate_cursor_rules_from_tenets(args.tenets_dir, args.output_dir)
     else:
         # Original behavior - combine VibeSafe tenets
