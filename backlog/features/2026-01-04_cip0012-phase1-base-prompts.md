@@ -23,12 +23,23 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
 
 ## Acceptance Criteria
 
-- [ ] Research and document platform-specific discovery paths
-  - [ ] Cursor: `.cursor/rules/` (verified)
-  - [ ] GitHub Copilot: `.github/copilot/prompts/` (verify correct path)
-  - [ ] Claude Code: `.claude/context/` (verify correct path or research)
-  - [ ] Codex: Research discovery path and format requirements
-  - [ ] Document findings in CIP-0012 or implementation notes
+- [x] Research and document platform-specific discovery paths ← RESEARCH COMPLETE!
+  - [x] **Cursor**: `.cursor/rules/*.mdc` (confirmed working)
+    - Uses Cursor-specific Markdown format with YAML frontmatter
+    - Legacy: `.cursorrules` (single file, older mechanism)
+  - [x] **GitHub Copilot**: Multiple instruction paths
+    - Repository-wide: `.github/copilot-instructions.md`
+    - Path-specific: `.github/instructions/*.instructions.md` (with `applyTo` globs)
+    - Prompt files: `.github/prompts/*.prompt.md` (on-demand via `/...`)
+  - [x] **Claude Code**: Memory + slash commands
+    - Project memory: `CLAUDE.md` OR `.claude/CLAUDE.md`
+    - Slash commands: `.claude/commands/*.md`
+    - User config: `~/.claude.json`
+  - [x] **Codex CLI**: Multi-layer instructions
+    - User config: `~/.codex/config.yaml`
+    - Global instructions: `~/.codex/instructions.md`
+    - Project docs: `codex.md` OR `AGENTS.md`
+    - Override via: `experimental_instructions_file=<path>` config flag
 - [ ] Create `templates/prompts/` directory structure
 - [ ] Convert existing cursor rules to base prompts:
   - [ ] `backlog.md` (strip YAML frontmatter, keep markdown content)
@@ -49,10 +60,26 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
 
 **Key Principle**: Separate content from delivery format. Base prompts should be pure markdown with clear section headers, no platform-specific metadata.
 
-**Discovery Path Research**:
-- Test file discovery on each platform if possible
-- Check official documentation for recommended paths
-- Community feedback on what works
+**Discovery Path Research** ✅ COMPLETE:
+
+Platform-specific paths (based on official docs):
+1. **Cursor**: `.cursor/rules/*.mdc` (+ legacy `.cursorrules`)
+2. **Copilot**: `.github/copilot-instructions.md` (repo-wide)
+3. **Claude Code**: `CLAUDE.md` or `.claude/CLAUDE.md` (project memory)
+4. **Codex**: `codex.md` or `AGENTS.md` (project docs)
+
+**Key Insight**: Each platform has different discovery patterns:
+- Cursor: Multi-file directory (`.cursor/rules/`)
+- Copilot: GitHub-namespaced directory (`.github/...`)
+- Claude: Single project file (`CLAUDE.md`) + commands directory
+- Codex: Project doc file (`codex.md` or `AGENTS.md`)
+
+**Implementation Strategy**:
+For VibeSafe, generate multiple files per platform to match their patterns:
+- Cursor: Generate separate `.mdc` files (backlog.mdc, cip.mdc, etc.)
+- Copilot: Generate single `.github/copilot-instructions.md` (combined)
+- Claude: Generate single `CLAUDE.md` (combined) OR separate command files
+- Codex: Generate single `AGENTS.md` (combined)
 
 **Backward Compatibility**: Keep existing `.cursor/rules/` generation working during transition.
 
@@ -60,4 +87,12 @@ Create the base prompts infrastructure that will serve as the platform-agnostic 
 
 ### 2026-01-04
 Task created. CIP-0012 accepted and ready for implementation.
+
+**Platform Research Completed**: Documented official discovery paths for all 4 platforms:
+- Cursor: `.cursor/rules/*.mdc`
+- Copilot: `.github/copilot-instructions.md` + `.github/instructions/*.instructions.md`
+- Claude Code: `CLAUDE.md` / `.claude/CLAUDE.md` + `.claude/commands/*.md`
+- Codex: `codex.md` / `AGENTS.md` + `~/.codex/instructions.md`
+
+Ready to proceed with base prompts creation and platform adapter implementation.
 

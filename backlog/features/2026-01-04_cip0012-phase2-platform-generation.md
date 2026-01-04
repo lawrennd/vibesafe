@@ -28,19 +28,24 @@ Implement platform-specific generators that transform base prompts into the corr
   - [ ] Use `.mdc` extension
   - [ ] Install to `.cursor/rules/`
 - [ ] Implement `generate_copilot_prompts()` function:
-  - [ ] Use simpler format (verify what Copilot needs)
-  - [ ] Use `.md` extension
-  - [ ] Install to `.github/copilot/prompts/`
+  - [ ] Generate single combined file: `.github/copilot-instructions.md`
+  - [ ] Plain markdown (no special frontmatter needed)
+  - [ ] Optionally: Generate path-specific `.github/instructions/*.instructions.md` files
+  - [ ] Consider: Separate prompt files in `.github/prompts/*.prompt.md` (on-demand)
 - [ ] Implement `generate_claude_context()` function:
-  - [ ] Adapt format for Claude Code (research needed)
-  - [ ] Install to `.claude/context/`
+  - [ ] Generate project memory: `CLAUDE.md` (root level)
+  - [ ] Plain markdown with sections (no special frontmatter)
+  - [ ] Alternative: `.claude/CLAUDE.md` (if we want namespacing)
+  - [ ] Optionally: Generate slash commands in `.claude/commands/*.md`
 - [ ] Implement `generate_codex_context()` function:
-  - [ ] Adapt format for Codex (research needed)
-  - [ ] Determine correct installation path (research needed)
-  - [ ] Install to appropriate location
-- [ ] Implement `generate_generic_context()` function:
-  - [ ] Plain markdown files
-  - [ ] Install to `.ai/context/` (generic fallback)
+  - [ ] Generate project doc: `AGENTS.md` (root level)
+  - [ ] Alternative: `codex.md` (root level)
+  - [ ] Plain markdown (no special frontmatter)
+  - [ ] Note: User-level `~/.codex/instructions.md` managed separately
+- [ ] Consider generic fallback (optional):
+  - [ ] May not be needed - each platform has specific paths
+  - [ ] Could implement `.ai/context/` if community requests it
+  - [ ] For now: Focus on the 4 major platforms with known paths
 - [ ] Add platform detection/selection:
   - [ ] Support `VIBESAFE_PLATFORM` environment variable
   - [ ] Options: `cursor`, `copilot`, `claude`, `codex`, `all` (default)
@@ -52,11 +57,48 @@ Implement platform-specific generators that transform base prompts into the corr
 
 ## Implementation Notes
 
-**Platform Frontmatter Examples**:
-- **Cursor**: YAML with `description`, `globs`, `alwaysApply`
-- **Copilot**: TBD (research needed)
-- **Claude Code**: TBD (research needed)
-- **Codex**: TBD (research needed)
+**Platform Format Examples**:
+
+**Cursor** (`.cursor/rules/backlog.mdc`):
+```markdown
+---
+description: VibeSafe Backlog System
+globs: backlog/**/*.md
+alwaysApply: true
+---
+# VibeSafe Project Backlog System
+[content...]
+```
+
+**Copilot** (`.github/copilot-instructions.md`):
+```markdown
+# VibeSafe Project Guidelines
+## Backlog System
+[content...]
+## CIP Process
+[content...]
+[combined content, no frontmatter]
+```
+
+**Claude Code** (`CLAUDE.md`):
+```markdown
+# VibeSafe Project Memory
+## Backlog System
+[content...]
+## CIP Process
+[content...]
+[combined content, plain markdown]
+```
+
+**Codex** (`AGENTS.md`):
+```markdown
+# VibeSafe Project Documentation
+## Backlog System
+[content...]
+## CIP Process
+[content...]
+[combined content, plain markdown]
+```
 
 **Default Behavior**: Generate for ALL platforms by default (only a few KB, respects user autonomy).
 
@@ -66,4 +108,12 @@ Implement platform-specific generators that transform base prompts into the corr
 
 ### 2026-01-04
 Task created. Depends on Phase 1 completion (base prompts infrastructure).
+
+**Platform Research Applied**: Based on official documentation:
+- **Cursor**: Multi-file directory (`.cursor/rules/*.mdc`) with YAML frontmatter
+- **Copilot**: Single combined file (`.github/copilot-instructions.md`), plain markdown
+- **Claude Code**: Single memory file (`CLAUDE.md`), plain markdown
+- **Codex**: Single doc file (`AGENTS.md` or `codex.md`), plain markdown
+
+**Key Decision**: Cursor gets multiple files (matches its pattern), other platforms get single combined files (matches their patterns).
 

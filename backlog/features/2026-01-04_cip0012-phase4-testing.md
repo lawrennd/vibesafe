@@ -24,12 +24,12 @@ Test multi-platform installation and validate that VibeSafe works correctly with
 ## Acceptance Criteria
 
 - [ ] Write installation tests (add to `scripts/test/install-test.bats`):
-  - [ ] Test `.cursor/rules/` generation (backward compatibility)
-  - [ ] Test `.github/copilot/prompts/` generation
-  - [ ] Test `.claude/context/` generation (if path confirmed)
-  - [ ] Test Codex path generation (if path confirmed)
+  - [ ] Test `.cursor/rules/*.mdc` generation (backward compatibility, multi-file)
+  - [ ] Test `.github/copilot-instructions.md` generation (single file)
+  - [ ] Test `CLAUDE.md` OR `.claude/CLAUDE.md` generation (single file)
+  - [ ] Test `AGENTS.md` OR `codex.md` generation (single file)
   - [ ] Test platform selection via `VIBESAFE_PLATFORM` env var
-  - [ ] Verify content consistency across platforms
+  - [ ] Verify content consistency across platforms (same info, different formats)
 - [ ] Test with Cursor AI:
   - [ ] Verify Cursor can still read `.cursor/rules/`
   - [ ] Verify core functionality (CIPs, backlog, requirements, tenets)
@@ -76,4 +76,10 @@ Test multi-platform installation and validate that VibeSafe works correctly with
 
 ### 2026-01-04
 Task created. Testing begins after Phase 2 (generation logic) is complete.
+
+**Platform Paths Confirmed**:
+- Cursor: `.cursor/rules/*.mdc` (multiple files)
+- Copilot: `.github/copilot-instructions.md` (single combined file)
+- Claude Code: `CLAUDE.md` or `.claude/CLAUDE.md` (single file)
+- Codex: `AGENTS.md` or `codex.md` (single file)
 
