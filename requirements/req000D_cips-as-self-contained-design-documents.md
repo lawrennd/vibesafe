@@ -5,7 +5,7 @@ status: "Proposed"
 priority: "High"
 created: "2026-01-04"
 last_updated: "2026-01-04"
-related_tenets: ["documentation-implementation-unified", "simplicity-of-use"]
+related_tenets: ["documentation-as-code", "simplicity-of-use"]
 stakeholders: ["developers", "ai-assistants"]
 tags: ["documentation", "cips", "design", "architecture"]
 ---
@@ -67,7 +67,7 @@ When you feel the urge to create a separate design document:
 ## References
 
 - **Related Tenets**:
-  - [Documentation and Implementation as a Unified Whole](tenets/vibesafe/documentation-implementation-unified.md)
+  - [Documentation and Implementation as a Unified Whole](tenets/vibesafe/documentation-as-code.md)
   - [Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)
 - **Example Issue**:
   - `cip/cip0012-prompt-composition-strategy.md` (should be integrated into `cip0012.md`)
