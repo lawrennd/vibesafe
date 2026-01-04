@@ -26,6 +26,25 @@ VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that sha
 
 [View all tenets →](tenets/vibesafe-tenets.md)
 
+## Framework Independence
+
+**VibeSafe works with any AI coding assistant** – whether you use Cursor, Claude Code, GitHub Copilot, Codex, Cody, or any other AI assistant, VibeSafe provides the same core functionality and benefits.
+
+### Why Framework-Independent?
+
+Following our core tenets of *User Autonomy* and *Simplicity*, VibeSafe:
+
+- 📁 Uses **standard file formats** (Markdown + YAML) that any AI assistant can read
+- 🌐 Relies on **file-based organization**, not platform-specific APIs
+- 🔄 Provides **portable content** that works across different tools
+- 🎯 Respects **your choice** of AI coding assistant
+
+### How It Works
+
+VibeSafe's components (CIPs, Backlog, Requirements, Tenets) are stored as standard markdown files with YAML frontmatter. Any AI assistant that can read project files will understand your VibeSafe structure and use it to provide context-aware suggestions.
+
+We provide tailored prompts such as cursor rules for Cursor users, the same content works with other platforms – they just discover it through different paths. See [REQ-000C](requirements/req000C_ai-assistant-framework-independence.md) and [CIP-0012](cip/cip0012.md) for our framework independence approach.
+
 ## What's Inside
 
 VibeSafe contains templates and configurations for three key project management systems:
@@ -60,7 +79,7 @@ Every installation is treated as a clean reinstall with predictable behavior:
 - Templates: `task_template.md`, `cip_template.md`, `tenet_template.md`
 - System documentation: `backlog/README.md`, `cip/README.md`, etc.
 - Scripts: `whats-next`, `update_index.py`, installation scripts
-- Cursor rules: `.cursor/rules/*`
+- AI context files: `.cursor/rules/*` (and `.ai/context/*` in future releases)
 - AI-Requirements framework templates
 
 *🛡️ Always Preserved (Your Content):*
@@ -132,14 +151,14 @@ vibesafe/
 │   ├── README.md             # Overview of the CIP process
 │   ├── cip_template.md       # Template for creating new CIPs
 │   └── cip0001.md, etc.      # Actual CIPs for VibeSafe
-├── .cursor/rules/            # Cursor rules for IDE integration
-│   ├── backlog.mdc           # Rule describing the backlog system
-│   └── cip.mdc               # Rule describing the CIP system
+├── .cursor/rules/            # AI context files for assistant integration
+│   ├── backlog.mdc           # Context about the backlog system
+│   └── cip.mdc               # Context about the CIP system
 └── templates/                # Templates for other projects
     ├── tenets/               # Tenet system template
     ├── backlog/              # Backlog system template
     ├── cip/                  # CIP system template
-    └── .cursor/rules/        # Cursor rules templates
+    └── .cursor/rules/        # AI context files templates (works with all AI assistants)
 ```
 
 ## Alternative Ways to Use VibeSafe
@@ -158,7 +177,7 @@ cp -r /path/to/vibesafe/templates/backlog /path/to/your/project/
 # Create Tenet system in your project
 cp -r /path/to/vibesafe/templates/tenets /path/to/your/project/
 
-# Copy Cursor rules
+# Copy AI context files (works with all AI coding assistants)
 mkdir -p /path/to/your/project/.cursor/rules
 cp /path/to/vibesafe/templates/.cursor/rules/{backlog.mdc,cip.mdc} /path/to/your/project/.cursor/rules/
 ```

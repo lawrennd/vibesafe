@@ -6,6 +6,9 @@ alwaysApply: true
 
 # VibeSafe Project Backlog System
 
+> **Note**: This file provides context to AI coding assistants (Cursor, Claude Code, GitHub Copilot, etc.).  
+> The content is standard markdown and works with any AI assistant that can read project files.
+
 ## What is the Backlog System?
 
 The Backlog System is a structured approach to tracking tasks, issues, and improvements that need to be implemented in the Lynguine project. The backlog serves as:
