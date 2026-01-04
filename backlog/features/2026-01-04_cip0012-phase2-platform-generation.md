@@ -1,7 +1,7 @@
 ---
 id: "2026-01-04_cip0012-phase2-platform-generation"
 title: "CIP-0012 Phase 2: Platform Generation Logic"
-status: "Proposed"
+status: "In Progress"
 priority: "High"
 created: "2026-01-04"
 last_updated: "2026-01-04"

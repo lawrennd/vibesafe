@@ -128,9 +128,15 @@ install_system_files() {
       echo "  ✅ Requirements framework installed (ai-requirements is deprecated)"
     fi
     
-    # Install cursor rules (always overwrite)
-    if [ -d "$templates_dir/templates/.cursor" ]; then
-      debug "Installing cursor rules"
+    # Generate AI assistant context files from base prompts (CIP-0012 Phase 2)
+    # Default: generate for all platforms (respects user autonomy)
+    local target_platform="${VIBESAFE_PLATFORM:-all}"
+    if [ -d "$templates_dir/templates/prompts" ]; then
+      debug "Generating AI context for platform: $target_platform"
+      generate_prompts_for_platform "$target_platform" "$templates_dir"
+    elif [ -d "$templates_dir/templates/.cursor" ]; then
+      # Fallback: Legacy cursor rules installation (backward compatibility)
+      debug "Using legacy cursor rules installation (templates/prompts not found)"
       mkdir -p .cursor/rules
       cp -f "$templates_dir/templates/.cursor/rules/"* .cursor/rules/ 2>/dev/null || true
     fi
@@ -681,38 +687,269 @@ generate_prompts_for_platform() {
 # Generate Cursor-specific .mdc files with YAML frontmatter
 generate_cursor_rules() {
   local base_dir="${1:-.}"
-  debug "Generating Cursor rules (stub - Phase 2 implementation pending)"
+  local prompts_dir="$base_dir/templates/prompts"
+  local output_dir=".cursor/rules"
   
-  # Phase 2: Read from templates/prompts/ and generate to .cursor/rules/
-  # For now, existing logic in install_vibesafe_structure() handles this
+  debug "Generating Cursor rules from base prompts"
+  
+  # Check if prompts directory exists
+  if [ ! -d "$prompts_dir" ]; then
+    debug "No templates/prompts directory found, skipping Cursor rules generation"
+    return 0
+  fi
+  
+  # Create output directory
+  mkdir -p "$output_dir"
+  
+  # Generate always-apply prompts (apply to all files)
+  if [ -d "$prompts_dir/always-apply" ]; then
+    for prompt_file in "$prompts_dir/always-apply"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      local basename=$(basename "$prompt_file" .md)
+      local output_file="$output_dir/${basename}.mdc"
+      
+      # Determine description based on filename
+      local description
+      case "$basename" in
+        vibesafe_general)
+          description="VibeSafe General Development Guidelines - Best practices for working with VibeSafe projects"
+          ;;
+        vibesafe_update)
+          description="VibeSafe Update Guide"
+          ;;
+        whats_next)
+          description="VibeSafe What's Next Script - Project status summarizer for understanding project state and identifying pending tasks"
+          ;;
+        *)
+          description="VibeSafe ${basename} guidance"
+          ;;
+      esac
+      
+      # Generate .mdc file with YAML frontmatter
+      {
+        echo "---"
+        echo "description: $description"
+        echo "globs: \"**/*\""
+        echo "alwaysApply: true"
+        echo "---"
+        cat "$prompt_file"
+      } > "$output_file"
+      
+      debug "Generated: $output_file"
+    done
+  fi
+  
+  # Generate context-specific prompts (apply to specific paths)
+  if [ -d "$prompts_dir/context-specific" ]; then
+    for prompt_file in "$prompts_dir/context-specific"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      local basename=$(basename "$prompt_file" .md)
+      local output_file="$output_dir/${basename}.mdc"
+      
+      # Determine description and globs based on filename
+      local description
+      local globs
+      case "$basename" in
+        backlog)
+          description="VibeSafe Backlog System - Task tracking and project management guidelines"
+          globs="backlog/**/*.md"
+          ;;
+        cip)
+          description="Code Improvement Plans (CIPs) - Structured process for planning and implementing significant code changes"
+          globs="cip/**/*.md"
+          ;;
+        requirements)
+          description="VibeSafe Requirements - Defining WHAT needs to be built (outcomes), not HOW to build it (implementation)"
+          globs="requirements/**/*.md"
+          ;;
+        tenets)
+          description="VibeSafe Tenets - Guiding principles that inform project decision-making"
+          globs="tenets/**/*.md"
+          ;;
+        *)
+          description="VibeSafe ${basename} guidance"
+          globs="${basename}/**/*.md"
+          ;;
+      esac
+      
+      # Generate .mdc file with YAML frontmatter
+      {
+        echo "---"
+        echo "description: $description"
+        echo "globs: $globs"
+        echo "alwaysApply: true"
+        echo "---"
+        cat "$prompt_file"
+      } > "$output_file"
+      
+      debug "Generated: $output_file"
+    done
+  fi
+  
+  echo "✅ Generated Cursor rules in $output_dir"
 }
 
 # Generate GitHub Copilot instructions
 generate_copilot_prompts() {
   local base_dir="${1:-.}"
-  debug "Generating Copilot prompts (stub - Phase 2 implementation pending)"
+  local prompts_dir="$base_dir/templates/prompts"
+  local output_file=".github/copilot-instructions.md"
   
-  # Phase 2: Generate .github/copilot-instructions.md and .github/instructions/*.instructions.md
-  # mkdir -p .github/instructions
-  # ... generate from templates/prompts/
+  debug "Generating Copilot instructions from base prompts"
+  
+  # Check if prompts directory exists
+  if [ ! -d "$prompts_dir" ]; then
+    debug "No templates/prompts directory found, skipping Copilot instructions generation"
+    return 0
+  fi
+  
+  # Create output directory
+  mkdir -p .github
+  
+  # Start the combined file with a header
+  {
+    echo "# VibeSafe Project Guidelines for GitHub Copilot"
+    echo ""
+    echo "This file provides context to GitHub Copilot about the VibeSafe project structure,"
+    echo "development practices, and component-specific guidance."
+    echo ""
+    echo "---"
+    echo ""
+  } > "$output_file"
+  
+  # Add always-apply prompts first (general guidance)
+  if [ -d "$prompts_dir/always-apply" ]; then
+    for prompt_file in "$prompts_dir/always-apply"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      cat "$prompt_file" >> "$output_file"
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      echo "" >> "$output_file"
+    done
+  fi
+  
+  # Add context-specific prompts (component guidance)
+  if [ -d "$prompts_dir/context-specific" ]; then
+    for prompt_file in "$prompts_dir/context-specific"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      cat "$prompt_file" >> "$output_file"
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      echo "" >> "$output_file"
+    done
+  fi
+  
+  echo "✅ Generated Copilot instructions at $output_file"
 }
 
 # Generate Claude Code context files
 generate_claude_context() {
   local base_dir="${1:-.}"
-  debug "Generating Claude context (stub - Phase 2 implementation pending)"
+  local prompts_dir="$base_dir/templates/prompts"
+  local output_file="CLAUDE.md"
   
-  # Phase 2: Generate CLAUDE.md and .claude/commands/*.md
-  # ... generate from templates/prompts/
+  debug "Generating Claude Code project memory from base prompts"
+  
+  # Check if prompts directory exists
+  if [ ! -d "$prompts_dir" ]; then
+    debug "No templates/prompts directory found, skipping Claude context generation"
+    return 0
+  fi
+  
+  # Start the combined file with a header
+  {
+    echo "# VibeSafe Project Memory for Claude Code"
+    echo ""
+    echo "This file provides project context and guidelines to Claude Code (Anthropic's coding assistant)."
+    echo "Claude will use this information to understand the VibeSafe project structure, development"
+    echo "practices, and component-specific guidance."
+    echo ""
+    echo "---"
+    echo ""
+  } > "$output_file"
+  
+  # Add always-apply prompts first (general guidance)
+  if [ -d "$prompts_dir/always-apply" ]; then
+    for prompt_file in "$prompts_dir/always-apply"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      cat "$prompt_file" >> "$output_file"
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      echo "" >> "$output_file"
+    done
+  fi
+  
+  # Add context-specific prompts (component guidance)
+  if [ -d "$prompts_dir/context-specific" ]; then
+    for prompt_file in "$prompts_dir/context-specific"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      cat "$prompt_file" >> "$output_file"
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      echo "" >> "$output_file"
+    done
+  fi
+  
+  echo "✅ Generated Claude Code project memory at $output_file"
 }
 
 # Generate Codex context files  
 generate_codex_context() {
   local base_dir="${1:-.}"
-  debug "Generating Codex context (stub - Phase 2 implementation pending)"
+  local prompts_dir="$base_dir/templates/prompts"
+  local output_file="AGENTS.md"
   
-  # Phase 2: Generate AGENTS.md (combined file)
-  # ... generate from templates/prompts/
+  debug "Generating Codex project documentation from base prompts"
+  
+  # Check if prompts directory exists
+  if [ ! -d "$prompts_dir" ]; then
+    debug "No templates/prompts directory found, skipping Codex context generation"
+    return 0
+  fi
+  
+  # Start the combined file with a header
+  {
+    echo "# VibeSafe Project Documentation for Codex"
+    echo ""
+    echo "This file provides project context and guidelines to OpenAI Codex (and compatible AI coding assistants)."
+    echo "The information below helps understand the VibeSafe project structure, development practices,"
+    echo "and component-specific guidance."
+    echo ""
+    echo "---"
+    echo ""
+  } > "$output_file"
+  
+  # Add always-apply prompts first (general guidance)
+  if [ -d "$prompts_dir/always-apply" ]; then
+    for prompt_file in "$prompts_dir/always-apply"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      cat "$prompt_file" >> "$output_file"
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      echo "" >> "$output_file"
+    done
+  fi
+  
+  # Add context-specific prompts (component guidance)
+  if [ -d "$prompts_dir/context-specific" ]; then
+    for prompt_file in "$prompts_dir/context-specific"/*.md; do
+      [ -f "$prompt_file" ] || continue
+      
+      cat "$prompt_file" >> "$output_file"
+      echo "" >> "$output_file"
+      echo "---" >> "$output_file"
+      echo "" >> "$output_file"
+    done
+  fi
+  
+  echo "✅ Generated Codex project documentation at $output_file"
 }
 
 # Generate generic AI context (fallback)
