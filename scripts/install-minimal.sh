@@ -994,19 +994,22 @@ generate_tenet_ai_prompts() {
     return 1
   fi
   
-  # Create .cursor/rules directory if it doesn't exist (for backward compatibility)
-  mkdir -p .cursor/rules
-  
-  # Clean up spurious cursor rules before generating new ones
-  cleanup_spurious_cursor_rules
-  
-  # Run tenet processing with Python using new --generate-prompts flag
-  if [ -d ".venv-vibesafe" ]; then
-    debug "Using virtual environment for tenet processing"
-    .venv-vibesafe/bin/python tenets/combine_tenets.py --generate-prompts --platform "$platform" --tenets-dir tenets --output-dir .cursor/rules
-  else
-    debug "Using system Python for tenet processing"
-    python3 tenets/combine_tenets.py --generate-prompts --platform "$platform" --tenets-dir tenets --output-dir .cursor/rules
+  # Only create Cursor directories and generate tenets if platform includes cursor
+  if [ "$platform" = "cursor" ] || [ "$platform" = "all" ]; then
+    # Create .cursor/rules directory if it doesn't exist (for backward compatibility)
+    mkdir -p .cursor/rules
+    
+    # Clean up spurious cursor rules before generating new ones
+    cleanup_spurious_cursor_rules
+    
+    # Run tenet processing with Python using new --generate-prompts flag
+    if [ -d ".venv-vibesafe" ]; then
+      debug "Using virtual environment for tenet processing"
+      .venv-vibesafe/bin/python tenets/combine_tenets.py --generate-prompts --platform "$platform" --tenets-dir tenets --output-dir .cursor/rules
+    else
+      debug "Using system Python for tenet processing"
+      python3 tenets/combine_tenets.py --generate-prompts --platform "$platform" --tenets-dir tenets --output-dir .cursor/rules
+    fi
   fi
   
   if [ $? -eq 0 ]; then
