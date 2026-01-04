@@ -62,6 +62,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
+- [CIP-0012 Phase 1: Base Prompts Infrastructure](features/2026-01-04_cip0012-phase1-base-prompts.md)
+
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)
@@ -73,6 +75,12 @@ This file provides an overview of all current backlog items organized by categor
 
 
 ### Proposed
+
+- [CIP-0012 Phase 4: Testing & Validation](features/2026-01-04_cip0012-phase4-testing.md)
+
+- [CIP-0012 Phase 3: Documentation Update](features/2026-01-04_cip0012-phase3-documentation.md)
+
+- [CIP-0012 Phase 2: Platform Generation Logic](features/2026-01-04_cip0012-phase2-platform-generation.md)
 
 - [Phase 5: CIP-0011 Documentation and Testing](features/2026-01-03_cip0011-documentation.md)
 
