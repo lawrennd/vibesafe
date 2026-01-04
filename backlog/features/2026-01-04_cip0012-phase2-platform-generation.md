@@ -54,6 +54,10 @@ Implement platform-specific generators that transform base prompts into the corr
   - [ ] Rename `--generate-cursor-rules` → `--generate-prompts`
   - [ ] Add `--platform` flag
   - [ ] Output to `templates/prompts/` (base format)
+- [ ] Refactor `generate_tenet_cursor_rules()` in `install-minimal.sh`:
+  - [ ] Rename to `generate_tenet_ai_prompts()` (platform-neutral)
+  - [ ] Call new platform adapters instead of direct Cursor generation
+  - [ ] Support VIBESAFE_PLATFORM environment variable
 
 ## Implementation Notes
 
