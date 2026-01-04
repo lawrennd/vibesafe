@@ -12,6 +12,16 @@ VibeSafe's approach is rooted in a philosophy of creating shared understanding a
 
 We're currently exploring an evolution of this philosophy with [CIP-0008](cip/cip0008.md), which proposes unifying our philosophical foundations and introducing new tenets focused on human-AI collaboration.
 
+## Why the Process?
+
+A natural reaction: "This looks like a lot of paperwork."
+
+But the cost model is inverted when working with AI:
+- **Generating documentation**: Cheap (AI does it)
+- **Debugging misimplementation**: Expensive (human discovers it late)
+
+VibeSafe forces intent to be explicit *before* implementation—when correcting misunderstandings costs editing a markdown file, not unwinding code changes. The process isn't overhead; it's a checkpoint where humans can catch AI misinterpretation early.
+
 ## Emerging Patterns
 
 Through the evolution of VibeSafe, we've observed emerging patterns that embody our philosophy in practice. Most notably, the [Breadcrumbs Pattern](patterns/breadcrumbs.md) describes how we leave explicit traces of our thinking processes through CIPs, tenets, and documentation – creating a navigable trail for both humans and AI systems.
