@@ -23,13 +23,13 @@ Test multi-platform installation and validate that VibeSafe works correctly with
 
 ## Acceptance Criteria
 
-- [ ] Write installation tests (add to `scripts/test/install-test.bats`):
-  - [x] Test `.cursor/rules/*.mdc` generation (backward compatibility, multi-file) ✅ Tested manually
-  - [x] Test `.github/copilot-instructions.md` generation (single file) ✅ Tested manually
-  - [x] Test `CLAUDE.md` OR `.claude/CLAUDE.md` generation (single file) ✅ Tested manually (CLAUDE.md)
-  - [x] Test `AGENTS.md` OR `codex.md` generation (single file) ✅ Tested manually (AGENTS.md)
-  - [x] Test platform selection via `VIBESAFE_PLATFORM` env var ✅ Tested `all` platform
-  - [x] Verify content consistency across platforms (same info, different formats) ✅ Verified via grep
+- [x] Write installation tests (add to `scripts/test/install-test.bats`): ✅ **17 automated tests added!**
+  - [x] Test `.cursor/rules/*.mdc` generation (backward compatibility, multi-file) ✅ Automated test
+  - [x] Test `.github/copilot-instructions.md` generation (single file) ✅ Automated test
+  - [x] Test `CLAUDE.md` OR `.claude/CLAUDE.md` generation (single file) ✅ Automated test (CLAUDE.md)
+  - [x] Test `AGENTS.md` OR `codex.md` generation (single file) ✅ Automated test (AGENTS.md)
+  - [x] Test platform selection via `VIBESAFE_PLATFORM` env var ✅ All platforms tested
+  - [x] Verify content consistency across platforms (same info, different formats) ✅ Automated test
 - [x] Test with Cursor AI:
   - [x] Verify Cursor can still read `.cursor/rules/` ✅ 17 .mdc files generated
   - [x] Verify core functionality (CIPs, backlog, requirements, tenets) ✅ Currently using Cursor in this session
@@ -95,6 +95,13 @@ Task created. Testing begins after Phase 2 (generation logic) is complete.
 - ✅ Content consistency verified (all contain same core guidance)
 - ✅ Backward compatibility confirmed (this Cursor session proves it!)
 - ✅ VIBESAFE_PLATFORM=all tested successfully
+
+**Automated Test Coverage Added**:
+- ✅ 17 comprehensive tests in `scripts/test/install-test.bats`
+- ✅ All tests passing (verified with `bats --filter "CIP-0012"`)
+- ✅ Tests cover: Cursor, Copilot, Claude, Codex generation
+- ✅ Tests verify platform selection, content consistency, backward compatibility
+- ✅ Fixed bug: Cursor directory no longer created for non-Cursor platforms
 
 **REQ-000C Compliance Updated**:
 - Score improved from 4/8 (50%) to 7/8 (87.5%)
