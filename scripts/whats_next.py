@@ -17,14 +17,15 @@ The script accepts status values in multiple formats for backlog items:
 All formats are normalized internally to lowercase with underscores.
 
 Usage:
-    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
+    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only] [--compression-check]
 
 Options:
     --no-git              Skip Git status information
-    --no-color           Disable colored output
-    --cip-only           Show only CIP status
-    --backlog-only       Show only backlog status
-    --requirements-only  Show only requirements status
+    --no-color            Disable colored output
+    --cip-only            Show only CIP status
+    --backlog-only        Show only backlog status
+    --requirements-only   Show only requirements status
+    --compression-check   Show compression candidates (closed CIPs needing documentation)
 
 Returns:
     None. Outputs formatted status information to stdout.
@@ -259,7 +260,10 @@ def scan_cips() -> Dict[str, Any]:
             elif status == 'closed':
                 cips_info['by_status']['closed'].append({
                     'id': file_id,
-                    'title': frontmatter.get('title', 'Untitled')
+                    'title': frontmatter.get('title', 'Untitled'),
+                    'last_updated': frontmatter.get('last_updated', ''),
+                    'compressed': frontmatter.get('compressed', False),
+                    'priority': frontmatter.get('priority', 'Medium').lower() if 'priority' in frontmatter else 'medium'
                 })
         else:
             # Extract information from CIP using regex if no frontmatter
@@ -301,7 +305,10 @@ def scan_cips() -> Dict[str, Any]:
                 cips_info['by_status']['closed'].append({
                     'id': file_id,
                     'title': title,
-                    'no_frontmatter': True
+                    'no_frontmatter': True,
+                    'last_updated': '',
+                    'compressed': False,
+                    'priority': 'medium'
                 })
     
     return cips_info
@@ -428,6 +435,157 @@ def scan_requirements() -> Dict[str, Any]:
     # in future versions to just check for requirements/*.md files.
     
     return requirements_info
+
+def calculate_days_since_closure(last_updated: str) -> Optional[int]:
+    """Calculate days since a CIP was last updated (closed).
+    
+    Args:
+        last_updated: Date string in YYYY-MM-DD format
+        
+    Returns:
+        Number of days since closure, or None if date is invalid
+    """
+    if not last_updated:
+        return None
+    
+    try:
+        closed_date = datetime.strptime(last_updated, '%Y-%m-%d')
+        today = datetime.now()
+        delta = today - closed_date
+        return delta.days
+    except (ValueError, TypeError):
+        return None
+
+def get_closed_cips_needing_compression(cips_info: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Find closed CIPs without compressed: true metadata.
+    
+    Implements REQ-000E Triggers 1, 2, 5, 7:
+    - Trigger 1: Detect closed CIPs without compressed: true
+    - Trigger 2: Calculate days since closure
+    - Trigger 5: List in main output
+    - Trigger 7: Detect batch compression opportunities (3+ CIPs within 7 days)
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        List of CIPs needing compression, sorted by priority and age
+    """
+    compression_candidates = []
+    
+    if not cips_info or 'by_status' not in cips_info:
+        return compression_candidates
+    
+    closed_cips = cips_info.get('by_status', {}).get('closed', [])
+    
+    for cip in closed_cips:
+        # Skip if already compressed
+        if cip.get('compressed') is True:
+            continue
+        
+        days_since_closure = calculate_days_since_closure(cip.get('last_updated', ''))
+        
+        compression_candidates.append({
+            'id': cip.get('id', 'unknown'),
+            'title': cip.get('title', 'Untitled'),
+            'days_since_closure': days_since_closure,
+            'priority': cip.get('priority', 'medium'),
+            'no_frontmatter': cip.get('no_frontmatter', False)
+        })
+    
+    # Sort by priority (high first) then by age (oldest first)
+    priority_order = {'high': 0, 'medium': 1, 'low': 2, 'unknown': 3}
+    compression_candidates.sort(
+        key=lambda x: (
+            priority_order.get(x['priority'], 3),
+            -(x['days_since_closure'] if x['days_since_closure'] is not None else -1)
+        )
+    )
+    
+    return compression_candidates
+
+def detect_batch_compression_opportunity(cips_info: Dict[str, Any]) -> bool:
+    """Detect if 3+ CIPs closed within 7 days (batch compression opportunity).
+    
+    Implements REQ-000E Trigger 7.
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        True if batch compression opportunity detected, False otherwise
+    """
+    if not cips_info or 'by_status' not in cips_info:
+        return False
+    
+    closed_cips = cips_info.get('by_status', {}).get('closed', [])
+    
+    # Count CIPs closed within 7 days that aren't compressed
+    recent_closures = []
+    for cip in closed_cips:
+        if cip.get('compressed') is True:
+            continue
+        
+        days_since_closure = calculate_days_since_closure(cip.get('last_updated', ''))
+        if days_since_closure is not None and days_since_closure <= 7:
+            recent_closures.append(cip)
+    
+    return len(recent_closures) >= 3
+
+def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
+    """Generate compression suggestions for the 'Suggested Next Steps' section.
+    
+    Implements REQ-000E Triggers 1-8.
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        List of formatted suggestion strings
+    """
+    suggestions = []
+    
+    candidates = get_closed_cips_needing_compression(cips_info)
+    
+    if not candidates:
+        return suggestions
+    
+    # Detect batch compression opportunity
+    is_batch = detect_batch_compression_opportunity(cips_info)
+    
+    # Generate main suggestion
+    if len(candidates) == 1:
+        cip = candidates[0]
+        days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+        priority_str = f"{cip['priority'].capitalize()} priority" if cip['priority'] != 'medium' else ""
+        
+        suggestion = f"Compress CIP-{cip['id']} into formal documentation"
+        if days_str or priority_str:
+            details = ", ".join(filter(None, [days_str, priority_str]))
+            suggestion = f"{suggestion} ({details})"
+        
+        suggestions.append(suggestion)
+    elif len(candidates) > 1:
+        # Multiple CIPs need compression
+        if is_batch:
+            suggestions.append(f"{Colors.YELLOW}Batch compression opportunity:{Colors.ENDC} {len(candidates)} CIPs closed within 7 days")
+        else:
+            suggestions.append(f"Compress {len(candidates)} closed CIPs into formal documentation:")
+        
+        # Show details for first 3
+        for cip in candidates[:3]:
+            days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+            priority_str = f", {cip['priority'].capitalize()} priority" if cip['priority'] != 'medium' else ""
+            
+            suggestions.append(f"   - CIP-{cip['id']}: {cip['title']} ({days_str}{priority_str})")
+        
+        if len(candidates) > 3:
+            suggestions.append(f"   ... and {len(candidates) - 3} more")
+        
+        suggestions.append(f"   {Colors.BLUE}Use template:{Colors.ENDC} templates/compression_checklist.md")
+        suggestions.append(f"   {Colors.BLUE}Or run:{Colors.ENDC} ./whats-next --compression-check")
+    
+    return suggestions
 
 def detect_codebase() -> bool:
     """Detect if there's a codebase (source code files) in the project.
@@ -843,6 +1001,10 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     if backlog_info and backlog_info.get('without_frontmatter'):
         next_steps.append(f"Add YAML frontmatter to {len(backlog_info['without_frontmatter'])} backlog items")
     
+    # Add compression suggestions (REQ-000E Triggers 1-8)
+    compression_suggestions = generate_compression_suggestions(cips_info)
+    next_steps.extend(compression_suggestions)
+    
     # Requirements process recommendations
     if requirements_info['has_framework']:
         # Check for in-progress backlog items that are explicitly linked to requirements
@@ -959,12 +1121,52 @@ def main():
     parser.add_argument('--cip-only', action='store_true', help='Only show CIP information')
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
+    parser.add_argument('--compression-check', action='store_true', help='Show compression candidates (closed CIPs needing documentation)')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
     parser.add_argument('--skip-validation', action='store_true', help='Skip VibeSafe structure validation')
     args = parser.parse_args()
     
     if args.no_color:
         Colors.disable()
+    
+    # Handle --compression-check flag (focused view)
+    if args.compression_check:
+        cips_info = scan_cips()
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        print_section("Compression Candidates")
+        
+        if not candidates:
+            print(f"{Colors.GREEN}No closed CIPs need compression. All up to date!{Colors.ENDC}\n")
+            return
+        
+        print(f"{Colors.BOLD}Found {len(candidates)} closed CIP(s) needing compression:{Colors.ENDC}\n")
+        
+        for i, cip in enumerate(candidates, 1):
+            days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+            priority_color = Colors.RED if cip['priority'] == 'high' else Colors.YELLOW if cip['priority'] == 'medium' else Colors.ENDC
+            
+            print(f"{i}. CIP-{cip['id']}: {cip['title']}")
+            print(f"   Closed: {days_str}")
+            print(f"   Priority: {priority_color}{cip['priority'].capitalize()}{Colors.ENDC}")
+            
+            if cip.get('no_frontmatter'):
+                print(f"   {Colors.YELLOW}⚠ Missing frontmatter{Colors.ENDC}")
+            
+            print()
+        
+        # Detect batch compression opportunity
+        is_batch = detect_batch_compression_opportunity(cips_info)
+        if is_batch:
+            print(f"{Colors.YELLOW}💡 Batch compression opportunity: 3+ CIPs closed within 7 days{Colors.ENDC}\n")
+        
+        print(f"{Colors.BLUE}Next steps:{Colors.ENDC}")
+        print(f"  1. Copy template: cp templates/compression_checklist.md cip/cip0012-compression.md")
+        print(f"  2. Fill out checklist for each CIP")
+        print(f"  3. Compress into formal documentation")
+        print(f"  4. Set compressed: true in CIP frontmatter\n")
+        
+        return
 
     # Run update scripts first if not disabled
     if not args.no_update:
