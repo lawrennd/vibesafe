@@ -128,5 +128,15 @@ Phase 2 completed! Implemented all 8 triggers from REQ-000E:
 - Trigger 4: Detect validated requirements without formal doc updates → Phase 3
 - Trigger 8: Auto-generate compression backlog tasks → Future enhancement (manual for now)
 
+**Test Coverage Added**:
+- ✅ **22 new comprehensive tests** added to `tests/test_whats_next.py`
+- ✅ **TestCompressionDetection** test class created
+- ✅ All functions tested: calculate_days_since_closure, get_closed_cips_needing_compression, 
+     detect_batch_compression_opportunity, generate_compression_suggestions
+- ✅ Edge cases covered: None, empty, invalid dates, missing fields
+- ✅ Integration tests: verify compression appears in next_steps
+- ✅ **All 75 tests passing** (22 new + 53 existing)
+- ✅ Fixed existing test: test_cmd_args_requirements_only (added compression_check=False)
+
 Next: Phase 3 (Documentation Structure Detection/Creation - implements REQ-000F)
 
