@@ -31,6 +31,10 @@ from scripts.whats_next import (
     detect_component,
     detect_gaps,
     generate_ai_prompts,
+    calculate_days_since_closure,
+    get_closed_cips_needing_compression,
+    detect_batch_compression_opportunity,
+    generate_compression_suggestions,
 )
 
 
@@ -348,6 +352,7 @@ def test_cmd_args_requirements_only():
             cip_only=False, 
             backlog_only=False, 
             requirements_only=True,
+            compression_check=False,  # Don't trigger compression check early return
             no_update=True,
             skip_validation=True
         )
@@ -1202,6 +1207,479 @@ class TestGapDetection(unittest.TestCase):
         # Should contain tenet-related suggestions
         next_steps_text = ' '.join(next_steps)
         self.assertIn('tenet', next_steps_text.lower())
+
+
+class TestCompressionDetection(unittest.TestCase):
+    """Test compression detection functionality (CIP-0013 Phase 2)."""
+    
+    def test_calculate_days_since_closure_valid_date(self):
+        """Test days calculation with valid date."""
+        from datetime import datetime, timedelta
+        
+        # Test with a date 10 days ago
+        ten_days_ago = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+        days = calculate_days_since_closure(ten_days_ago)
+        
+        self.assertIsNotNone(days)
+        self.assertEqual(days, 10)
+    
+    def test_calculate_days_since_closure_today(self):
+        """Test days calculation with today's date."""
+        from datetime import datetime
+        
+        today = datetime.now().strftime('%Y-%m-%d')
+        days = calculate_days_since_closure(today)
+        
+        self.assertIsNotNone(days)
+        self.assertEqual(days, 0)
+    
+    def test_calculate_days_since_closure_invalid_date(self):
+        """Test days calculation with invalid date."""
+        days = calculate_days_since_closure('not-a-date')
+        self.assertIsNone(days)
+    
+    def test_calculate_days_since_closure_empty_string(self):
+        """Test days calculation with empty string."""
+        days = calculate_days_since_closure('')
+        self.assertIsNone(days)
+    
+    def test_calculate_days_since_closure_none(self):
+        """Test days calculation with None."""
+        days = calculate_days_since_closure(None)
+        self.assertIsNone(days)
+    
+    def test_calculate_days_since_closure_wrong_format(self):
+        """Test days calculation with wrong date format."""
+        days = calculate_days_since_closure('01/08/2026')  # MM/DD/YYYY instead of YYYY-MM-DD
+        self.assertIsNone(days)
+    
+    def test_get_closed_cips_needing_compression_empty_cips(self):
+        """Test compression detection with no CIPs."""
+        cips_info = {'by_status': {'closed': []}}
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        self.assertEqual(len(candidates), 0)
+    
+    def test_get_closed_cips_needing_compression_all_compressed(self):
+        """Test compression detection when all CIPs are compressed."""
+        from datetime import datetime, timedelta
+        
+        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Test CIP',
+                        'last_updated': yesterday,
+                        'compressed': True,
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        # Should filter out compressed CIPs
+        self.assertEqual(len(candidates), 0)
+    
+    def test_get_closed_cips_needing_compression_uncompressed(self):
+        """Test compression detection with uncompressed CIPs."""
+        from datetime import datetime, timedelta
+        
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Test CIP 1',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0]['id'], 'cip0001')
+        self.assertEqual(candidates[0]['days_since_closure'], 5)
+        self.assertEqual(candidates[0]['priority'], 'high')
+    
+    def test_get_closed_cips_needing_compression_missing_compressed_field(self):
+        """Test that missing 'compressed' field is treated as False."""
+        from datetime import datetime, timedelta
+        
+        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Test CIP',
+                        'last_updated': yesterday,
+                        # compressed field missing
+                        'priority': 'medium'
+                    }
+                ]
+            }
+        }
+        
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        # Should include CIP (missing field treated as False)
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0]['id'], 'cip0001')
+    
+    def test_get_closed_cips_needing_compression_priority_sorting(self):
+        """Test that CIPs are sorted by priority (high first)."""
+        from datetime import datetime, timedelta
+        
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Low Priority',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'low'
+                    },
+                    {
+                        'id': 'cip0002',
+                        'title': 'High Priority',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    },
+                    {
+                        'id': 'cip0003',
+                        'title': 'Medium Priority',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'medium'
+                    }
+                ]
+            }
+        }
+        
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        # Should be sorted: high, medium, low
+        self.assertEqual(len(candidates), 3)
+        self.assertEqual(candidates[0]['id'], 'cip0002')  # high
+        self.assertEqual(candidates[1]['id'], 'cip0003')  # medium
+        self.assertEqual(candidates[2]['id'], 'cip0001')  # low
+    
+    def test_get_closed_cips_needing_compression_age_sorting_within_priority(self):
+        """Test that CIPs are sorted by age within same priority."""
+        from datetime import datetime, timedelta
+        
+        two_days_ago = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
+        ten_days_ago = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Recent High',
+                        'last_updated': two_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    },
+                    {
+                        'id': 'cip0002',
+                        'title': 'Old High',
+                        'last_updated': ten_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        # Within same priority, older should come first
+        self.assertEqual(len(candidates), 2)
+        self.assertEqual(candidates[0]['id'], 'cip0002')  # 10 days old
+        self.assertEqual(candidates[1]['id'], 'cip0001')  # 2 days old
+    
+    def test_detect_batch_compression_opportunity_no_batch(self):
+        """Test batch detection with only 1-2 recent CIPs."""
+        from datetime import datetime, timedelta
+        
+        three_days_ago = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Recent',
+                        'last_updated': three_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        
+        is_batch = detect_batch_compression_opportunity(cips_info)
+        
+        # Only 1 CIP, not a batch
+        self.assertFalse(is_batch)
+    
+    def test_detect_batch_compression_opportunity_with_batch(self):
+        """Test batch detection with 3+ CIPs within 7 days."""
+        from datetime import datetime, timedelta
+        
+        two_days_ago = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        six_days_ago = (datetime.now() - timedelta(days=6)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {'id': 'cip0001', 'title': 'CIP 1', 'last_updated': two_days_ago, 
+                     'compressed': False, 'priority': 'high'},
+                    {'id': 'cip0002', 'title': 'CIP 2', 'last_updated': five_days_ago,
+                     'compressed': False, 'priority': 'high'},
+                    {'id': 'cip0003', 'title': 'CIP 3', 'last_updated': six_days_ago,
+                     'compressed': False, 'priority': 'high'}
+                ]
+            }
+        }
+        
+        is_batch = detect_batch_compression_opportunity(cips_info)
+        
+        # 3 CIPs within 7 days, should be batch
+        self.assertTrue(is_batch)
+    
+    def test_detect_batch_compression_opportunity_excludes_compressed(self):
+        """Test that batch detection excludes already compressed CIPs."""
+        from datetime import datetime, timedelta
+        
+        three_days_ago = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {'id': 'cip0001', 'title': 'Compressed', 'last_updated': three_days_ago,
+                     'compressed': True, 'priority': 'high'},
+                    {'id': 'cip0002', 'title': 'Uncompressed 1', 'last_updated': three_days_ago,
+                     'compressed': False, 'priority': 'high'},
+                    {'id': 'cip0003', 'title': 'Uncompressed 2', 'last_updated': three_days_ago,
+                     'compressed': False, 'priority': 'high'}
+                ]
+            }
+        }
+        
+        is_batch = detect_batch_compression_opportunity(cips_info)
+        
+        # Only 2 uncompressed CIPs, not a batch
+        self.assertFalse(is_batch)
+    
+    def test_detect_batch_compression_opportunity_excludes_old(self):
+        """Test that batch detection excludes CIPs older than 7 days."""
+        from datetime import datetime, timedelta
+        
+        three_days_ago = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')
+        ten_days_ago = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {'id': 'cip0001', 'title': 'Recent 1', 'last_updated': three_days_ago,
+                     'compressed': False, 'priority': 'high'},
+                    {'id': 'cip0002', 'title': 'Recent 2', 'last_updated': three_days_ago,
+                     'compressed': False, 'priority': 'high'},
+                    {'id': 'cip0003', 'title': 'Old', 'last_updated': ten_days_ago,
+                     'compressed': False, 'priority': 'high'}
+                ]
+            }
+        }
+        
+        is_batch = detect_batch_compression_opportunity(cips_info)
+        
+        # Only 2 CIPs within 7 days, not a batch
+        self.assertFalse(is_batch)
+    
+    def test_generate_compression_suggestions_no_candidates(self):
+        """Test suggestion generation with no candidates."""
+        cips_info = {'by_status': {'closed': []}}
+        
+        suggestions = generate_compression_suggestions(cips_info)
+        
+        self.assertEqual(len(suggestions), 0)
+    
+    def test_generate_compression_suggestions_single_cip(self):
+        """Test suggestion generation with single CIP."""
+        from datetime import datetime, timedelta
+        
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0012',
+                        'title': 'Test CIP',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        
+        suggestions = generate_compression_suggestions(cips_info)
+        
+        self.assertGreater(len(suggestions), 0)
+        # Should mention the CIP
+        suggestions_text = ' '.join(suggestions)
+        self.assertIn('CIP-cip0012', suggestions_text)
+        self.assertIn('5 days ago', suggestions_text)
+        self.assertIn('High priority', suggestions_text)
+    
+    def test_generate_compression_suggestions_multiple_cips(self):
+        """Test suggestion generation with multiple CIPs."""
+        from datetime import datetime, timedelta
+        
+        two_days_ago = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'CIP 1',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    },
+                    {
+                        'id': 'cip0002',
+                        'title': 'CIP 2',
+                        'last_updated': two_days_ago,
+                        'compressed': False,
+                        'priority': 'medium'
+                    }
+                ]
+            }
+        }
+        
+        suggestions = generate_compression_suggestions(cips_info)
+        
+        self.assertGreater(len(suggestions), 0)
+        suggestions_text = ' '.join(suggestions)
+        # Should mention both CIPs
+        self.assertIn('CIP-cip0001', suggestions_text)
+        self.assertIn('CIP-cip0002', suggestions_text)
+        # Should show count
+        self.assertIn('2', suggestions_text)
+        # Should reference template
+        self.assertIn('compression_checklist.md', suggestions_text)
+    
+    def test_generate_compression_suggestions_batch_opportunity(self):
+        """Test suggestion generation with batch opportunity."""
+        from datetime import datetime, timedelta
+        
+        three_days_ago = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d')
+        
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {'id': f'cip000{i}', 'title': f'CIP {i}', 'last_updated': three_days_ago,
+                     'compressed': False, 'priority': 'high'}
+                    for i in range(1, 5)  # 4 CIPs
+                ]
+            }
+        }
+        
+        suggestions = generate_compression_suggestions(cips_info)
+        
+        self.assertGreater(len(suggestions), 0)
+        suggestions_text = ' '.join(suggestions)
+        # Should mention batch opportunity
+        self.assertIn('Batch compression opportunity', suggestions_text)
+    
+    def test_generate_next_steps_includes_compression(self):
+        """Test that compression suggestions appear in next steps."""
+        from datetime import datetime, timedelta
+        
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        
+        git_info = {}
+        cips_info = {
+            'by_status': {
+                'proposed': [],
+                'accepted': [],
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Uncompressed CIP',
+                        'last_updated': five_days_ago,
+                        'compressed': False,
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+        
+        # Should include compression suggestion
+        next_steps_text = ' '.join(next_steps)
+        self.assertIn('Compress', next_steps_text)
+        self.assertIn('CIP-cip0001', next_steps_text)
+    
+    def test_generate_next_steps_no_compression_when_all_compressed(self):
+        """Test that no compression suggestions when all CIPs compressed."""
+        from datetime import datetime, timedelta
+        
+        five_days_ago = (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')
+        
+        git_info = {}
+        cips_info = {
+            'by_status': {
+                'proposed': [],
+                'accepted': [],
+                'closed': [
+                    {
+                        'id': 'cip0001',
+                        'title': 'Compressed CIP',
+                        'last_updated': five_days_ago,
+                        'compressed': True,  # Already compressed
+                        'priority': 'high'
+                    }
+                ]
+            }
+        }
+        backlog_info = {'by_status': {'in_progress': [], 'proposed': []}, 
+                       'by_priority': {'high': []}}
+        requirements_info = {'has_framework': True}
+        
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info)
+        
+        # Should NOT include compression suggestion
+        next_steps_text = ' '.join(next_steps)
+        # Avoid false positives from other mentions of "compress" in different contexts
+        self.assertNotIn('CIP-cip0001', next_steps_text)
 
 
 if __name__ == "__main__":
