@@ -1,17 +1,21 @@
 ---
 id: "[kebab-case-id]"
-title: "[Tenet Title]"
-status: "Active"
-created: "YYYY-MM-DD"
-last_reviewed: "YYYY-MM-DD"
+title: "[Short, descriptive title]"
+status: "Active"  # Active, Under Review, Archived
+created: "[YYYY-MM-DD]"
+last_reviewed: "[YYYY-MM-DD]"
 review_frequency: "Annual"  # Annual, Quarterly, etc.
 conflicts_with: []  # Optional: Other tenet IDs that may conflict
-tags: []  # Optional: Tags for categorization
+tags:
+- tenet
+- "[additional tags]"
 ---
 
-## Tenet: [kebab-case-id]
+# Tenet Template
 
-**Title**: [Tenet Title]
+Use this template to create new tenets for your project.
+
+## Tenet
 
 **Description**: [1-2 paragraphs explaining the principle, its importance, and how it guides decisions]
 
@@ -31,4 +35,4 @@ tags: []  # Optional: Tags for categorization
 - [Potential conflict with another tenet]
 - Resolution: [How to resolve the conflict]
 - [Another potential conflict]
-- Resolution: [Another resolution approach]
+- Resolution: [Another resolution approach] 
