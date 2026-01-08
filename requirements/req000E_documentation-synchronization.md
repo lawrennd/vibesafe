@@ -1,7 +1,7 @@
 ---
 id: "000E"
 title: "Documentation Synchronization with Implementation"
-status: "Proposed"
+status: "Ready"
 priority: "High"
 created: "2026-01-08"
 last_updated: "2026-01-08"
@@ -65,10 +65,20 @@ What does "done" look like? These criteria serve as **triggers for `whats-next` 
 
 ### Scope of "Formal Documentation"
 
-This requirement applies to:
-- **README.md** (project root): High-level features, architecture overview, getting started
-- **Sphinx/docs/** (or equivalent): Detailed API docs, tutorials, architecture guides, user guides
-- **docs/architecture.md** (if exists): System design decisions, patterns, tradeoffs
+**User Autonomy**: This requirement applies to whatever documentation system the user has chosen. VibeSafe detects and adapts to user preferences rather than prescribing structure.
+
+**Common documentation systems** (all supported):
+- **README.md** (project root): High-level features, architecture overview
+- **Sphinx** (`docs/source/*.rst`): Detailed API docs, tutorials, architecture guides
+- **MkDocs** (`docs/*.md`): Detailed API docs, tutorials, architecture guides
+- **Plain Markdown** (`docs/*.md`): Architecture docs, design decisions
+- **Custom**: User-specified compression targets via configuration
+
+**VibeSafe adapts to**:
+- Your existing directory structure
+- Your chosen documentation format (markdown, reStructuredText, etc.)
+- Your documentation system (Sphinx, MkDocs, Hugo, etc.)
+- Your file naming conventions
 
 Does NOT apply to:
 - CIPs themselves (they remain as historical record, unchanged)
@@ -134,5 +144,8 @@ The system guides toward best practices but respects user judgment.
 ## Progress Updates
 
 ### 2026-01-08
-Requirement created with "Proposed" status. Awaiting review and refinement.
+Requirement created with "Proposed" status.
+
+### 2026-01-08 (Later)
+Refined acceptance criteria to be "prompt triggers" for `whats-next` rather than blocking gates. Added User Autonomy tenet. Status changed to "Ready" - fully defined and ready for CIP implementation.
 
