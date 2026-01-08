@@ -5,7 +5,7 @@ status: "Proposed"
 priority: "High"
 created: "2026-01-08"
 last_updated: "2026-01-08"
-related_tenets: ["documentation-as-code"]  # Documentation and Implementation as Unified Whole
+related_tenets: ["documentation-as-code", "user-autonomy"]  # Documentation as Unified Whole + User Autonomy
 stakeholders: ["users", "ai-assistants", "maintainers", "contributors"]
 tags: ["documentation", "knowledge-management", "compression", "workflow"]
 ---
@@ -30,7 +30,11 @@ This requirement addresses the "documentation drift" problem where:
 
 **Why this matters**: 
 
-This requirement stems from the **"Documentation and Implementation as a Unified Whole"** tenet, which states: *"Document to guide implementation; implement to validate documentation."* The compression stage closes the feedback loop by validating that implementation matches design intent and capturing that validated knowledge in permanent, accessible documentation.
+This requirement stems from two tenets:
+
+1. **"Documentation and Implementation as a Unified Whole"**: *"Document to guide implementation; implement to validate documentation."* The compression stage closes the feedback loop by validating that implementation matches design intent and capturing that validated knowledge in permanent, accessible documentation.
+
+2. **"User Autonomy Over Prescription"**: *"We optimize for configurability over our own preferences."* The acceptance criteria serve as prompts/suggestions via `whats-next`, not blocking requirements. Users choose when and how to compress documentation based on their judgment and workflow.
 
 **Who benefits**: 
 
@@ -42,16 +46,20 @@ This requirement stems from the **"Documentation and Implementation as a Unified
 
 ## Acceptance Criteria
 
-What does "done" look like? Be specific about outcomes, not implementation:
+What does "done" look like? These criteria serve as **triggers for `whats-next` prompts**, not blocking gates. Per the "User Autonomy" tenet, VibeSafe guides but doesn't prescribe.
 
-- [ ] **Observable Outcome 1**: When a CIP is closed, formal documentation is updated within 30 days to reflect its key decisions
-- [ ] **Observable Outcome 2**: Users can understand current system architecture by reading formal documentation alone (README + Sphinx/docs) without reading closed CIPs
-- [ ] **Observable Outcome 3**: AI assistants can answer questions about implemented features using formal documentation as primary source
-- [ ] **Observable Outcome 4**: Formal documentation includes traceability: each major feature/architecture decision references the CIP(s) that defined it
-- [ ] **Observable Outcome 5**: When requirements are validated, their acceptance criteria and outcomes are documented in formal docs
-- [ ] **Observable Outcome 6**: Documentation compression status is visible: users/maintainers can identify which closed CIPs have not yet been reflected in formal docs
-- [ ] **Observable Outcome 7**: Formal documentation is the source of truth for "current state"; closed CIPs are the source of truth for "historical decisions and rationale"
-- [ ] **Observable Outcome 8**: Major architectural decisions documented in formal docs include both WHAT was built and WHY (linking back to tenets/requirements)
+**Measurability**: Each criterion should be detectable by `whats-next` and turned into an actionable prompt. For example: "3 closed CIPs need documentation compression (CIP-0012, CIP-0013, CIP-0014)".
+
+- [ ] **Prompt Trigger 1**: When a CIP is closed without `compressed: true` metadata, `whats-next` suggests compression within 30 days
+- [ ] **Prompt Trigger 2**: When formal documentation hasn't been updated in X days, `whats-next` suggests reviewing closed CIPs for compression candidates
+- [ ] **Prompt Trigger 3**: When a CIP is marked `compressed: true`, formal docs reference that CIP number (e.g., "Multi-platform support (CIP-0012)")
+- [ ] **Prompt Trigger 4**: When a requirement status changes to "Validated", `whats-next` suggests documenting its outcomes in formal docs
+- [ ] **Prompt Trigger 5**: `whats-next` can list closed CIPs that lack `compressed: true` metadata (visible compression backlog)
+- [ ] **Prompt Trigger 6**: `whats-next --compression-check` shows priority-ordered list of compression candidates
+- [ ] **Prompt Trigger 7**: When multiple CIPs close in short timeframe, `whats-next` suggests batch compression task
+- [ ] **Prompt Trigger 8**: When compression task is created, it includes checklist: update README, update Sphinx, add traceability, mark CIP compressed
+
+**Note**: These triggers guide workflow but don't block progress. Users can close CIPs without immediate compression. The prompts ensure compression doesn't get forgotten.
 
 ## Notes (Optional)
 
@@ -95,6 +103,27 @@ WHY (Tenets) ← loop closes
 ```
 
 Compression validates the loop: Does the formal documentation align with our tenets? If not, we've drifted.
+
+### Implementation Note: whats-next Integration
+
+The `whats-next` script must implement detection for these prompt triggers. This should be documented as part of CIP-0013 implementation (likely Phase 2: Integration with whats-next). The implementation will:
+
+1. Check for closed CIPs without `compressed: true` metadata
+2. Calculate time since CIP closure (trigger 30-day reminders)
+3. Detect validated requirements without formal documentation updates
+4. Provide `--compression-check` flag for focused compression view
+5. Generate prioritized suggestions based on:
+   - Age of closed CIP (older = higher priority)
+   - Importance of CIP (based on `priority` or `related_requirements`)
+   - Number of uncompressed CIPs (batch suggestions for 3+)
+
+**User Autonomy Alignment**: These prompts are suggestions, not blockers. Users can choose to:
+- Compress immediately after CIP closure
+- Batch compress multiple CIPs together
+- Defer compression for lower-priority CIPs
+- Skip compression entirely for minor/internal CIPs
+
+The system guides toward best practices but respects user judgment.
 
 ## References
 
