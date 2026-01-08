@@ -163,7 +163,7 @@ bats scripts/test/install-test.bats
 
 VibeSafe distinguishes between **active design** (still being discussed) and **finalized documentation** (implementation complete and validated).
 
-**🎯 The Three Phases of Documentation:**
+**🎯 The Four Phases of Documentation:**
 
 **Phase 1: Design & Discussion → Use VibeSafe System**
 - **When**: Planning, designing, discussing architecture
@@ -175,10 +175,15 @@ VibeSafe distinguishes between **active design** (still being discussed) and **f
 - **Where**: Clear naming, type hints, docstrings, comments
 - **Why**: Code itself explains behavior without separate docs
 
-**Phase 3: Finalization → Update Formal Documentation**
-- **When**: After implementation is complete, tested, and validated
+**Phase 3: Validation → Test & Close CIP**
+- **When**: After implementation is complete, testing passes
+- **Where**: Update CIP status to "Closed", mark `compressed: false`
+- **Why**: Signals implementation is done, compression can follow
+
+**Phase 4: Compression → Update Formal Documentation**
+- **When**: After CIP is closed (immediately or periodically)
 - **Where**: Sphinx, ReadTheDocs, or other formal doc systems
-- **Why**: Creates permanent reference for finalized decisions
+- **Why**: Distills development history into permanent, accessible documentation
 
 **❌ NEVER create separate design/architecture docs during discussion:**
 ```bash
@@ -212,23 +217,30 @@ def calculate_user_score(user_id: str, period: str) -> float:
     """
     # Implementation with clear variable names and structure
 
-# ✅ PHASE 3: After implementation complete → Formal Documentation
-# Update Sphinx docs with finalized API
-git add docs/source/api.rst
-git commit -m "Update API documentation after completing user scoring feature"
+# ✅ PHASE 3: Validation → Test & Close CIP
+# Tests pass, implementation validated
+git add cip/cip0012.md
+# (Mark status: Closed, compressed: false)
+git commit -m "Complete CIP-0012 implementation and validation"
+
+# ✅ PHASE 4: Compression → Formal Documentation
+# Distill CIP knowledge into permanent docs
+git add docs/source/api.rst README.md
+git add cip/cip0012.md  # Mark compressed: true
+git commit -m "Compress CIP-0012: Update formal docs with API reference"
 ```
 
 **✅ Table: Where Documentation Belongs by Phase**
 
-| What to Document | Discussion Phase | Implementation Phase | After Finalization |
-|---|---|---|---|
-| **Architecture decisions** | CIPs | Self-documenting code | Sphinx/formal docs |
-| **Design rationale** | CIP "Motivation" | Self-documenting code | Sphinx/formal docs |
-| **Implementation plans** | CIP "Implementation" | Self-documenting code | Sphinx/formal docs |
-| **Tasks and TODOs** | Backlog tasks | Self-documenting code | N/A (remove when done) |
-| **Requirements** | ai-requirements/ | Self-documenting code | Sphinx/formal docs |
-| **API behavior** | CIP sketches | Self-documenting code | Sphinx/formal docs |
-| **Guiding principles** | Tenets | N/A | Tenets (permanent) |
+| What to Document | Phase 1: Design | Phase 2: Implementation | Phase 3: Validation | Phase 4: Compression |
+|---|---|---|---|---|
+| **Architecture decisions** | CIPs | Self-doc code | Close CIP | Sphinx/formal docs |
+| **Design rationale** | CIP "Motivation" | Self-doc code | Close CIP | Sphinx/formal docs |
+| **Implementation plans** | CIP "Implementation" | Self-doc code | Close CIP | Sphinx/formal docs |
+| **Tasks and TODOs** | Backlog tasks | Self-doc code | Close tasks | N/A (remove when done) |
+| **Requirements** | requirements/ | Self-doc code | Validate reqs | Sphinx/formal docs |
+| **API behavior** | CIP sketches | Self-doc code | Close CIP | Sphinx/formal docs |
+| **Guiding principles** | Tenets | N/A | N/A | Tenets (permanent) |
 
 **🎯 Key Principle: Don't Duplicate Work**
 
@@ -244,9 +256,10 @@ git commit -m "Update API documentation after completing user scoring feature"
 - `docs/source/` - API reference, user guides, tutorials (post-implementation)
 
 **🤔 When in Doubt:**
-- Still designing/discussing? → **Use CIPs, backlog, requirements**
-- Implementing? → **Make code self-documenting**
-- Implementation done and tested? → **Update formal docs (Sphinx)**
+- Still designing/discussing? → **Phase 1: Use CIPs, backlog, requirements**
+- Implementing? → **Phase 2: Make code self-documenting**
+- Implementation done and tested? → **Phase 3: Close CIP, mark `compressed: false`**
+- CIP closed? → **Phase 4: Compress into formal docs (Sphinx), mark `compressed: true`**
 - Never create standalone design docs that duplicate CIPs during active development
 
 ### 8. Git Workflow and Regular Commits

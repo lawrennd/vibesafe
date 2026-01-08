@@ -219,6 +219,11 @@ Natural Breakpoints:
 
 5. ✋ After validation (status: Implemented → Closed)
    → Done: CIP complete, commit and celebrate!
+
+6. ✋ After CIP closure (status: Closed) ← COMPRESSION STAGE
+   → Pause: Ask user about compression
+   → Suggest: "CIP-XXXX is closed. Compress into formal docs now or defer?"
+   → Options: Compress now, create compression task, skip/defer
 ```
 
 **Why?** These transitions are:
@@ -238,7 +243,8 @@ Natural Breakpoints:
 ✅ Accept CIP (Proposed → Accepted) → 🛑 PAUSE (ask about creating tasks)
 ✅ Create tasks & start (Accepted → In Progress) → 🛑 PAUSE (user reviews progress)
 ✅ Complete implementation (In Progress → Implemented) → 🛑 PAUSE (user tests/validates)
-✅ Validate & close (Implemented → Closed) → ✅ Done!
+✅ Validate & close (Implemented → Closed) → ✅ CIP complete!
+✅ After closure (Closed) → 🛑 PAUSE (ask about compression) → Compress or defer
 ```
 
 ## CIP Template Structure

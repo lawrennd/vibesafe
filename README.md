@@ -19,8 +19,11 @@ A natural reaction: "This looks like a lot of paperwork."
 But the cost model is inverted when working with AI:
 - **Generating documentation**: Cheap (AI does it)
 - **Debugging misimplementation**: Expensive (human discovers it late)
+- **Finding answers later**: Expensive (reading 50 closed CIPs to understand current state)
 
 VibeSafe forces intent to be explicit *before* implementation—when correcting misunderstandings costs editing a markdown file, not unwinding code changes. The process isn't overhead; it's a checkpoint where humans can catch AI misinterpretation early.
+
+After implementation, **compression** distills the development history (CIPs, backlog, commits) into streamlined formal documentation. Future developers (human and AI) understand *what* was built without reading the entire *how* it evolved. The workflow is: **WHY** (Tenets) → **WHAT** (Requirements) → **HOW** (CIPs) → **DO** (Backlog) → **DOCUMENT** (Compression).
 
 ## Emerging Patterns
 
@@ -65,7 +68,7 @@ See [REQ-000C](requirements/req000C_ai-assistant-framework-independence.md) and 
 
 ## What's Inside
 
-VibeSafe contains templates and configurations for three key project management systems:
+VibeSafe contains templates and configurations for key project management systems:
 
 1. An [emerging philosophy](philosophy.md) of human-AI collaboration for code and systems design.
 
@@ -76,6 +79,8 @@ VibeSafe contains templates and configurations for three key project management 
 4. *Tenet System*: A framework for defining, managing, and sharing project guiding principles.
 
 5. *What's Next Script*: A project status summarizer that helps both humans and LLMs quickly understand the current state of the project and identify pending tasks.
+
+6. *Documentation Compression*: A systematic workflow (WHY→WHAT→HOW→DO→DOCUMENT) that consolidates closed CIPs and completed implementations into permanent, accessible formal documentation. See [CIP-0013](cip/cip0013.md) and [REQ-000E](requirements/req000E_documentation-synchronization.md).
 
 ## Simple Installation
 
