@@ -62,8 +62,6 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
-- [CIP-0013 Phase 5: Establish Periodic Compression Review Process](features/2026-01-08_cip0013-phase5-periodic-review.md)
-
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)

@@ -71,6 +71,8 @@ The script supports several command line options:
 - `--no-color`: Disable colored output
 - `--cip-only`: Only show CIP information
 - `--backlog-only`: Only show backlog information
+- `--requirements-only`: Only show requirements information
+- `--compression-check`: Show detailed compression candidates (closed CIPs needing compression)
 - `--quiet`: Suppress all output except next steps
 
 Examples:
@@ -111,9 +113,82 @@ Provides a prioritized list of recommended actions based on the project's curren
 
 Lists specific files that need YAML frontmatter to be added for better project tracking.
 
+### Compression Suggestions (New)
+
+When closed CIPs haven't been compressed into formal documentation, the script automatically detects and suggests compression actions. This helps ensure that knowledge from closed CIPs is systematically transferred to permanent documentation.
+
 ## YAML Frontmatter
 
 The script checks for and recommends adding YAML frontmatter to CIPs and backlog items. See [YAML Frontmatter Examples](yaml_frontmatter_examples.md) for the required format.
+
+## Compression Detection
+
+The "What's Next" script automatically detects closed CIPs that haven't been compressed into formal documentation and suggests compression actions.
+
+### What is Compression?
+
+**Documentation compression** is the process of distilling knowledge from closed CIPs (design rationale), completed backlog tasks (implementation details), and finalized code into streamlined formal documentation. This ensures that future users can understand what was built without reading the entire development history.
+
+### --compression-check Flag
+
+Use the `--compression-check` flag to see a detailed view of compression candidates:
+
+```bash
+./whats-next --compression-check
+```
+
+**Output includes**:
+- List of closed CIPs with `compressed: false` (or missing the field)
+- Days since CIP closure
+- Priority level (High, Medium, Low)
+- Batch compression opportunities (3+ CIPs closed within 7 days)
+
+### Compression Suggestions in Main Output
+
+When running `./whats-next` without flags, compression suggestions appear in the "Suggested Next Steps" section if:
+
+1. **Any closed CIPs need compression**: Suggests using the compression template
+2. **Batch opportunity detected**: 3+ CIPs closed within 7 days
+3. **High-priority CIPs uncompressed**: Older or high-priority CIPs are highlighted
+
+### Compression Workflow
+
+The script suggests:
+
+1. **Use template**: `cp templates/compression_checklist.md cip/cipXXXX-compression.md`
+2. **Or run detailed check**: `./whats-next --compression-check`
+3. **Follow the guide**: See [Compression Guide](compression-guide.md)
+
+### How the Script Detects Compression Needs
+
+The script scans all closed CIPs and checks:
+- **Status**: Is the CIP closed?
+- **Compressed field**: Is `compressed: false` or missing?
+- **Age**: How many days since `last_updated`?
+
+**Prioritization**:
+- High-priority CIPs are flagged first
+- Older CIPs are listed before newer ones
+- Batch opportunities are highlighted
+
+### Setting compressed: true
+
+After compressing a CIP into formal documentation:
+
+1. Update the CIP's YAML frontmatter: `compressed: true`
+2. Commit the changes
+3. The CIP will no longer appear in compression suggestions
+
+**Example**:
+```yaml
+---
+id: "0013"
+status: "Closed"
+compressed: true  # Marks as compressed
+---
+```
+
+See [Compression Guide](compression-guide.md) for the complete workflow.
 
 ## For Developers
 

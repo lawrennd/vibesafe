@@ -80,7 +80,7 @@ VibeSafe contains templates and configurations for key project management system
 
 5. *What's Next Script*: A project status summarizer that helps both humans and LLMs quickly understand the current state of the project and identify pending tasks.
 
-6. *Documentation Compression*: A systematic workflow (WHY→WHAT→HOW→DO→DOCUMENT) that consolidates closed CIPs and completed implementations into permanent, accessible formal documentation. See [CIP-0013](cip/cip0013.md) and [REQ-000E](requirements/req000E_documentation-synchronization.md).
+6. *Documentation Compression*: A systematic workflow (WHY→WHAT→HOW→DO→DOCUMENT) that consolidates closed CIPs and completed implementations into permanent, accessible formal documentation. See [Compression Guide](docs/compression-guide.md), [CIP-0013](cip/cip0013.md), and [REQ-000E](requirements/req000E_documentation-synchronization.md).
 
 ## Simple Installation
 
