@@ -138,7 +138,7 @@ VibeSafe generates AI assistant prompts for Cursor, GitHub Copilot, Claude Code,
 Task created with "Ready" status. Independent of other phases, can be done in parallel.
 
 ### 2026-01-08 (Later)
-Phase 3 completed! Created comprehensive `docs/compression-guide.md` (500+ lines):
+Phase 3 completed! Integrated comprehensive compression guide into `cip/cip0013.md` (per REQ-000D: CIPs are self-contained):
 
 **Documentation Structure Detection**:
 - ✅ Detection logic for Sphinx (`docs/conf.py`)
@@ -179,6 +179,19 @@ Phase 3 completed! Created comprehensive `docs/compression-guide.md` (500+ lines
 - ✅ Adapts to existing structure
 
 All acceptance criteria met. Guide is comprehensive, example-driven, and respects User Autonomy.
+
+**Why integrated into CIP-0013 instead of separate docs/**:
+- ✅ **VibeSafe Documentation Lifecycle**: CIP-0013 is "In Progress" → guidance belongs IN the CIP
+- ✅ **REQ-000D**: CIPs are self-contained design documents → all design rationale in the CIP
+- ✅ **After CIP closes**: Will create `docs/compression-guide.md` from CIP content (Phase 3 of lifecycle)
+- ❌ **Violation avoided**: Creating `docs/compression-guide.md` now would be premature formal documentation
+
+**Documentation Lifecycle Applied**:
+1. **Phase 1**: Design/Discussion → ✅ Use CIP-0013 (this phase)
+2. **Phase 2**: Implementation → Self-documenting code
+3. **Phase 3**: After validation → Create `docs/compression-guide.md` from CIP-0013
+
+This is a textbook application of VibeSafe's own philosophy!
 
 Next: Phase 4 (Workflow Integration) and Phase 5 (Periodic Review)
 
