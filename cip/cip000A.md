@@ -3,6 +3,7 @@ author: Neil Lawrence
 created: '2025-05-11'
 id: 000A
 last_updated: '2026-01-03'
+compressed: true  # Compressed 2026-01-08: Documented in docs/whats_next_script.md and README
 status: Closed
 tags:
 - project-management

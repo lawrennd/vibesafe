@@ -113,6 +113,9 @@ Every installation is treated as a clean reinstall with predictable behavior:
 - Virtual environment: `.venv`
 - Your requirements documents
 
+*🔒 Automatic Version Control Protection:*
+VibeSafe automatically adds system files to `.gitignore`, preventing accidental commits. This means you can safely use `git add .` without committing VibeSafe infrastructure. See [CIP-000F](cip/cip000F.md) for details.
+
 ### Requirements
 
 - *Required*: `bash` and `git`

@@ -3,6 +3,7 @@ author: VibeSafe Team
 created: '2025-07-26'
 id: 000E
 last_updated: '2026-01-03'
+compressed: true  # Compressed 2026-01-08: Already in README "What Happens During Installation"
 related_requirements:
 - '0007'
 status: Closed

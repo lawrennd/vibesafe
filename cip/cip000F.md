@@ -2,6 +2,7 @@
 id: "2025-07-26_vibesafe-auto-gitignore-protection"
 title: "VibeSafe Auto-Gitignore Protection"
 status: "Closed"
+compressed: true  # Compressed 2026-01-08: Added to README installation section
 priority: "High"
 created: "2025-07-26"
 last_updated: "2026-01-03"
