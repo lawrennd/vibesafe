@@ -12,7 +12,7 @@
 
 **Compression Targets**:
 - ✅ README.md (already updated in Phase 4)
-- ⬜ docs/compression-guide.md (extract from CIP-0013)
+- ⬜ docs/source/compression-guide.md (extract from CIP-0013)
 - ⬜ docs/whats_next_script.md (add compression section)
 
 ---
@@ -53,7 +53,7 @@
 - [x] **Content**: Added workflow diagram: WHY→WHAT→HOW→DO→DOCUMENT
 - [ ] **Add**: Link to formal compression guide (after creating it)
 
-### docs/compression-guide.md (NEW)
+### docs/source/compression-guide.md (NEW)
 - [ ] **Create**: Extract "Compression Guide" section from CIP-0013
 - [ ] **Include**: Documentation structure detection logic
 - [ ] **Include**: Adaptive compression targets (Sphinx, MkDocs, plain markdown, minimal)
@@ -76,7 +76,7 @@
 
 Source: `cip/cip0013.md` lines ~262-373 ("Compression Guide" section)
 
-Destination: `docs/compression-guide.md`
+Destination: `docs/source/compression-guide.md`
 
 **Content Structure**:
 1. Introduction (what is compression?)
@@ -95,7 +95,7 @@ Add link to compression guide:
 ```markdown
 6. *Documentation Compression*: A systematic workflow (WHY→WHAT→HOW→DO→DOCUMENT) 
    that consolidates closed CIPs and completed implementations into permanent, accessible 
-   formal documentation. See [CIP-0013](cip/cip0013.md) and [Compression Guide](docs/compression-guide.md).
+   formal documentation. See [CIP-0013](cip/cip0013.md) and [Compression Guide](docs/source/compression-guide.md).
 ```
 
 ### Update docs/whats_next_script.md
@@ -130,7 +130,7 @@ See [Compression Guide](compression-guide.md) for the full workflow.
 
 ### Add References
 
-In `docs/compression-guide.md`, add footer:
+In `docs/source/compression-guide.md`, add footer:
 ```markdown
 ---
 
@@ -156,7 +156,7 @@ After completing all updates:
    ```
    Compress CIP-0013: Extract compression guide into formal docs
    
-   Created docs/compression-guide.md from CIP-0013
+   Created docs/source/compression-guide.md from CIP-0013
    Updated README.md with compression guide link
    Updated docs/whats_next_script.md with compression detection docs
    Marked CIP-0013 compressed: true
@@ -167,7 +167,7 @@ After completing all updates:
 ## Compression Quality Check
 
 - [ ] README.md links to compression guide
-- [ ] docs/compression-guide.md created with all sections
+- [ ] docs/source/compression-guide.md created with all sections
 - [ ] docs/whats_next_script.md documents compression features
 - [ ] All traceability links work
 - [ ] CIP-0013 marked `compressed: true`

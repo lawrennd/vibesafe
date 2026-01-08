@@ -1,202 +1,246 @@
 # What's Next Script
 
-The What's Next script is a tool in the VibeSafe framework that helps teams understand their project's current status and identify pending tasks. It provides a comprehensive overview of:
+## Overview
+
+The "What's Next" script is a project status summarizer that helps LLMs and human users quickly understand the current state of the VibeSafe project and identify pending tasks. It provides a comprehensive overview of:
 
 - Git repository status
-- CIP (Change Implementation Proposal) status
+- CIP (Code Improvement Proposal) status
 - Backlog item status
-- Requirements status
-
-## Philosophy
-
-The What's Next script embodies several key principles from the VibeSafe framework:
-
-1. **Progressive Disclosure**: Information is presented in layers, from high-level status to detailed implementation tasks
-2. **Contextual Awareness**: The script maintains awareness of the project's current state and suggests relevant next steps
-3. **Requirements-Driven Development**: Integration with the AI-Requirements framework ensures alignment with project goals
-4. **Continuous Improvement**: Regular status checks help identify areas for improvement and maintain project momentum
+- Recommended next steps
+- Files needing YAML frontmatter
 
 ## Installation
 
-The script can be installed using the provided installation script:
+The script is located in the `scripts` directory of the VibeSafe repository:
 
 ```bash
-./install-whats-next.sh
+scripts/whats_next.py
 ```
 
-This will:
-1. Create a Python virtual environment (if it doesn't exist)
-2. Install required dependencies
-3. Make the script executable
-4. Create a convenience wrapper script
+### Dependencies
+
+The script requires:
+- Python 3.6+
+- PyYAML library
+
+You can install everything needed using:
+
+1. The installation script (recommended):
+   ```bash
+   # This creates a virtual environment and sets up a convenient wrapper
+   ./install-whats-next.sh
+   ```
+
+2. Using the run-python-tests.sh script (for development):
+   ```bash
+   # This creates a virtual environment for testing
+   ./scripts/run-python-tests.sh
+   ```
+
+3. Using the pyproject.toml file (if you have Poetry installed):
+   ```bash
+   # Install Poetry if you don't have it
+   curl -sSL https://install.python-poetry.org | python3 -
+   
+   # Install dependencies
+   poetry install
+   ```
 
 ## Usage
 
-The script can be run in several ways:
+After installation using the installation script, run the script using:
 
 ```bash
-# Basic usage
 ./whats-next
-
-# With options
-./whats-next --no-git        # Skip Git status
-./whats-next --no-color      # Disable colored output
-./whats-next --cip-only      # Show only CIP status
-./whats-next --backlog-only  # Show only backlog status
-./whats-next --requirements-only  # Show only requirements status
 ```
 
-## Example Use Case
+If you prefer to run it directly, make sure to activate the virtual environment first:
 
-Here's a typical workflow using the What's Next script:
+```bash
+source .venv/bin/activate
+python scripts/whats_next.py
+deactivate  # When finished
+```
 
-1. **Daily Status Check**
-   ```bash
-   ./whats-next
-   ```
-   This provides a quick overview of:
-   - Current Git branch and recent commits
-   - Active CIPs and their status
-   - High-priority backlog items
-   - Requirements framework status
+### Command Line Options
 
-2. **Requirements-Focused Planning**
-   ```bash
-   ./whats-next --requirements-only
-   ```
-   Use this when:
-   - Starting a new feature
-   - Reviewing requirements for an existing feature
-   - Checking requirements coverage
+The script supports several command line options:
 
-3. **CIP Review**
-   ```bash
-   ./whats-next --cip-only
-   ```
-   Use this when:
-   - Planning sprint work
-   - Reviewing proposed changes
-   - Tracking implementation progress
+- `--no-git`: Skip Git status information
+- `--no-color`: Disable colored output
+- `--cip-only`: Only show CIP information
+- `--backlog-only`: Only show backlog information
+- `--requirements-only`: Only show requirements information
+- `--compression-check`: Show detailed compression candidates (closed CIPs needing compression)
+- `--quiet`: Suppress all output except next steps
 
-4. **Backlog Management**
-   ```bash
-   ./whats-next --backlog-only
-   ```
-   Use this when:
-   - Prioritizing work
-   - Planning team capacity
-   - Reviewing task status
+Examples:
 
-## Features
+```bash
+# Show only the next steps (useful for quick reference)
+./whats-next --quiet
+
+# Focus only on CIPs
+./whats-next --cip-only
+
+# Focus only on backlog items
+./whats-next --backlog-only
+
+# Disable color (useful for non-interactive terminals)
+./whats-next --no-color
+```
+
+## Output Sections
 
 ### Git Status
-- Current branch
-- Recent commits (last 5)
-- Modified files
-- Untracked files
+
+Shows the current branch, recent commits, modified files, and untracked files.
 
 ### CIP Status
-- Total number of CIPs
-- CIPs by status (proposed, accepted, implemented, closed)
-- CIPs with/without frontmatter
-- CIP details including title and dates
+
+Lists all CIPs, categorized by their status (proposed, accepted, implemented, closed), and identifies those missing YAML frontmatter.
 
 ### Backlog Status
-- Total number of backlog items
-- Items by priority (high, medium, low)
-- Items by status (proposed, ready, in progress, completed, abandoned)
-- Items with/without frontmatter
 
-### Requirements Status
-- Total number of requirements
-- Requirements by status
-- Requirements with/without frontmatter
+Lists backlog items, highlighting high-priority items and those in progress, and identifies items missing YAML frontmatter.
 
-## Implementation Details
+### Recommended Next Steps
 
-### Python Script (`scripts/whats_next.py`)
+Provides a prioritized list of recommended actions based on the project's current state.
 
-The main script is implemented in Python and provides the core functionality:
+### Files Needing YAML Frontmatter
 
-```python
-def get_git_status() -> Dict[str, Any]:
-    """Get Git repository status information."""
-    # Implementation details...
+Lists specific files that need YAML frontmatter to be added for better project tracking.
 
-def scan_cips() -> Dict[str, Any]:
-    """Scan all CIP files and collect their status."""
-    # Implementation details...
+### Compression Suggestions (New)
 
-def scan_backlog() -> Dict[str, Any]:
-    """Scan all backlog items and collect their status."""
-    # Implementation details...
+When closed CIPs haven't been compressed into formal documentation, the script automatically detects and suggests compression actions. This helps ensure that knowledge from closed CIPs is systematically transferred to permanent documentation.
 
-def scan_requirements() -> Dict[str, Any]:
-    """Scan all requirements and collect their status."""
-    # Implementation details...
-```
+## YAML Frontmatter
 
-### Shell Script (`install-whats-next.sh`)
+The script checks for and recommends adding YAML frontmatter to CIPs and backlog items. See [YAML Frontmatter Examples](yaml_frontmatter_examples.md) for the required format.
 
-The installation script handles the setup process:
+## Compression Detection
+
+The "What's Next" script automatically detects closed CIPs that haven't been compressed into formal documentation and suggests compression actions.
+
+### What is Compression?
+
+**Documentation compression** is the process of distilling knowledge from closed CIPs (design rationale), completed backlog tasks (implementation details), and finalized code into streamlined formal documentation. This ensures that future users can understand what was built without reading the entire development history.
+
+### --compression-check Flag
+
+Use the `--compression-check` flag to see a detailed view of compression candidates:
 
 ```bash
-# Create and activate virtual environment
-python3 -m venv .venv-vibesafe
-source .venv-vibesafe/bin/activate
-
-# Install dependencies
-pip install PyYAML
-
-# Make script executable
-chmod +x scripts/whats_next.py
+./whats-next --compression-check
 ```
 
-## Integration with AI-Requirements Framework
+**Output includes**:
+- List of closed CIPs with `compressed: false` (or missing the field)
+- Days since CIP closure
+- Priority level (High, Medium, Low)
+- Batch compression opportunities (3+ CIPs closed within 7 days)
 
-The What's Next script integrates with the AI-Requirements framework to provide:
+### Compression Suggestions in Main Output
 
-1. **Pattern-Based Analysis**
-   - Identifies missing requirements patterns
-   - Suggests appropriate patterns for new features
-   - Tracks pattern implementation status
+When running `./whats-next` without flags, compression suggestions appear in the "Suggested Next Steps" section if:
 
-2. **Prompt Integration**
-   - Links to relevant discovery prompts
-   - Suggests refinement prompts for existing requirements
-   - Provides validation prompts for implementation
+1. **Any closed CIPs need compression**: Suggests using the compression template
+2. **Batch opportunity detected**: 3+ CIPs closed within 7 days
+3. **High-priority CIPs uncompressed**: Older or high-priority CIPs are highlighted
 
-3. **Requirements Tracking**
-   - Monitors requirements coverage
-   - Identifies gaps in requirements documentation
-   - Suggests next steps for requirements gathering
+### Compression Workflow
 
-## Dependencies
+The script suggests:
 
-- Python 3.6 or higher
-- PyYAML package
-- Git (for Git status features)
+1. **Use template**: `cp templates/compression_checklist.md cip/cipXXXX-compression.md`
+2. **Or run detailed check**: `./whats-next --compression-check`
+3. **Follow the guide**: See [Compression Guide](compression-guide.md)
 
-## Contributing
+### How the Script Detects Compression Needs
 
-To contribute to the What's Next script:
+The script scans all closed CIPs and checks:
+- **Status**: Is the CIP closed?
+- **Compressed field**: Is `compressed: false` or missing?
+- **Age**: How many days since `last_updated`?
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+**Prioritization**:
+- High-priority CIPs are flagged first
+- Older CIPs are listed before newer ones
+- Batch opportunities are highlighted
 
-## Troubleshooting
+### Setting compressed: true
 
-Common issues and solutions:
+After compressing a CIP into formal documentation:
 
-1. **Virtual Environment Issues**
-   - Ensure Python 3 is installed
-   - On Ubuntu/Debian: `apt-get install python3-venv`
+1. Update the CIP's YAML frontmatter: `compressed: true`
+2. Commit the changes
+3. The CIP will no longer appear in compression suggestions
 
-2. **Permission Issues**
-   - Make sure the script is executable: `chmod +x whats-next`
+**Example**:
+```yaml
+---
+id: "0013"
+status: "Closed"
+compressed: true  # Marks as compressed
+---
+```
 
-3. **Dependency Issues**
-   - Activate the virtual environment: `source .venv-vibesafe/bin/activate`
-   - Install dependencies: `pip install PyYAML` 
+See [Compression Guide](compression-guide.md) for the complete workflow.
+
+## For Developers
+
+### Testing
+
+The script includes unit tests to ensure its functionality. To run the tests:
+
+```bash
+# Run all tests (creates a virtual environment automatically)
+./scripts/run-python-tests.sh
+
+# Alternatively, run tests manually
+source .venv/bin/activate
+python -m pytest tests/
+deactivate
+```
+
+### Project Structure
+
+```
+vibesafe/
+├── scripts/
+│   └── whats_next.py         # The main script
+├── docs/
+│   ├── whats_next_script.md  # This documentation
+│   └── yaml_frontmatter_examples.md  # YAML examples
+├── tests/
+│   └── test_whats_next.py    # Test cases for the script
+├── pyproject.toml            # Dependency and project configuration
+├── .venv/                    # Virtual environment (created by install script)
+├── whats-next                # Convenience wrapper script (created by install script)
+└── install-whats-next.sh     # Installation script
+```
+
+### Extending the Script
+
+The script is designed to be modular and extensible. If you want to add new functionality:
+
+1. Add new functions in `scripts/whats_next.py`
+2. Update the `generate_next_steps` function to include your new functionality
+3. Add tests for your changes in `tests/test_whats_next.py`
+4. Update this documentation as needed
+
+## For LLMs
+
+This script is particularly useful for LLMs working on the VibeSafe project, as it provides quick context about the project's current state and priorities. 
+
+When an LLM is asked to work on VibeSafe, it should:
+
+1. Run the "What's Next" script to get current project status
+2. Review the recommended next steps
+3. Understand the high-priority items
+4. Check if there are files missing YAML frontmatter that need updating
+
+This approach ensures that LLMs have the necessary context to make informed decisions about what tasks to prioritize. 

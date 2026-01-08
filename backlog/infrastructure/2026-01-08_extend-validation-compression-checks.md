@@ -39,7 +39,7 @@ Extend `scripts/validate_vibesafe_structure.py` to validate documentation compre
   - [ ] Check README.md for high-level references
   - [ ] Warn if compressed CIP has no documentation references
 - [ ] Flag CIPs with invalid `compressed` values (not true/false)
-- [ ] Optional: Check that compression guide exists (`docs/compression-guide.md`)
+- [ ] Optional: Check that compression guide exists (`docs/source/compression-guide.md`)
 
 ### Validation Output
 - [ ] Add "Compression Status" section to validation output
@@ -102,7 +102,7 @@ Compression Status:
   
   ⚠️  WARNING: High compression backlog (>10 CIPs)
   → Run: ./whats-next --compression-check
-  → Guide: docs/compression-guide.md
+  → Guide: docs/source/compression-guide.md
 ```
 
 ### Integration with whats-next
@@ -145,7 +145,7 @@ def test_compression_validation_compressed_true_no_docs():
 python scripts/validate_vibesafe_structure.py --compression-only
 
 # Should show:
-# - CIP-0013: compressed: true, found in docs/compression-guide.md ✅
+# - CIP-0013: compressed: true, found in docs/source/compression-guide.md ✅
 # - CIP-000F: compressed: false, 5 days old ⚠️
 # - CIP-0006: compressed: false, 248 days old ⚠️⚠️
 ```

@@ -169,7 +169,7 @@ Implementation details and algorithm selection rationale: [CIP-00XX](../cip/cip0
 
 **Scenario**: CIP-0013 (Documentation Compression Stage)  
 **Type**: Process  
-**Target Docs**: README.md workflow diagram + docs/compression-guide.md
+**Target Docs**: README.md workflow diagram + docs/source/compression-guide.md
 
 ### Compression Summary:
 - **From**: CIP with 5 implementation phases, whats-next integration details, tenet analysis
@@ -195,7 +195,7 @@ WHY (Tenets) → WHAT (Requirements) → HOW (CIPs) → DO (Backlog) → DOCUMEN
      └─────────────────────── feedback loop ──────────────────────────────┘
 ```
 
-After completing implementation, compress CIP knowledge into formal documentation so users can understand current architecture without reading development history. See [docs/compression-guide.md](docs/compression-guide.md) and [CIP-0013](cip/cip0013.md).
+After completing implementation, compress CIP knowledge into formal documentation so users can understand current architecture without reading development history. See [docs/source/compression-guide.md](docs/source/compression-guide.md) and [CIP-0013](cip/cip0013.md).
 ```
 
 ---
