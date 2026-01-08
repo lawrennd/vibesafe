@@ -51,6 +51,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Extend Validation Script with Compression Checks](infrastructure/2026-01-08_extend-validation-compression-checks.md)
+
 - [Fix install-whats-next messaging and requirements rule installation in minimal](infrastructure/2025-12-15_fix-install-whats-next-docs-link.md)
 
 - [Ensure combine_tenets.py Includes Cursor Rules Generation Functionality](infrastructure/2025-07-28_vibesafe-combine-tenets-cursor-rules.md)
