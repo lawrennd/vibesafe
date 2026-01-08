@@ -33,6 +33,29 @@ Each CIP can have one of the following statuses:
 - **Completed**: Implementation is complete
 - **Rejected**: Proposal has been rejected
 
+## Documentation Compression
+
+After a CIP is closed (implementation complete and verified), its key decisions should be compressed into formal documentation (README, Sphinx, architecture docs). The `compressed` metadata field tracks this:
+
+- **`compressed: false`** (default): CIP closed but not yet compressed into formal docs
+- **`compressed: true`**: CIP's key decisions reflected in formal documentation
+
+**Why compression matters**: CIPs document the development journey (WHY, HOW, alternatives considered). Formal documentation should capture the final outcome (WHAT was built, essential WHY). Users shouldn't need to read 50+ closed CIPs to understand current architecture.
+
+**Compression workflow**:
+1. Close CIP after implementation verified
+2. Extract key decisions: WHAT was built, WHY, architecture patterns
+3. Update formal documentation (README, Sphinx, `docs/architecture.md`)
+4. Add traceability: reference CIP number in formal docs
+5. Set `compressed: true` in CIP YAML frontmatter
+6. Commit: "Compress CIP-XXXX into formal documentation"
+
+The `whats-next` script detects uncompressed closed CIPs and prompts for compression. See [REQ-000E](../requirements/req000E_documentation-synchronization.md) and [CIP-0013](./cip0013.md) for details.
+
+**Example**:
+- **Before**: CIP-0012 (15 pages of implementation details, 4 phases, 50+ commits)
+- **After**: README section "Multi-platform AI assistant support" + architecture doc entry (2 paragraphs) + reference to CIP-0012 for detailed rationale
+
 ## Current CIPs
 
 - [CIP-0001](./cip0001.md): 

@@ -4,6 +4,7 @@ created: "[YYYY-MM-DD]"
 id: "XXXX"
 last_updated: "[YYYY-MM-DD]"
 status: "Proposed"
+compressed: false  # Set to true after compressing into formal documentation (README, Sphinx, etc.)
 related_requirements: []  # Optional: Requirements this CIP implements (IDs like "0001")
 related_cips: []  # Optional: Related CIPs (IDs like "0002")
 # blocked_by: "YYYY"  # Optional: CIP ID that blocks this (use with Deferred status)
@@ -18,6 +19,8 @@ title: "[Title]"
 
 > **Note**: CIPs describe HOW to achieve requirements (WHAT).  
 > Use `related_requirements` to link to the requirements this CIP implements.
+
+> **Compression Metadata**: The `compressed` field tracks whether this CIP's key decisions have been compressed into formal documentation (README, Sphinx, architecture docs). Set to `false` by default. After closing a CIP and updating formal documentation with its essential outcomes, set `compressed: true`. This enables `whats-next` to prompt for documentation compression. See [REQ-000E](../../requirements/req000E_documentation-synchronization.md) and [CIP-0013](../../cip/cip0013.md).
 
 ## Status
 
