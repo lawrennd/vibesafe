@@ -35,6 +35,10 @@ from scripts.whats_next import (
     get_closed_cips_needing_compression,
     detect_batch_compression_opportunity,
     generate_compression_suggestions,
+    load_documentation_spec,
+    detect_cip_type,
+    get_compression_target,
+    generate_documentation_spec_prompts,
 )
 
 
@@ -1680,6 +1684,251 @@ class TestCompressionDetection(unittest.TestCase):
         next_steps_text = ' '.join(next_steps)
         # Avoid false positives from other mentions of "compress" in different contexts
         self.assertNotIn('CIP-cip0001', next_steps_text)
+
+
+class TestDocumentationSpecIntegration(unittest.TestCase):
+    """Test documentation specification integration (REQ-000F)."""
+    
+    def setUp(self):
+        """Create temp directory for test files."""
+        self.test_dir = tempfile.mkdtemp()
+        self.original_dir = os.getcwd()
+        os.chdir(self.test_dir)
+        
+        # Create .vibesafe directory
+        os.makedirs('.vibesafe', exist_ok=True)
+        
+        # Create cip directory for CIP files
+        os.makedirs('cip', exist_ok=True)
+    
+    def tearDown(self):
+        """Clean up temp directory."""
+        os.chdir(self.original_dir)
+        shutil.rmtree(self.test_dir)
+    
+    def test_load_documentation_spec_valid(self):
+        """Test loading valid documentation specification."""
+        spec_content = """documentation:
+  system: "sphinx"
+  source_dir: "docs/source"
+  targets:
+    infrastructure: "docs/source/architecture.md"
+    feature: "docs/source/features.md"
+"""
+        
+        with open('.vibesafe/documentation.yml', 'w') as f:
+            f.write(spec_content)
+        
+        spec = load_documentation_spec()
+        self.assertIsNotNone(spec)
+        self.assertEqual(spec['documentation']['system'], 'sphinx')
+        self.assertEqual(spec['documentation']['targets']['infrastructure'], 'docs/source/architecture.md')
+    
+    def test_load_documentation_spec_missing(self):
+        """Test graceful handling of missing specification."""
+        spec = load_documentation_spec()
+        self.assertIsNone(spec)
+    
+    def test_load_documentation_spec_invalid_yaml(self):
+        """Test error handling for invalid YAML."""
+        invalid_yaml = "invalid: yaml: syntax::"
+        
+        with open('.vibesafe/documentation.yml', 'w') as f:
+            f.write(invalid_yaml)
+        
+        # Should return None and print error (but not crash)
+        spec = load_documentation_spec()
+        self.assertIsNone(spec)
+    
+    def test_load_documentation_spec_alternative_locations(self):
+        """Test loading from alternative locations."""
+        spec_content = """documentation:
+  system: "mkdocs"
+"""
+        
+        # Test .vibesafe/docs.yml
+        with open('.vibesafe/docs.yml', 'w') as f:
+            f.write(spec_content)
+        
+        spec = load_documentation_spec()
+        self.assertIsNotNone(spec)
+        self.assertEqual(spec['documentation']['system'], 'mkdocs')
+    
+    def test_detect_cip_type_from_tags(self):
+        """Test CIP type detection from frontmatter tags."""
+        # Create CIP file with infrastructure tag
+        cip_content = """---
+title: "Installation System"
+tags: ["infrastructure", "deployment"]
+---
+
+# CIP-0001: Installation System
+"""
+        cip_path = 'cip/cip0001.md'
+        with open(cip_path, 'w') as f:
+            f.write(cip_content)
+        
+        cip_info = {'tags': ['infrastructure', 'deployment'], 'title': 'Installation System'}
+        cip_type = detect_cip_type(cip_path, cip_info)
+        
+        self.assertEqual(cip_type, 'infrastructure')
+    
+    def test_detect_cip_type_from_title(self):
+        """Test CIP type detection from title keywords."""
+        cip_info = {'title': 'Implement Search Functionality', 'tags': []}
+        cip_type = detect_cip_type('cip/cip0002.md', cip_info)
+        
+        self.assertEqual(cip_type, 'feature')
+    
+    def test_detect_cip_type_process(self):
+        """Test detection of process CIPs."""
+        cip_info = {'title': 'Documentation Compression Workflow', 'tags': []}
+        cip_type = detect_cip_type('cip/cip0003.md', cip_info)
+        
+        self.assertEqual(cip_type, 'process')
+    
+    def test_detect_cip_type_fallback(self):
+        """Test fallback to 'guides' when type unclear."""
+        cip_info = {'title': 'Miscellaneous Updates', 'tags': []}
+        cip_type = detect_cip_type('cip/cip0004.md', cip_info)
+        
+        self.assertEqual(cip_type, 'guides')
+    
+    def test_get_compression_target_with_spec(self):
+        """Test target suggestion with specification present."""
+        spec = {
+            'documentation': {
+                'targets': {
+                    'infrastructure': 'docs/source/architecture.md',
+                    'feature': 'docs/source/features.md',
+                    'process': 'docs/source/workflow.md',
+                }
+            }
+        }
+        
+        target = get_compression_target('infrastructure', spec)
+        self.assertEqual(target, 'docs/source/architecture.md')
+        
+        target = get_compression_target('feature', spec)
+        self.assertEqual(target, 'docs/source/features.md')
+    
+    def test_get_compression_target_without_spec(self):
+        """Test target suggestion without specification (fallback)."""
+        target = get_compression_target('infrastructure', None)
+        self.assertIsNone(target)
+    
+    def test_get_compression_target_fallback_to_guides(self):
+        """Test fallback to guides when specific target not found."""
+        spec = {
+            'documentation': {
+                'targets': {
+                    'infrastructure': 'docs/source/architecture.md',
+                    'guides': 'docs/source/',
+                }
+            }
+        }
+        
+        # Request feature target, but it doesn't exist - should fall back to guides
+        target = get_compression_target('feature', spec)
+        self.assertEqual(target, 'docs/source/')
+    
+    def test_compression_suggestions_grouped_by_target(self):
+        """Test that compression suggestions group CIPs by target."""
+        spec_content = """documentation:
+  system: "sphinx"
+  targets:
+    infrastructure: "docs/source/architecture.md"
+    process: "docs/source/workflow.md"
+"""
+        
+        with open('.vibesafe/documentation.yml', 'w') as f:
+            f.write(spec_content)
+        
+        # Create CIP files
+        cip1_content = """---
+title: "Installation Redesign"
+tags: ["infrastructure"]
+last_updated: "2026-01-01"
+status: "closed"
+priority: "high"
+---
+"""
+        cip2_content = """---
+title: "Workflow Enhancement"
+tags: ["process"]
+last_updated: "2026-01-02"
+status: "closed"
+priority: "medium"
+---
+"""
+        
+        with open('cip/cipcip0001.md', 'w') as f:
+            f.write(cip1_content)
+        with open('cip/cipcip0002.md', 'w') as f:
+            f.write(cip2_content)
+        
+        # Create mock CIP info
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {'id': 'cip0001', 'title': 'Installation Redesign', 'compressed': False, 
+                     'last_updated': '2026-01-01', 'priority': 'high', 'tags': ['infrastructure']},
+                    {'id': 'cip0002', 'title': 'Workflow Enhancement', 'compressed': False, 
+                     'last_updated': '2026-01-02', 'priority': 'medium', 'tags': ['process']},
+                ]
+            }
+        }
+        
+        suggestions = generate_compression_suggestions(cips_info)
+        suggestions_text = ' '.join(suggestions)
+        
+        # Should mention both targets (grouped by target)
+        self.assertIn('architecture.md', suggestions_text)
+        self.assertIn('workflow.md', suggestions_text)
+        # Should group by CIP type
+        self.assertIn('Infrastructure CIPs', suggestions_text)
+        self.assertIn('Process CIPs', suggestions_text)
+    
+    def test_documentation_spec_prompts_no_spec(self):
+        """Test prompts when no specification exists."""
+        cips_info = {
+            'by_status': {
+                'closed': [
+                    {'id': 'cip0001', 'title': 'Test CIP', 'compressed': False, 
+                     'last_updated': '2026-01-01', 'priority': 'high'}
+                ]
+            }
+        }
+        
+        prompts = generate_documentation_spec_prompts(cips_info)
+        prompts_text = ' '.join(prompts)
+        
+        # Should suggest creating documentation.yml
+        self.assertIn('documentation specification', prompts_text.lower())
+        self.assertIn('.vibesafe/documentation.yml', prompts_text)
+    
+    def test_documentation_spec_prompts_spec_exists(self):
+        """Test prompts when specification exists."""
+        spec_content = """documentation:
+  system: "sphinx"
+  source_dir: "docs/source"
+  targets:
+    infrastructure: "docs/source/architecture.md"
+"""
+        
+        with open('.vibesafe/documentation.yml', 'w') as f:
+            f.write(spec_content)
+        
+        cips_info = {
+            'by_status': {
+                'closed': []  # No compression candidates
+            }
+        }
+        
+        prompts = generate_documentation_spec_prompts(cips_info)
+        
+        # Should not suggest creating spec if it exists and no compression needed
+        self.assertEqual(len(prompts), 0)
 
 
 if __name__ == "__main__":
