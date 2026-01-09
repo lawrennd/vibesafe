@@ -17,6 +17,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.10"
 pyyaml = ">=6.0"
+python-frontmatter = ">=1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
