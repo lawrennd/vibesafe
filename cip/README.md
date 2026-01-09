@@ -58,7 +58,26 @@ The `whats-next` script detects uncompressed closed CIPs and prompts for compres
 
 ## Current CIPs
 
-- [CIP-0001](./cip0001.md): 
+- [CIP-0001](./cip0001.md): VibeSafe Project Management Templates
+- [CIP-0002](./cip0002.md): VibeSafe Local Installation Method
+- [CIP-0003](./cip0003.md): Gist Integration for VibeSafe
+- [CIP-0004](./cip0004.md): Tenet System for Project Governance
+- [CIP-0005](./cip0005.md): Enhanced Documentation-First Practices
+- [CIP-0006](./cip0006.md): Installation Script Redesign
+- [CIP-0007](./cip0007.md): New Tenet - Documentation and Implementation as a Unified Whole
+- [CIP-0008](./cip0008.md): Unified Philosophy Document and New Tenets for Human-LLM Collaboration
+- [CIP-0009](./cip0009.md): Requirements Conversation Framework
+- [CIP-000A](./cip000A.md): Project Status Summarizer ("What's Next" Script)
+- [CIP-000B](./cip000B.md): VibeSafe Update Script
+- [CIP-000C](./cip000C.md): Integrate AI-Requirements Framework into Installation Script
+- [CIP-000D](./cip000D.md): Backlog Module Refactor
+- [CIP-000E](./cip000E.md): Clean Installation Philosophy for VibeSafe
+- [CIP-000F](./cip000F.md): VibeSafe Auto-Gitignore Protection
+- [CIP-0010](./cip0010.md): Automatic Tenets-to-Cursor-Rules Generation
+- [CIP-0011](./cip0011.md): Simplify VibeSafe Component Management
+- [CIP-0012](./cip0012.md): AI Assistant Framework Independence Implementation
+- [CIP-0013](./cip0013.md): Documentation Compression Stage
+- [CIP-0014](./cip0014.md): Traceability Analysis and Reporting in whats-next
 
 ## Creating a Good CIP
 
