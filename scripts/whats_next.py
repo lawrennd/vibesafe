@@ -1372,6 +1372,7 @@ def main():
     parser.add_argument('--cip-only', action='store_true', help='Only show CIP information')
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
+    parser.add_argument('--quiet', action='store_true', help='Suppress all output except next steps')
     parser.add_argument('--compression-check', action='store_true', help='Show compression candidates (closed CIPs needing documentation)')
     parser.add_argument('--show-doc-spec', action='store_true', help='Display documentation specification (.vibesafe/documentation.yml)')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
@@ -1494,7 +1495,7 @@ def main():
         return
 
     # Run update scripts first if not disabled
-    if not args.no_update:
+    if not args.no_update and not args.quiet:
         print_section("Updating Registries")
         update_results = run_update_scripts()
         for result in update_results:
@@ -1503,7 +1504,7 @@ def main():
     
     # Get Git info if requested
     git_info = {}
-    if not args.no_git:
+    if not args.no_git and not args.quiet:
         git_info = get_git_status()
         
         if git_info.get('current_branch'):
@@ -1521,100 +1522,103 @@ def main():
     if not args.backlog_only and not args.requirements_only:
         cips_info = scan_cips()
         
-        print(f"{Colors.BOLD}CIPs:{Colors.ENDC}")
-        print(f"  Total: {cips_info['total']}")
-        
-        if cips_info['by_status']['proposed']:
-            print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(cips_info['by_status']['proposed'])}")
-            for cip in cips_info['by_status']['proposed']:
-                title = cip.get('title', 'Untitled')
-                if cip.get('no_frontmatter'):
-                    title += f" {Colors.RED}(No frontmatter){Colors.ENDC}"
-                print(f"    - {cip['id']}: {title}")
-        
-        if cips_info['by_status']['accepted']:
-            print(f"  {Colors.BLUE}Accepted:{Colors.ENDC} {len(cips_info['by_status']['accepted'])}")
-            for cip in cips_info['by_status']['accepted']:
-                print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
-        
-        if cips_info['by_status']['implemented']:
-            print(f"  {Colors.GREEN}Implemented:{Colors.ENDC} {len(cips_info['by_status']['implemented'])}")
-        
-        if cips_info['by_status']['closed']:
-            print(f"  Closed: {len(cips_info['by_status']['closed'])}")
-        
-        if cips_info['without_frontmatter']:
-            print(f"  {Colors.RED}Missing Frontmatter:{Colors.ENDC} {len(cips_info['without_frontmatter'])}")
-            for cip in cips_info['without_frontmatter']:
-                print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
-        
-        print("")
+        if not args.quiet:
+            print(f"{Colors.BOLD}CIPs:{Colors.ENDC}")
+            print(f"  Total: {cips_info['total']}")
+            
+            if cips_info['by_status']['proposed']:
+                print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(cips_info['by_status']['proposed'])}")
+                for cip in cips_info['by_status']['proposed']:
+                    title = cip.get('title', 'Untitled')
+                    if cip.get('no_frontmatter'):
+                        title += f" {Colors.RED}(No frontmatter){Colors.ENDC}"
+                    print(f"    - {cip['id']}: {title}")
+            
+            if cips_info['by_status']['accepted']:
+                print(f"  {Colors.BLUE}Accepted:{Colors.ENDC} {len(cips_info['by_status']['accepted'])}")
+                for cip in cips_info['by_status']['accepted']:
+                    print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
+            
+            if cips_info['by_status']['implemented']:
+                print(f"  {Colors.GREEN}Implemented:{Colors.ENDC} {len(cips_info['by_status']['implemented'])}")
+            
+            if cips_info['by_status']['closed']:
+                print(f"  Closed: {len(cips_info['by_status']['closed'])}")
+            
+            if cips_info['without_frontmatter']:
+                print(f"  {Colors.RED}Missing Frontmatter:{Colors.ENDC} {len(cips_info['without_frontmatter'])}")
+                for cip in cips_info['without_frontmatter']:
+                    print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
+            
+            print("")
     
     # Get backlog info if not cip-only
     backlog_info = {}
     if not args.cip_only and not args.requirements_only:
         backlog_info = scan_backlog()
         
-        print(f"{Colors.BOLD}Backlog:{Colors.ENDC}")
-        print(f"  Total: {backlog_info['total']}")
-        
-        if backlog_info['by_status']['in_progress']:
-            print(f"  {Colors.BLUE}In Progress:{Colors.ENDC} {len(backlog_info['by_status']['in_progress'])}")
-            for task in backlog_info['by_status']['in_progress']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        if backlog_info['by_status']['ready']:
-            print(f"  {Colors.GREEN}Ready:{Colors.ENDC} {len(backlog_info['by_status']['ready'])}")
-            for task in backlog_info['by_status']['ready']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        if backlog_info['by_status']['proposed']:
-            print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(backlog_info['by_status']['proposed'])}")
-            for task in backlog_info['by_status']['proposed']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        if backlog_info['by_priority']['high']:
-            print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(backlog_info['by_priority']['high'])}")
-            for task in backlog_info['by_priority']['high']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        print("")
+        if not args.quiet:
+            print(f"{Colors.BOLD}Backlog:{Colors.ENDC}")
+            print(f"  Total: {backlog_info['total']}")
+            
+            if backlog_info['by_status']['in_progress']:
+                print(f"  {Colors.BLUE}In Progress:{Colors.ENDC} {len(backlog_info['by_status']['in_progress'])}")
+                for task in backlog_info['by_status']['in_progress']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            if backlog_info['by_status']['ready']:
+                print(f"  {Colors.GREEN}Ready:{Colors.ENDC} {len(backlog_info['by_status']['ready'])}")
+                for task in backlog_info['by_status']['ready']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            if backlog_info['by_status']['proposed']:
+                print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(backlog_info['by_status']['proposed'])}")
+                for task in backlog_info['by_status']['proposed']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            if backlog_info['by_priority']['high']:
+                print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(backlog_info['by_priority']['high'])}")
+                for task in backlog_info['by_priority']['high']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            print("")
     
     # Get requirements info if not cip-only or backlog-only, or if requirements-only
     requirements_info = {}
     if not args.cip_only and not args.backlog_only or args.requirements_only:
         requirements_info = scan_requirements()
         
-        print(f"{Colors.BOLD}Requirements Framework:{Colors.ENDC}")
-        if requirements_info['has_framework']:
-            print(f"  Framework installed: {Colors.GREEN}Yes{Colors.ENDC}")
-            
-            if requirements_info['patterns']:
-                print(f"  Patterns: {len(requirements_info['patterns'])}")
-                for pattern in requirements_info['patterns']:
-                    print(f"    - {pattern}")
+        if not args.quiet:
+            print(f"{Colors.BOLD}Requirements Framework:{Colors.ENDC}")
+            if requirements_info['has_framework']:
+                print(f"  Framework installed: {Colors.GREEN}Yes{Colors.ENDC}")
+                
+                if requirements_info['patterns']:
+                    print(f"  Patterns: {len(requirements_info['patterns'])}")
+                    for pattern in requirements_info['patterns']:
+                        print(f"    - {pattern}")
+                else:
+                    print(f"  Patterns: {Colors.YELLOW}None defined{Colors.ENDC}")
+                
+                prompt_count = sum(len(prompts) for prompts in requirements_info['prompts'].values())
+                if prompt_count > 0:
+                    print(f"  Prompts: {prompt_count}")
+                    for prompt_type, prompts in requirements_info['prompts'].items():
+                        if prompts:
+                            print(f"    - {prompt_type.capitalize()}: {len(prompts)}")
+                else:
+                    print(f"  Prompts: {Colors.YELLOW}None defined{Colors.ENDC}")
+                
+                if requirements_info['integrations']:
+                    print(f"  Integrations: {len(requirements_info['integrations'])}")
+                    for integration in requirements_info['integrations']:
+                        print(f"    - {integration}")
+                else:
+                    print(f"  Integrations: {Colors.YELLOW}None defined{Colors.ENDC}")
             else:
-                print(f"  Patterns: {Colors.YELLOW}None defined{Colors.ENDC}")
+                print(f"  Framework installed: {Colors.RED}No{Colors.ENDC}")
             
-            prompt_count = sum(len(prompts) for prompts in requirements_info['prompts'].values())
-            if prompt_count > 0:
-                print(f"  Prompts: {prompt_count}")
-                for prompt_type, prompts in requirements_info['prompts'].items():
-                    if prompts:
-                        print(f"    - {prompt_type.capitalize()}: {len(prompts)}")
-            else:
-                print(f"  Prompts: {Colors.YELLOW}None defined{Colors.ENDC}")
-            
-            if requirements_info['integrations']:
-                print(f"  Integrations: {len(requirements_info['integrations'])}")
-                for integration in requirements_info['integrations']:
-                    print(f"    - {integration}")
-            else:
-                print(f"  Integrations: {Colors.YELLOW}None defined{Colors.ENDC}")
-        else:
-            print(f"  Framework installed: {Colors.RED}No{Colors.ENDC}")
-        
-        print("")
+            print("")
     
     # Check tenet status
     tenet_info = check_tenet_status()
@@ -1648,7 +1652,7 @@ def main():
             print(f"{i}. {step}")
     
     # Output files needing frontmatter
-    if not args.requirements_only and (cips_info.get('without_frontmatter') or backlog_info.get('without_frontmatter')):
+    if not args.quiet and not args.requirements_only and (cips_info.get('without_frontmatter') or backlog_info.get('without_frontmatter')):
         print_section("Files Needing YAML Frontmatter")
         
         if cips_info.get('without_frontmatter'):
@@ -1661,7 +1665,7 @@ def main():
             for item in backlog_info['without_frontmatter']:
                 print(f"  {Colors.YELLOW}{item['path']}{Colors.ENDC}")
     
-    if not args.requirements_only:
+    if not args.requirements_only and not args.quiet:
         print("\n")
 
 if __name__ == "__main__":

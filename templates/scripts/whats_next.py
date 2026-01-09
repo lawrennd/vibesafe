@@ -17,14 +17,15 @@ The script accepts status values in multiple formats for backlog items:
 All formats are normalized internally to lowercase with underscores.
 
 Usage:
-    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only]
+    python whats_next.py [--no-git] [--no-color] [--cip-only] [--backlog-only] [--requirements-only] [--compression-check]
 
 Options:
     --no-git              Skip Git status information
-    --no-color           Disable colored output
-    --cip-only           Show only CIP status
-    --backlog-only       Show only backlog status
-    --requirements-only  Show only requirements status
+    --no-color            Disable colored output
+    --cip-only            Show only CIP status
+    --backlog-only        Show only backlog status
+    --requirements-only   Show only requirements status
+    --compression-check   Show compression candidates (closed CIPs needing documentation)
 
 Returns:
     None. Outputs formatted status information to stdout.
@@ -201,6 +202,134 @@ def has_expected_frontmatter(file_path: str, expected_keys: List[str]) -> bool:
     
     return True
 
+def load_documentation_spec(vibesafe_dir: str = ".vibesafe") -> Optional[Dict[str, Any]]:
+    """Load documentation specification from .vibesafe/documentation.yml.
+    
+    Tries multiple locations in order of preference:
+    1. .vibesafe/documentation.yml
+    2. .vibesafe/docs.yml
+    3. docs/.vibesafe.yml
+    
+    Args:
+        vibesafe_dir: Directory containing VibeSafe configuration.
+        
+    Returns:
+        Dictionary containing documentation specification, or None if not found/invalid.
+    """
+    locations = [
+        os.path.join(vibesafe_dir, "documentation.yml"),
+        os.path.join(vibesafe_dir, "docs.yml"),
+        os.path.join("docs", ".vibesafe.yml"),
+    ]
+    
+    for spec_file in locations:
+        if os.path.exists(spec_file):
+            try:
+                with open(spec_file, 'r', encoding='utf-8') as f:
+                    spec = yaml.safe_load(f)
+                    if spec and 'documentation' in spec:
+                        return spec
+            except yaml.YAMLError as e:
+                print(f"⚠️  Could not parse {spec_file}")
+                print(f"Error: {e}")
+                print(f"→ Fix or remove file to continue")
+                return None
+            except Exception as e:
+                print(f"Error reading {spec_file}: {e}")
+                return None
+    
+    return None
+
+def detect_cip_type(cip_path: str, cip_info: Dict[str, Any]) -> str:
+    """Detect CIP type from tags, title, and content.
+    
+    Detection order:
+    1. Explicit 'type' field in frontmatter
+    2. Tags in frontmatter (e.g., ['infrastructure'])
+    3. Keywords in title
+    4. Keywords in summary/motivation (first 500 chars of content)
+    5. Default to 'guides'
+    
+    Args:
+        cip_path: Path to the CIP file.
+        cip_info: Dictionary containing CIP frontmatter and metadata.
+        
+    Returns:
+        String indicating CIP type: 'infrastructure', 'feature', 'process', or 'guides'
+    """
+    # Type keywords for each category
+    type_keywords = {
+        'infrastructure': ['install', 'architecture', 'system', 'deployment', 'setup', 'structure'],
+        'feature': ['implement', 'add', 'create', 'functionality', 'user', 'interface'],
+        'process': ['workflow', 'process', 'methodology', 'compression', 'lifecycle', 'documentation'],
+    }
+    
+    # 1. Check explicit type field
+    if 'type' in cip_info:
+        cip_type = cip_info['type'].lower()
+        if cip_type in type_keywords or cip_type == 'guides':
+            return cip_type
+    
+    # 2. Check tags
+    if 'tags' in cip_info and isinstance(cip_info['tags'], list):
+        for tag in cip_info['tags']:
+            tag_lower = tag.lower()
+            if tag_lower in type_keywords or tag_lower == 'guides':
+                return tag_lower
+            # Check if tag contains type keywords
+            for cip_type, keywords in type_keywords.items():
+                if any(keyword in tag_lower for keyword in keywords):
+                    return cip_type
+    
+    # 3. Check title
+    title = cip_info.get('title', '').lower()
+    for cip_type, keywords in type_keywords.items():
+        if any(keyword in title for keyword in keywords):
+            return cip_type
+    
+    # 4. Check content (first 500 chars after frontmatter)
+    try:
+        with open(cip_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        # Skip frontmatter
+        content_match = re.search(r'^---\s*\n.*?\n---\s*\n(.{0,500})', content, re.DOTALL)
+        if content_match:
+            sample = content_match.group(1).lower()
+            for cip_type, keywords in type_keywords.items():
+                if sum(sample.count(keyword) for keyword in keywords) >= 2:
+                    return cip_type
+    except Exception:
+        pass
+    
+    # 5. Default to guides
+    return 'guides'
+
+def get_compression_target(cip_type: str, doc_spec: Optional[Dict[str, Any]]) -> Optional[str]:
+    """Get compression target location for a CIP type.
+    
+    Args:
+        cip_type: Type of CIP ('infrastructure', 'feature', 'process', 'guides').
+        doc_spec: Documentation specification dictionary (from load_documentation_spec).
+        
+    Returns:
+        Target file/directory path, or None if no spec available.
+    """
+    if not doc_spec:
+        return None
+    
+    targets = doc_spec.get('documentation', {}).get('targets', {})
+    if not targets:
+        return None
+    
+    # Get target for this CIP type
+    target = targets.get(cip_type)
+    
+    # If no specific target, try 'guides' as fallback
+    if not target and cip_type != 'guides':
+        target = targets.get('guides')
+    
+    return target
+
 def scan_cips() -> Dict[str, Any]:
     """Scan all CIP files and collect their status.
     
@@ -259,7 +388,10 @@ def scan_cips() -> Dict[str, Any]:
             elif status == 'closed':
                 cips_info['by_status']['closed'].append({
                     'id': file_id,
-                    'title': frontmatter.get('title', 'Untitled')
+                    'title': frontmatter.get('title', 'Untitled'),
+                    'last_updated': frontmatter.get('last_updated', ''),
+                    'compressed': frontmatter.get('compressed', False),
+                    'priority': frontmatter.get('priority', 'Medium').lower() if 'priority' in frontmatter else 'medium'
                 })
         else:
             # Extract information from CIP using regex if no frontmatter
@@ -301,7 +433,10 @@ def scan_cips() -> Dict[str, Any]:
                 cips_info['by_status']['closed'].append({
                     'id': file_id,
                     'title': title,
-                    'no_frontmatter': True
+                    'no_frontmatter': True,
+                    'last_updated': '',
+                    'compressed': False,
+                    'priority': 'medium'
                 })
     
     return cips_info
@@ -428,6 +563,276 @@ def scan_requirements() -> Dict[str, Any]:
     # in future versions to just check for requirements/*.md files.
     
     return requirements_info
+
+def calculate_days_since_closure(last_updated: str) -> Optional[int]:
+    """Calculate days since a CIP was last updated (closed).
+    
+    Args:
+        last_updated: Date string in YYYY-MM-DD format
+        
+    Returns:
+        Number of days since closure, or None if date is invalid
+    """
+    if not last_updated:
+        return None
+    
+    try:
+        closed_date = datetime.strptime(last_updated, '%Y-%m-%d')
+        today = datetime.now()
+        delta = today - closed_date
+        return delta.days
+    except (ValueError, TypeError):
+        return None
+
+def get_closed_cips_needing_compression(cips_info: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Find closed CIPs without compressed: true metadata.
+    
+    Implements REQ-000E Triggers 1, 2, 5, 7:
+    - Trigger 1: Detect closed CIPs without compressed: true
+    - Trigger 2: Calculate days since closure
+    - Trigger 5: List in main output
+    - Trigger 7: Detect batch compression opportunities (3+ CIPs within 7 days)
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        List of CIPs needing compression, sorted by priority and age
+    """
+    compression_candidates = []
+    
+    if not cips_info or 'by_status' not in cips_info:
+        return compression_candidates
+    
+    closed_cips = cips_info.get('by_status', {}).get('closed', [])
+    
+    for cip in closed_cips:
+        # Skip if already compressed
+        if cip.get('compressed') is True:
+            continue
+        
+        days_since_closure = calculate_days_since_closure(cip.get('last_updated', ''))
+        
+        compression_candidates.append({
+            'id': cip.get('id', 'unknown'),
+            'title': cip.get('title', 'Untitled'),
+            'days_since_closure': days_since_closure,
+            'priority': cip.get('priority', 'medium'),
+            'no_frontmatter': cip.get('no_frontmatter', False)
+        })
+    
+    # Sort by priority (high first) then by age (oldest first)
+    priority_order = {'high': 0, 'medium': 1, 'low': 2, 'unknown': 3}
+    compression_candidates.sort(
+        key=lambda x: (
+            priority_order.get(x['priority'], 3),
+            -(x['days_since_closure'] if x['days_since_closure'] is not None else -1)
+        )
+    )
+    
+    return compression_candidates
+
+def detect_batch_compression_opportunity(cips_info: Dict[str, Any]) -> bool:
+    """Detect if 3+ CIPs closed within 7 days (batch compression opportunity).
+    
+    Implements REQ-000E Trigger 7.
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        True if batch compression opportunity detected, False otherwise
+    """
+    if not cips_info or 'by_status' not in cips_info:
+        return False
+    
+    closed_cips = cips_info.get('by_status', {}).get('closed', [])
+    
+    # Count CIPs closed within 7 days that aren't compressed
+    recent_closures = []
+    for cip in closed_cips:
+        if cip.get('compressed') is True:
+            continue
+        
+        days_since_closure = calculate_days_since_closure(cip.get('last_updated', ''))
+        if days_since_closure is not None and days_since_closure <= 7:
+            recent_closures.append(cip)
+    
+    return len(recent_closures) >= 3
+
+def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
+    """Generate compression suggestions for the 'Suggested Next Steps' section.
+    
+    Implements REQ-000E Triggers 1-8 and REQ-000F Trigger 4.
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        List of formatted suggestion strings
+    """
+    suggestions = []
+    
+    candidates = get_closed_cips_needing_compression(cips_info)
+    
+    if not candidates:
+        return suggestions
+    
+    # Load documentation specification (REQ-000F)
+    doc_spec = load_documentation_spec()
+    
+    # Detect batch compression opportunity
+    is_batch = detect_batch_compression_opportunity(cips_info)
+    
+    # Enrich candidates with type and target information
+    for cip in candidates:
+        # Find CIP file by ID
+        cip_id = cip['id']
+        cip_files = glob.glob(f"cip/*{cip_id}*.md")
+        if cip_files:
+            cip_path = cip_files[0]
+            cip['cip_type'] = detect_cip_type(cip_path, cip)
+            cip['target'] = get_compression_target(cip['cip_type'], doc_spec)
+        else:
+            # Fallback if file not found
+            cip['cip_type'] = 'guides'
+            cip['target'] = get_compression_target('guides', doc_spec)
+    
+    # Generate main suggestion
+    if len(candidates) == 1:
+        cip = candidates[0]
+        days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+        priority_str = f"{cip['priority'].capitalize()} priority" if cip['priority'] != 'medium' else ""
+        
+        suggestion = f"Compress CIP-{cip['id']} into formal documentation"
+        if days_str or priority_str:
+            details = ", ".join(filter(None, [days_str, priority_str]))
+            suggestion = f"{suggestion} ({details})"
+        
+        # Add target if available
+        if cip['target']:
+            suggestion += f"\n      → Compress to: {cip['target']} ({cip['cip_type']})"
+        
+        suggestions.append(suggestion)
+    elif len(candidates) > 1:
+        # Multiple CIPs need compression
+        if is_batch:
+            header = f"{Colors.YELLOW}Batch compression opportunity:{Colors.ENDC} {len(candidates)} CIPs closed within 7 days"
+            if doc_spec:
+                header += " (per .vibesafe/documentation.yml)"
+            suggestions.append(header)
+        else:
+            suggestions.append(f"Compress {len(candidates)} closed CIPs into formal documentation:")
+        
+        # Group by target if we have doc spec
+        if doc_spec:
+            # Group CIPs by target
+            by_target = {}
+            for cip in candidates:
+                target = cip['target'] or "docs/ (no specific target)"
+                cip_type = cip['cip_type']
+                if target not in by_target:
+                    by_target[target] = {'type': cip_type, 'cips': []}
+                by_target[target]['cips'].append(cip)
+            
+            # Show grouped by target (limit to first 3 targets)
+            for idx, (target, info) in enumerate(list(by_target.items())[:3]):
+                suggestions.append(f"   ")
+                suggestions.append(f"   {info['type'].capitalize()} CIPs → {target}:")
+                for cip in info['cips'][:2]:  # Show max 2 CIPs per target
+                    days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+                    suggestions.append(f"     - CIP-{cip['id']}: {cip['title']} ({days_str})")
+                if len(info['cips']) > 2:
+                    suggestions.append(f"     ... and {len(info['cips']) - 2} more")
+            
+            if len(by_target) > 3:
+                remaining_cips = sum(len(info['cips']) for target, info in list(by_target.items())[3:])
+                suggestions.append(f"   ... and {remaining_cips} more CIPs across {len(by_target) - 3} targets")
+        else:
+            # No doc spec - show flat list (original behavior)
+            for cip in candidates[:3]:
+                days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+                priority_str = f", {cip['priority'].capitalize()} priority" if cip['priority'] != 'medium' else ""
+                
+                suggestions.append(f"   - CIP-{cip['id']}: {cip['title']} ({days_str}{priority_str})")
+            
+            if len(candidates) > 3:
+                suggestions.append(f"   ... and {len(candidates) - 3} more")
+        
+        suggestions.append(f"   {Colors.BLUE}Use template:{Colors.ENDC} templates/compression_checklist.md")
+        suggestions.append(f"   {Colors.BLUE}Or run:{Colors.ENDC} ./whats-next --compression-check")
+    
+    return suggestions
+
+def generate_documentation_spec_prompts(cips_info: Dict[str, Any]) -> List[str]:
+    """Generate prompts related to documentation specification.
+    
+    Suggests creating .vibesafe/documentation.yml when:
+    - Compression is needed but no spec exists (Trigger 1 & 6)
+    - Documentation structure may have changed (Trigger 5)
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        List of formatted suggestion strings
+    """
+    prompts = []
+    
+    # Check if documentation specification exists
+    doc_spec = load_documentation_spec()
+    
+    # Get compression candidates
+    candidates = get_closed_cips_needing_compression(cips_info)
+    has_compression_candidates = len(candidates) > 0
+    
+    # Trigger 1 & 6: No spec exists but compression is needed
+    if not doc_spec and has_compression_candidates:
+        prompts.append("")
+        prompts.append(f"{Colors.YELLOW}ℹ️  No documentation specification found{Colors.ENDC}")
+        prompts.append(f"   → Create .vibesafe/documentation.yml to define compression targets")
+        
+        # Check for compression guide (generic, works for any project)
+        possible_guides = [
+            'docs/source/compression-guide.md',
+            'docs/compression-guide.md',
+            'docs/compression.md',
+        ]
+        guide_found = None
+        for guide in possible_guides:
+            if os.path.exists(guide):
+                guide_found = guide
+                break
+        
+        if guide_found:
+            prompts.append(f"   → See: {Colors.BLUE}{guide_found}{Colors.ENDC} for guidance")
+        else:
+            prompts.append(f"   → Define: system (sphinx/mkdocs/markdown), targets (infrastructure/feature/process)")
+        
+        prompts.append(f"   → Run: {Colors.BLUE}whats-next --show-doc-spec{Colors.ENDC} (once created)")
+    
+    # Trigger 5: Spec exists, but docs directory has new files (potential structure change)
+    # This is a "nice to have" check - only warn if we detect potential misalignment
+    if doc_spec and has_compression_candidates:
+        # Check if any doc files exist that aren't in the spec
+        doc_system = doc_spec.get('documentation', {}).get('system', 'unknown')
+        source_dir = doc_spec.get('documentation', {}).get('source_dir', 'docs/source')
+        
+        # Quick heuristic: Check if docs directory has more .md files than expected
+        # (This is not exhaustive, just a helpful hint)
+        if os.path.exists(source_dir):
+            md_files = list(Path(source_dir).glob('*.md'))
+            targets = doc_spec.get('documentation', {}).get('targets', {})
+            
+            # If we have many md files but only a few targets defined, suggest review
+            if len(md_files) > len(targets) + 3:  # +3 for index, getting started, etc.
+                prompts.append("")
+                prompts.append(f"{Colors.BLUE}ℹ️  Documentation structure may have changed{Colors.ENDC}")
+                prompts.append(f"   → Review .vibesafe/documentation.yml")
+                prompts.append(f"   → New doc files: {len(md_files)} in {source_dir}")
+                prompts.append(f"   → Targets defined: {len(targets)}")
+    
+    return prompts
 
 def detect_codebase() -> bool:
     """Detect if there's a codebase (source code files) in the project.
@@ -843,6 +1248,14 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     if backlog_info and backlog_info.get('without_frontmatter'):
         next_steps.append(f"Add YAML frontmatter to {len(backlog_info['without_frontmatter'])} backlog items")
     
+    # Add compression suggestions (REQ-000E Triggers 1-8)
+    compression_suggestions = generate_compression_suggestions(cips_info)
+    next_steps.extend(compression_suggestions)
+    
+    # Add documentation specification prompts (REQ-000F Triggers 1, 5, 6)
+    doc_spec_prompts = generate_documentation_spec_prompts(cips_info)
+    next_steps.extend(doc_spec_prompts)
+    
     # Requirements process recommendations
     if requirements_info['has_framework']:
         # Check for in-progress backlog items that are explicitly linked to requirements
@@ -959,15 +1372,130 @@ def main():
     parser.add_argument('--cip-only', action='store_true', help='Only show CIP information')
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
+    parser.add_argument('--quiet', action='store_true', help='Suppress all output except next steps')
+    parser.add_argument('--compression-check', action='store_true', help='Show compression candidates (closed CIPs needing documentation)')
+    parser.add_argument('--show-doc-spec', action='store_true', help='Display documentation specification (.vibesafe/documentation.yml)')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
     parser.add_argument('--skip-validation', action='store_true', help='Skip VibeSafe structure validation')
     args = parser.parse_args()
     
     if args.no_color:
         Colors.disable()
+    
+    # Handle --compression-check flag (focused view)
+    # Handle --show-doc-spec flag
+    if args.show_doc_spec:
+        print_section("Documentation Specification")
+        
+        doc_spec = load_documentation_spec()
+        
+        if not doc_spec:
+            print(f"{Colors.YELLOW}⚠️  No documentation specification found{Colors.ENDC}")
+            print(f"\nSearched locations:")
+            print(f"  - .vibesafe/documentation.yml")
+            print(f"  - .vibesafe/docs.yml")
+            print(f"  - docs/.vibesafe.yml")
+            print(f"\n{Colors.BLUE}To create a specification:{Colors.ENDC}")
+            print(f"  1. Create .vibesafe/documentation.yml")
+            print(f"  2. Define documentation system and compression targets")
+            
+            # Check for compression guide (project-agnostic)
+            possible_guides = [
+                'docs/source/compression-guide.md',
+                'docs/compression-guide.md',
+                'docs/compression.md',
+            ]
+            guide_found = None
+            for guide in possible_guides:
+                if os.path.exists(guide):
+                    guide_found = guide
+                    break
+            
+            if guide_found:
+                print(f"  3. See: {Colors.BLUE}{guide_found}{Colors.ENDC} for examples\n")
+            else:
+                print(f"  3. Example: system: sphinx, targets: {{infrastructure: docs/architecture.md}}\n")
+            
+            return
+        
+        # Display the specification
+        print(f"{Colors.GREEN}✓ Documentation specification found{Colors.ENDC}\n")
+        
+        doc_config = doc_spec.get('documentation', {})
+        print(f"{Colors.BOLD}System:{Colors.ENDC} {doc_config.get('system', 'unknown')}")
+        print(f"{Colors.BOLD}Source Directory:{Colors.ENDC} {doc_config.get('source_dir', 'N/A')}")
+        print(f"{Colors.BOLD}Build Directory:{Colors.ENDC} {doc_config.get('build_dir', 'N/A')}")
+        print(f"{Colors.BOLD}Format:{Colors.ENDC} {doc_config.get('format', 'N/A')}")
+        
+        print(f"\n{Colors.BOLD}Compression Targets:{Colors.ENDC}")
+        targets = doc_config.get('targets', {})
+        if targets:
+            for cip_type, target in targets.items():
+                print(f"  {cip_type.capitalize():15} → {target}")
+        else:
+            print(f"  {Colors.YELLOW}No targets defined{Colors.ENDC}")
+        
+        # Show key documentation files
+        key_files = {
+            'compression_guide': 'Compression Guide',
+            'whats_next_guide': 'What\'s Next Guide',
+            'getting_started': 'Getting Started'
+        }
+        
+        has_files = False
+        for key, label in key_files.items():
+            file_path = doc_config.get(key)
+            if file_path:
+                if not has_files:
+                    print(f"\n{Colors.BOLD}Key Documentation Files:{Colors.ENDC}")
+                    has_files = True
+                exists = "✓" if os.path.exists(file_path) else "✗"
+                color = Colors.GREEN if exists == "✓" else Colors.RED
+                print(f"  {color}{exists}{Colors.ENDC} {label:20} → {file_path}")
+        
+        print()
+        return
+    
+    if args.compression_check:
+        cips_info = scan_cips()
+        candidates = get_closed_cips_needing_compression(cips_info)
+        
+        print_section("Compression Candidates")
+        
+        if not candidates:
+            print(f"{Colors.GREEN}No closed CIPs need compression. All up to date!{Colors.ENDC}\n")
+            return
+        
+        print(f"{Colors.BOLD}Found {len(candidates)} closed CIP(s) needing compression:{Colors.ENDC}\n")
+        
+        for i, cip in enumerate(candidates, 1):
+            days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+            priority_color = Colors.RED if cip['priority'] == 'high' else Colors.YELLOW if cip['priority'] == 'medium' else Colors.ENDC
+            
+            print(f"{i}. CIP-{cip['id']}: {cip['title']}")
+            print(f"   Closed: {days_str}")
+            print(f"   Priority: {priority_color}{cip['priority'].capitalize()}{Colors.ENDC}")
+            
+            if cip.get('no_frontmatter'):
+                print(f"   {Colors.YELLOW}⚠ Missing frontmatter{Colors.ENDC}")
+            
+            print()
+        
+        # Detect batch compression opportunity
+        is_batch = detect_batch_compression_opportunity(cips_info)
+        if is_batch:
+            print(f"{Colors.YELLOW}💡 Batch compression opportunity: 3+ CIPs closed within 7 days{Colors.ENDC}\n")
+        
+        print(f"{Colors.BLUE}Next steps:{Colors.ENDC}")
+        print(f"  1. Copy template: cp templates/compression_checklist.md cip/cip0012-compression.md")
+        print(f"  2. Fill out checklist for each CIP")
+        print(f"  3. Compress into formal documentation")
+        print(f"  4. Set compressed: true in CIP frontmatter\n")
+        
+        return
 
     # Run update scripts first if not disabled
-    if not args.no_update:
+    if not args.no_update and not args.quiet:
         print_section("Updating Registries")
         update_results = run_update_scripts()
         for result in update_results:
@@ -976,7 +1504,7 @@ def main():
     
     # Get Git info if requested
     git_info = {}
-    if not args.no_git:
+    if not args.no_git and not args.quiet:
         git_info = get_git_status()
         
         if git_info.get('current_branch'):
@@ -994,100 +1522,103 @@ def main():
     if not args.backlog_only and not args.requirements_only:
         cips_info = scan_cips()
         
-        print(f"{Colors.BOLD}CIPs:{Colors.ENDC}")
-        print(f"  Total: {cips_info['total']}")
-        
-        if cips_info['by_status']['proposed']:
-            print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(cips_info['by_status']['proposed'])}")
-            for cip in cips_info['by_status']['proposed']:
-                title = cip.get('title', 'Untitled')
-                if cip.get('no_frontmatter'):
-                    title += f" {Colors.RED}(No frontmatter){Colors.ENDC}"
-                print(f"    - {cip['id']}: {title}")
-        
-        if cips_info['by_status']['accepted']:
-            print(f"  {Colors.BLUE}Accepted:{Colors.ENDC} {len(cips_info['by_status']['accepted'])}")
-            for cip in cips_info['by_status']['accepted']:
-                print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
-        
-        if cips_info['by_status']['implemented']:
-            print(f"  {Colors.GREEN}Implemented:{Colors.ENDC} {len(cips_info['by_status']['implemented'])}")
-        
-        if cips_info['by_status']['closed']:
-            print(f"  Closed: {len(cips_info['by_status']['closed'])}")
-        
-        if cips_info['without_frontmatter']:
-            print(f"  {Colors.RED}Missing Frontmatter:{Colors.ENDC} {len(cips_info['without_frontmatter'])}")
-            for cip in cips_info['without_frontmatter']:
-                print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
-        
-        print("")
+        if not args.quiet:
+            print(f"{Colors.BOLD}CIPs:{Colors.ENDC}")
+            print(f"  Total: {cips_info['total']}")
+            
+            if cips_info['by_status']['proposed']:
+                print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(cips_info['by_status']['proposed'])}")
+                for cip in cips_info['by_status']['proposed']:
+                    title = cip.get('title', 'Untitled')
+                    if cip.get('no_frontmatter'):
+                        title += f" {Colors.RED}(No frontmatter){Colors.ENDC}"
+                    print(f"    - {cip['id']}: {title}")
+            
+            if cips_info['by_status']['accepted']:
+                print(f"  {Colors.BLUE}Accepted:{Colors.ENDC} {len(cips_info['by_status']['accepted'])}")
+                for cip in cips_info['by_status']['accepted']:
+                    print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
+            
+            if cips_info['by_status']['implemented']:
+                print(f"  {Colors.GREEN}Implemented:{Colors.ENDC} {len(cips_info['by_status']['implemented'])}")
+            
+            if cips_info['by_status']['closed']:
+                print(f"  Closed: {len(cips_info['by_status']['closed'])}")
+            
+            if cips_info['without_frontmatter']:
+                print(f"  {Colors.RED}Missing Frontmatter:{Colors.ENDC} {len(cips_info['without_frontmatter'])}")
+                for cip in cips_info['without_frontmatter']:
+                    print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
+            
+            print("")
     
     # Get backlog info if not cip-only
     backlog_info = {}
     if not args.cip_only and not args.requirements_only:
         backlog_info = scan_backlog()
         
-        print(f"{Colors.BOLD}Backlog:{Colors.ENDC}")
-        print(f"  Total: {backlog_info['total']}")
-        
-        if backlog_info['by_status']['in_progress']:
-            print(f"  {Colors.BLUE}In Progress:{Colors.ENDC} {len(backlog_info['by_status']['in_progress'])}")
-            for task in backlog_info['by_status']['in_progress']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        if backlog_info['by_status']['ready']:
-            print(f"  {Colors.GREEN}Ready:{Colors.ENDC} {len(backlog_info['by_status']['ready'])}")
-            for task in backlog_info['by_status']['ready']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        if backlog_info['by_status']['proposed']:
-            print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(backlog_info['by_status']['proposed'])}")
-            for task in backlog_info['by_status']['proposed']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        if backlog_info['by_priority']['high']:
-            print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(backlog_info['by_priority']['high'])}")
-            for task in backlog_info['by_priority']['high']:
-                print(f"    - {task['title']} ({task['id']})")
-        
-        print("")
+        if not args.quiet:
+            print(f"{Colors.BOLD}Backlog:{Colors.ENDC}")
+            print(f"  Total: {backlog_info['total']}")
+            
+            if backlog_info['by_status']['in_progress']:
+                print(f"  {Colors.BLUE}In Progress:{Colors.ENDC} {len(backlog_info['by_status']['in_progress'])}")
+                for task in backlog_info['by_status']['in_progress']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            if backlog_info['by_status']['ready']:
+                print(f"  {Colors.GREEN}Ready:{Colors.ENDC} {len(backlog_info['by_status']['ready'])}")
+                for task in backlog_info['by_status']['ready']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            if backlog_info['by_status']['proposed']:
+                print(f"  {Colors.YELLOW}Proposed:{Colors.ENDC} {len(backlog_info['by_status']['proposed'])}")
+                for task in backlog_info['by_status']['proposed']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            if backlog_info['by_priority']['high']:
+                print(f"  {Colors.RED}High Priority:{Colors.ENDC} {len(backlog_info['by_priority']['high'])}")
+                for task in backlog_info['by_priority']['high']:
+                    print(f"    - {task['title']} ({task['id']})")
+            
+            print("")
     
     # Get requirements info if not cip-only or backlog-only, or if requirements-only
     requirements_info = {}
     if not args.cip_only and not args.backlog_only or args.requirements_only:
         requirements_info = scan_requirements()
         
-        print(f"{Colors.BOLD}Requirements Framework:{Colors.ENDC}")
-        if requirements_info['has_framework']:
-            print(f"  Framework installed: {Colors.GREEN}Yes{Colors.ENDC}")
-            
-            if requirements_info['patterns']:
-                print(f"  Patterns: {len(requirements_info['patterns'])}")
-                for pattern in requirements_info['patterns']:
-                    print(f"    - {pattern}")
+        if not args.quiet:
+            print(f"{Colors.BOLD}Requirements Framework:{Colors.ENDC}")
+            if requirements_info['has_framework']:
+                print(f"  Framework installed: {Colors.GREEN}Yes{Colors.ENDC}")
+                
+                if requirements_info['patterns']:
+                    print(f"  Patterns: {len(requirements_info['patterns'])}")
+                    for pattern in requirements_info['patterns']:
+                        print(f"    - {pattern}")
+                else:
+                    print(f"  Patterns: {Colors.YELLOW}None defined{Colors.ENDC}")
+                
+                prompt_count = sum(len(prompts) for prompts in requirements_info['prompts'].values())
+                if prompt_count > 0:
+                    print(f"  Prompts: {prompt_count}")
+                    for prompt_type, prompts in requirements_info['prompts'].items():
+                        if prompts:
+                            print(f"    - {prompt_type.capitalize()}: {len(prompts)}")
+                else:
+                    print(f"  Prompts: {Colors.YELLOW}None defined{Colors.ENDC}")
+                
+                if requirements_info['integrations']:
+                    print(f"  Integrations: {len(requirements_info['integrations'])}")
+                    for integration in requirements_info['integrations']:
+                        print(f"    - {integration}")
+                else:
+                    print(f"  Integrations: {Colors.YELLOW}None defined{Colors.ENDC}")
             else:
-                print(f"  Patterns: {Colors.YELLOW}None defined{Colors.ENDC}")
+                print(f"  Framework installed: {Colors.RED}No{Colors.ENDC}")
             
-            prompt_count = sum(len(prompts) for prompts in requirements_info['prompts'].values())
-            if prompt_count > 0:
-                print(f"  Prompts: {prompt_count}")
-                for prompt_type, prompts in requirements_info['prompts'].items():
-                    if prompts:
-                        print(f"    - {prompt_type.capitalize()}: {len(prompts)}")
-            else:
-                print(f"  Prompts: {Colors.YELLOW}None defined{Colors.ENDC}")
-            
-            if requirements_info['integrations']:
-                print(f"  Integrations: {len(requirements_info['integrations'])}")
-                for integration in requirements_info['integrations']:
-                    print(f"    - {integration}")
-            else:
-                print(f"  Integrations: {Colors.YELLOW}None defined{Colors.ENDC}")
-        else:
-            print(f"  Framework installed: {Colors.RED}No{Colors.ENDC}")
-        
-        print("")
+            print("")
     
     # Check tenet status
     tenet_info = check_tenet_status()
@@ -1121,7 +1652,7 @@ def main():
             print(f"{i}. {step}")
     
     # Output files needing frontmatter
-    if not args.requirements_only and (cips_info.get('without_frontmatter') or backlog_info.get('without_frontmatter')):
+    if not args.quiet and not args.requirements_only and (cips_info.get('without_frontmatter') or backlog_info.get('without_frontmatter')):
         print_section("Files Needing YAML Frontmatter")
         
         if cips_info.get('without_frontmatter'):
@@ -1134,7 +1665,7 @@ def main():
             for item in backlog_info['without_frontmatter']:
                 print(f"  {Colors.YELLOW}{item['path']}{Colors.ENDC}")
     
-    if not args.requirements_only:
+    if not args.requirements_only and not args.quiet:
         print("\n")
 
 if __name__ == "__main__":
