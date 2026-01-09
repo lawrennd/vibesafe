@@ -148,23 +148,6 @@ VIBESAFE_PLATFORM=all bash install-script.sh       # All platforms (default)
 - *Simple*: No complex options or modes
 - *Always Current*: System files stay up-to-date with latest VibeSafe
 
-### Preventing System File Drift (Optional)
-
-VibeSafe provides a pre-commit hook to prevent accidentally committing when system files are out of sync:
-
-```bash
-# Install the pre-commit hook (optional, recommended for VibeSafe contributors)
-cp templates/git-hooks/pre-commit .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
-```
-
-This hook:
-- ✅ Validates that `scripts/` and `templates/scripts/` are in sync
-- ✅ Checks YAML frontmatter and cross-references
-- ✅ Prevents commits that would break the installation
-
-See [REQ-0006](requirements/req0006_process-conformance-validation.md) for the validation approach.
-
 ## Repository Structure
 
 This repository follows a "dogfooding" approach - VibeSafe follows its own practices while also providing templates for other projects:
@@ -255,9 +238,17 @@ While VibeSafe provides a standardized set of practices, you can and should adap
 
 ## Contributing to VibeSafe
 
-1. Use the CIP system (in the root `/cip` directory) to propose improvements
-2. Use the backlog system (in the root `/backlog` directory) to track tasks
-3. Submit pull requests that follow VibeSafe practices
+Interested in contributing to VibeSafe itself? See [Contributing Guide](docs/source/contributing.md) for:
+
+- Development setup (pre-commit hooks, validation)
+- System file sync workflow (`templates/` as source of truth)
+- Testing and validation
+- VibeSafe's own development process
+
+Quick start:
+1. Use the CIP system to propose improvements
+2. Use the backlog system to track tasks
+3. Follow VibeSafe practices in your contributions
 
 ## Testing
 
