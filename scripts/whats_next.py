@@ -764,6 +764,60 @@ def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
     
     return suggestions
 
+def generate_documentation_spec_prompts(cips_info: Dict[str, Any]) -> List[str]:
+    """Generate prompts related to documentation specification (REQ-000F).
+    
+    Implements REQ-000F Triggers 1, 5, 6:
+    - Trigger 1: When compression attempted but no spec exists
+    - Trigger 5: When docs structure changes, suggest updating spec
+    - Trigger 6: New projects prompted to create spec before first compression
+    
+    Args:
+        cips_info: Dictionary containing CIP information from scan_cips()
+        
+    Returns:
+        List of formatted suggestion strings
+    """
+    prompts = []
+    
+    # Check if documentation specification exists
+    doc_spec = load_documentation_spec()
+    
+    # Get compression candidates
+    candidates = get_closed_cips_needing_compression(cips_info)
+    has_compression_candidates = len(candidates) > 0
+    
+    # Trigger 1 & 6: No spec exists but compression is needed
+    if not doc_spec and has_compression_candidates:
+        prompts.append("")
+        prompts.append(f"{Colors.YELLOW}ℹ️  No documentation specification found{Colors.ENDC}")
+        prompts.append(f"   → Create .vibesafe/documentation.yml to define compression targets")
+        prompts.append(f"   → See: REQ-000F, {Colors.BLUE}docs/source/compression-guide.md{Colors.ENDC}")
+        prompts.append(f"   → Run: {Colors.BLUE}whats-next --show-doc-spec{Colors.ENDC} (once created)")
+    
+    # Trigger 5: Spec exists, but docs directory has new files (potential structure change)
+    # This is a "nice to have" check - only warn if we detect potential misalignment
+    if doc_spec and has_compression_candidates:
+        # Check if any doc files exist that aren't in the spec
+        doc_system = doc_spec.get('documentation', {}).get('system', 'unknown')
+        source_dir = doc_spec.get('documentation', {}).get('source_dir', 'docs/source')
+        
+        # Quick heuristic: Check if docs directory has more .md files than expected
+        # (This is not exhaustive, just a helpful hint)
+        if os.path.exists(source_dir):
+            md_files = list(Path(source_dir).glob('*.md'))
+            targets = doc_spec.get('documentation', {}).get('targets', {})
+            
+            # If we have many md files but only a few targets defined, suggest review
+            if len(md_files) > len(targets) + 3:  # +3 for index, getting started, etc.
+                prompts.append("")
+                prompts.append(f"{Colors.BLUE}ℹ️  Documentation structure may have changed{Colors.ENDC}")
+                prompts.append(f"   → Review .vibesafe/documentation.yml")
+                prompts.append(f"   → New doc files: {len(md_files)} in {source_dir}")
+                prompts.append(f"   → Targets defined: {len(targets)}")
+    
+    return prompts
+
 def detect_codebase() -> bool:
     """Detect if there's a codebase (source code files) in the project.
     
@@ -1182,6 +1236,10 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     compression_suggestions = generate_compression_suggestions(cips_info)
     next_steps.extend(compression_suggestions)
     
+    # Add documentation specification prompts (REQ-000F Triggers 1, 5, 6)
+    doc_spec_prompts = generate_documentation_spec_prompts(cips_info)
+    next_steps.extend(doc_spec_prompts)
+    
     # Requirements process recommendations
     if requirements_info['has_framework']:
         # Check for in-progress backlog items that are explicitly linked to requirements
@@ -1299,6 +1357,7 @@ def main():
     parser.add_argument('--backlog-only', action='store_true', help='Only show backlog information')
     parser.add_argument('--requirements-only', action='store_true', help='Only show requirements information')
     parser.add_argument('--compression-check', action='store_true', help='Show compression candidates (closed CIPs needing documentation)')
+    parser.add_argument('--show-doc-spec', action='store_true', help='Display documentation specification (.vibesafe/documentation.yml)')
     parser.add_argument('--no-update', action='store_true', help='Skip running update scripts')
     parser.add_argument('--skip-validation', action='store_true', help='Skip VibeSafe structure validation')
     args = parser.parse_args()
@@ -1307,6 +1366,62 @@ def main():
         Colors.disable()
     
     # Handle --compression-check flag (focused view)
+    # Handle --show-doc-spec flag
+    if args.show_doc_spec:
+        print_section("Documentation Specification")
+        
+        doc_spec = load_documentation_spec()
+        
+        if not doc_spec:
+            print(f"{Colors.YELLOW}⚠️  No documentation specification found{Colors.ENDC}")
+            print(f"\nSearched locations:")
+            print(f"  - .vibesafe/documentation.yml")
+            print(f"  - .vibesafe/docs.yml")
+            print(f"  - docs/.vibesafe.yml")
+            print(f"\n{Colors.BLUE}To create a specification:{Colors.ENDC}")
+            print(f"  1. Create .vibesafe/documentation.yml")
+            print(f"  2. Define documentation system and compression targets")
+            print(f"  3. See: {Colors.BLUE}docs/source/compression-guide.md{Colors.ENDC} or REQ-000F\n")
+            return
+        
+        # Display the specification
+        print(f"{Colors.GREEN}✓ Documentation specification found{Colors.ENDC}\n")
+        
+        doc_config = doc_spec.get('documentation', {})
+        print(f"{Colors.BOLD}System:{Colors.ENDC} {doc_config.get('system', 'unknown')}")
+        print(f"{Colors.BOLD}Source Directory:{Colors.ENDC} {doc_config.get('source_dir', 'N/A')}")
+        print(f"{Colors.BOLD}Build Directory:{Colors.ENDC} {doc_config.get('build_dir', 'N/A')}")
+        print(f"{Colors.BOLD}Format:{Colors.ENDC} {doc_config.get('format', 'N/A')}")
+        
+        print(f"\n{Colors.BOLD}Compression Targets:{Colors.ENDC}")
+        targets = doc_config.get('targets', {})
+        if targets:
+            for cip_type, target in targets.items():
+                print(f"  {cip_type.capitalize():15} → {target}")
+        else:
+            print(f"  {Colors.YELLOW}No targets defined{Colors.ENDC}")
+        
+        # Show key documentation files
+        key_files = {
+            'compression_guide': 'Compression Guide',
+            'whats_next_guide': 'What\'s Next Guide',
+            'getting_started': 'Getting Started'
+        }
+        
+        has_files = False
+        for key, label in key_files.items():
+            file_path = doc_config.get(key)
+            if file_path:
+                if not has_files:
+                    print(f"\n{Colors.BOLD}Key Documentation Files:{Colors.ENDC}")
+                    has_files = True
+                exists = "✓" if os.path.exists(file_path) else "✗"
+                color = Colors.GREEN if exists == "✓" else Colors.RED
+                print(f"  {color}{exists}{Colors.ENDC} {label:20} → {file_path}")
+        
+        print()
+        return
+    
     if args.compression_check:
         cips_info = scan_cips()
         candidates = get_closed_cips_needing_compression(cips_info)
