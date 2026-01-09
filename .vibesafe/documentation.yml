@@ -6,12 +6,13 @@
 
 documentation:
   # Documentation system being used
-  system: "sphinx"  # Options: sphinx, mkdocs, plain-markdown, readme-only
+  system: "sphinx"  # Options: sphinx, sphinx-myst, mkdocs, plain-markdown, readme-only
   
   # Sphinx-specific configuration
   source_dir: "docs/source"
   build_dir: "docs/_build"
   format: "markdown"  # Primary format (markdown or rst)
+  parser: "myst"  # For Sphinx: myst (Markdown) or default (reStructuredText)
   
   # Compression targets: where different types of CIPs should be compressed
   targets:
@@ -66,10 +67,15 @@ notes: |
   plain markdown files were being created directly in docs/ instead of following
   the Sphinx structure in docs/source/.
   
+  VibeSafe uses Sphinx with MyST parser, which allows writing documentation in
+  Markdown while getting all the benefits of Sphinx (professional docs, ReadTheDocs
+  hosting, cross-references, search, multiple output formats).
+  
   All documentation should now be created in docs/source/ and added to the
   docs/source/index.rst table of contents.
   
   See: REQ-000F (Documentation Structure Specification)
        CIP-0013 (Documentation Compression Stage)
        Backlog: 2026-01-08_migrate-docs-to-sphinx.md
+       MyST Parser: https://myst-parser.readthedocs.io/
 

@@ -807,7 +807,7 @@ def generate_documentation_spec_prompts(cips_info: Dict[str, Any]) -> List[str]:
         if guide_found:
             prompts.append(f"   → See: {Colors.BLUE}{guide_found}{Colors.ENDC} for guidance")
         else:
-            prompts.append(f"   → Define: system (sphinx/mkdocs/markdown), targets (infrastructure/feature/process)")
+            prompts.append(f"   → Define: system (sphinx-myst/sphinx/mkdocs/markdown), targets (infrastructure/feature/process)")
         
         prompts.append(f"   → Run: {Colors.BLUE}whats-next --show-doc-spec{Colors.ENDC} (once created)")
     
@@ -1414,7 +1414,7 @@ def main():
             if guide_found:
                 print(f"  3. See: {Colors.BLUE}{guide_found}{Colors.ENDC} for examples\n")
             else:
-                print(f"  3. Example: system: sphinx, targets: {{infrastructure: docs/architecture.md}}\n")
+                print(f"  3. Example: system: sphinx-myst (Markdown with Sphinx), targets: {{infrastructure: docs/source/architecture.md}}\n")
             
             return
         

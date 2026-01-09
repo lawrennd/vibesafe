@@ -21,21 +21,34 @@ VibeSafe **detects** your existing documentation structure and adapts guidance a
 
 | Check | Result | Suggested Targets |
 |-------|--------|-------------------|
-| `docs/conf.py` exists? | **Sphinx** | `docs/source/*.rst` + README.md |
+| `docs/conf.py` exists? | **Sphinx** (✨ supports Markdown via MyST) | `docs/source/*.{rst,md}` + README.md |
 | `mkdocs.yml` exists? | **MkDocs** | `docs/*.md` + README.md |
 | `docs/*.md` exist? | **Plain Markdown** | `docs/*.md` + README.md |
 | None of above? | **Minimal** | README.md + optional `docs/` |
+
+**💡 Recommended: Sphinx with MyST Parser**
+
+Sphinx with the MyST parser gives you:
+- ✅ Professional documentation with Markdown (no need to learn reStructuredText)
+- ✅ ReadTheDocs integration for hosting
+- ✅ Cross-references, table of contents, search
+- ✅ Multiple output formats (HTML, PDF, ePub)
+- ✅ Full Markdown syntax support
+
+See [MyST Parser documentation](https://myst-parser.readthedocs.io/) for setup.
 
 ---
 
 ## Adaptive Compression Targets
 
-### For Sphinx Users
+### For Sphinx Users (with MyST for Markdown)
 
-- Infrastructure CIPs → `docs/source/architecture.rst`
-- Feature CIPs → `docs/source/features.rst`
-- Process CIPs → `docs/source/workflow.rst`
+- Infrastructure CIPs → `docs/source/architecture.md` (or `.rst`)
+- Feature CIPs → `docs/source/features.md` (or `.rst`)
+- Process CIPs → `docs/source/workflow.md` (or `.rst`)
 - High-level → `README.md`
+
+**Note**: With MyST parser, you can write Sphinx docs in Markdown! VibeSafe itself uses this approach.
 
 ### For MkDocs/Plain Markdown Users
 
@@ -127,18 +140,28 @@ When skipping, still set `compressed: true` to remove the CIP from compression s
 
 ## Configuration Override (Optional)
 
-Create `.vibesafe/compression.yml` to customize compression behavior:
+Create `.vibesafe/documentation.yml` to customize compression behavior:
 
 ```yaml
-compression:
-  system: "sphinx"  # Override auto-detection
+documentation:
+  # Recommended: Sphinx with MyST for Markdown support
+  system: "sphinx-myst"  # Options: sphinx, sphinx-myst, mkdocs, plain-markdown, readme-only
+  source_dir: "docs/source"
+  format: "markdown"  # Primary format (markdown or rst)
+  parser: "myst"  # For Sphinx: myst (Markdown) or default (reStructuredText)
+  
   targets:
-    infrastructure: "docs/my-architecture.md"
-    feature: "docs/features/"
-    process: "docs/workflow.md"
-  format: "markdown"
+    infrastructure: "docs/source/architecture.md"
+    feature: "docs/source/features.md"
+    process: "docs/source/workflow.md"
+    guides: "docs/source/"
+
+compression:
+  enabled: true
   traceability: "inline"  # or "footer"
 ```
+
+**Why sphinx-myst?** Get professional documentation capabilities while writing in Markdown!
 
 ---
 
