@@ -765,12 +765,11 @@ def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
     return suggestions
 
 def generate_documentation_spec_prompts(cips_info: Dict[str, Any]) -> List[str]:
-    """Generate prompts related to documentation specification (REQ-000F).
+    """Generate prompts related to documentation specification.
     
-    Implements REQ-000F Triggers 1, 5, 6:
-    - Trigger 1: When compression attempted but no spec exists
-    - Trigger 5: When docs structure changes, suggest updating spec
-    - Trigger 6: New projects prompted to create spec before first compression
+    Suggests creating .vibesafe/documentation.yml when:
+    - Compression is needed but no spec exists (Trigger 1 & 6)
+    - Documentation structure may have changed (Trigger 5)
     
     Args:
         cips_info: Dictionary containing CIP information from scan_cips()
@@ -792,7 +791,24 @@ def generate_documentation_spec_prompts(cips_info: Dict[str, Any]) -> List[str]:
         prompts.append("")
         prompts.append(f"{Colors.YELLOW}ℹ️  No documentation specification found{Colors.ENDC}")
         prompts.append(f"   → Create .vibesafe/documentation.yml to define compression targets")
-        prompts.append(f"   → See: REQ-000F, {Colors.BLUE}docs/source/compression-guide.md{Colors.ENDC}")
+        
+        # Check for compression guide (generic, works for any project)
+        possible_guides = [
+            'docs/source/compression-guide.md',
+            'docs/compression-guide.md',
+            'docs/compression.md',
+        ]
+        guide_found = None
+        for guide in possible_guides:
+            if os.path.exists(guide):
+                guide_found = guide
+                break
+        
+        if guide_found:
+            prompts.append(f"   → See: {Colors.BLUE}{guide_found}{Colors.ENDC} for guidance")
+        else:
+            prompts.append(f"   → Define: system (sphinx/mkdocs/markdown), targets (infrastructure/feature/process)")
+        
         prompts.append(f"   → Run: {Colors.BLUE}whats-next --show-doc-spec{Colors.ENDC} (once created)")
     
     # Trigger 5: Spec exists, but docs directory has new files (potential structure change)
@@ -1381,7 +1397,24 @@ def main():
             print(f"\n{Colors.BLUE}To create a specification:{Colors.ENDC}")
             print(f"  1. Create .vibesafe/documentation.yml")
             print(f"  2. Define documentation system and compression targets")
-            print(f"  3. See: {Colors.BLUE}docs/source/compression-guide.md{Colors.ENDC} or REQ-000F\n")
+            
+            # Check for compression guide (project-agnostic)
+            possible_guides = [
+                'docs/source/compression-guide.md',
+                'docs/compression-guide.md',
+                'docs/compression.md',
+            ]
+            guide_found = None
+            for guide in possible_guides:
+                if os.path.exists(guide):
+                    guide_found = guide
+                    break
+            
+            if guide_found:
+                print(f"  3. See: {Colors.BLUE}{guide_found}{Colors.ENDC} for examples\n")
+            else:
+                print(f"  3. Example: system: sphinx, targets: {{infrastructure: docs/architecture.md}}\n")
+            
             return
         
         # Display the specification
