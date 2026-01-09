@@ -9,6 +9,7 @@ VibeSafe is a project management framework that supports consistent development 
 
    getting_started
    whats_next_script
+   workflow
    compression-guide
    contributing
    yaml_frontmatter_examples
