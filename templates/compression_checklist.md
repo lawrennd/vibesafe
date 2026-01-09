@@ -29,7 +29,11 @@
 - [ ] Identify key decisions and outcomes
 - [ ] Note which tenets/requirements informed this CIP
 - [ ] Determine CIP type (infrastructure, feature, or process)
-- [ ] Identify target documentation locations (README, Sphinx, architecture docs)
+- [ ] **Consult `.vibesafe/documentation.yml`** for target documentation locations
+  - Infrastructure CIPs → Check `targets.infrastructure` (e.g., `docs/source/architecture.md`)
+  - Feature CIPs → Check `targets.feature` (e.g., `docs/source/features.md`)
+  - Process CIPs → Check `targets.process` (e.g., `docs/source/workflow.md`)
+  - If no spec exists: Identify targets manually (README, Sphinx docs, etc.)
 
 ### What to Extract (Compress)
 
@@ -162,6 +166,53 @@ for result in results:
 
 Implementation details and algorithm selection rationale: [CIP-00XX](../cip/cip00XX.md).
 ```
+
+---
+
+## Using Documentation Specification (REQ-000F)
+
+If your project has a `.vibesafe/documentation.yml` file, use it to guide compression targets:
+
+### Example Documentation Specification:
+```yaml
+documentation:
+  system: "sphinx"
+  source_dir: "docs/source"
+  targets:
+    infrastructure: "docs/source/architecture.md"
+    feature: "docs/source/features.md"
+    process: "docs/source/workflow.md"
+    guides: "docs/source/"
+```
+
+### How to Use It:
+
+1. **Check CIP type** (infrastructure/feature/process/guides)
+2. **Look up target** in `.vibesafe/documentation.yml`
+3. **Compress to that target** following the checklist
+4. **Create target file if missing** (use Sphinx template if applicable)
+
+### CIP Type Detection:
+
+**Infrastructure CIPs** (→ `architecture.md`):
+- Keywords: "install", "architecture", "system", "deployment", "setup"
+- Examples: Installation scripts, auto-gitignore, system structure
+- Focus: System design, technical architecture, infrastructure patterns
+
+**Feature CIPs** (→ `features.md`):
+- Keywords: "implement", "add", "create", "functionality", "user"
+- Examples: Search functionality, multi-platform support, user-facing features
+- Focus: What users can do, how to use features, API reference
+
+**Process CIPs** (→ `workflow.md`):
+- Keywords: "workflow", "process", "methodology", "compression", "lifecycle"
+- Examples: Documentation compression, CIP workflow, development processes
+- Focus: How team works, development practices, project methodology
+
+**Guides** (→ `docs/source/` directory):
+- Miscellaneous guides, tutorials, how-tos
+- Examples: Getting started guides, troubleshooting, best practices
+- Focus: Step-by-step instructions, practical guidance
 
 ---
 
