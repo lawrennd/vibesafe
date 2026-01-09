@@ -1,7 +1,7 @@
 ---
 id: "2026-01-08_integrate-documentation-spec"
 title: "Integrate Documentation Specification with Compression Tools"
-status: "In Progress"
+status: "Completed"
 priority: "High"
 created: "2026-01-08"
 last_updated: "2026-01-08"
@@ -310,6 +310,53 @@ Task created with "Proposed" status, High priority.
 
 **Dependencies**:
 - Requires completion of 2026-01-08_migrate-docs-to-sphinx (creates `.vibesafe/documentation.yml`)
+
+## Progress Updates
+
+### 2026-01-08 (Later)
+Status updated to "Completed". All 6 phases implemented and tested:
+
+**✅ Phase 1: Detection and Loading**
+- Implemented `load_documentation_spec()` to read `.vibesafe/documentation.yml`
+- Supports multiple file locations (.vibesafe/documentation.yml, .vibesafe/docs.yml, docs/.vibesafe.yml)
+- Graceful error handling for missing/invalid YAML
+- Commit: be4fce0
+
+**✅ Phase 2: CIP Type Detection**
+- Implemented `detect_cip_type()` with keyword-based classification
+- Detects infrastructure/feature/process/guides from tags, title, content
+- Fallback to 'guides' when unclear
+- Integrated into Phase 1 commit
+
+**✅ Phase 3: Enhanced Compression Suggestions**
+- Modified `generate_compression_suggestions()` to group by target
+- Shows specific target locations (e.g., "Infrastructure CIPs → docs/source/architecture.md")
+- Mentions ".vibesafe/documentation.yml" as source for batch operations
+- Integrated into Phase 1 commit
+
+**✅ Phase 4: Compression Checklist Enhancement**
+- Updated `templates/compression_checklist.md` with REQ-000F guidance
+- Added "Using Documentation Specification" section with examples
+- Documented CIP type detection keywords
+- Commit: 4baa334
+
+**✅ Phase 5: REQ-000F Prompt Triggers**
+- Implemented `generate_documentation_spec_prompts()` for Triggers 1, 5, 6
+- Added `--show-doc-spec` flag to display current specification
+- Integrated prompts into `generate_next_steps()`
+- Commit: 5a44865
+
+**✅ Phase 6: Testing**
+- Added 14 comprehensive unit and integration tests
+- Test coverage: YAML loading, CIP type detection, target suggestions, grouping, prompts
+- All new tests pass (14/14)
+- Commit: a9d1e45
+
+**Results**:
+- `whats-next` now shows specific compression targets grouped by CIP type
+- Example: "Infrastructure CIPs → docs/source/architecture.md" instead of generic "Compress CIPs"
+- `--show-doc-spec` displays current documentation structure
+- REQ-000F Trigger 4 fully implemented
 
 ## Benefits
 
