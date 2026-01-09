@@ -143,6 +143,58 @@ templates/prompts/
 
 ---
 
+## Template System
+
+### Core Templates
+
+**Implemented in:** [CIP-0001](../../cip/cip0001.md) - VibeSafe Project Management Templates
+
+VibeSafe provides a complete template system in `templates/` directory:
+- CIP template (`cip_template.md`)
+- Backlog task template (`backlog/task_template.md`)
+- Requirement template (`requirements/requirement_template.md`)
+- Tenet template (`tenets/tenet_template.md`)
+- Compression checklist template (`compression_checklist.md`)
+
+**Key principle**: Templates include YAML frontmatter with all required metadata fields, ensuring consistency across components.
+
+### Local Installation Method
+
+**Implemented in:** [CIP-0002](../../cip/cip0002.md) - Local Installation Method
+
+VibeSafe supports installation from local directories (not just GitHub):
+
+```bash
+VIBESAFE_TEMPLATES_DIR=/path/to/vibesafe bash -c "$(curl -s ...)"
+```
+
+**Use cases:**
+- Testing installation changes before pushing
+- Working with forks
+- Air-gapped environments
+- Custom template modifications
+
+This aligns with "User Autonomy" tenet by giving developers full control over their installation source.
+
+### Installation Script Architecture
+
+**Implemented in:** [CIP-0006](../../cip/cip0006.md) - Installation Script Redesign
+
+The installation script (`scripts/install-minimal.sh`) embodies self-documenting principles:
+
+**Architecture decisions:**
+- Self-contained (no dependencies beyond bash/curl)
+- Clearly named functions (`install_system_files`, `generate_prompts_for_platform`)
+- Environment variables document their purpose (`VIBESAFE_PLATFORM`, `VIBESAFE_SKIP_CLONE`)
+- Idempotent operations (safe to run multiple times)
+- Atomic updates (backup before modify)
+
+**Key insight**: The script itself demonstrates "Documentation and Implementation as Unified Whole" - clear naming and structure reduce need for external documentation.
+
+**See also:** [CIP-000E](../../cip/cip000E.md) for Clean Installation Philosophy
+
+---
+
 *Last updated: 2026-01-09*
 *This file is part of the VibeSafe formal documentation system.*
 
