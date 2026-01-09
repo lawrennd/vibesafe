@@ -658,50 +658,51 @@ def print_results(result, strict=False, dry_run=False):
 
 def check_system_file_drift(root_dir, result):
     """
-    Check for drift between scripts/ and templates/scripts/
+    Check for drift between runtime files and templates/
     
-    Per CIP-000E (Clean Installation Philosophy), system files must be in 
-    templates/ so they propagate on install. This checks that scripts/ 
-    and templates/scripts/ are in sync.
+    Per CIP-000E (Clean Installation Philosophy), templates/ is the source 
+    of truth for system files that propagate on install. This validates that 
+    runtime files haven't diverged from their templates.
     
     Args:
         root_dir: Root directory of the repository
         result: ValidationResult to update
     """
+    # Check scripts/ against templates/scripts/
     scripts_dir = os.path.join(root_dir, "scripts")
     templates_scripts_dir = os.path.join(root_dir, "templates", "scripts")
     
-    if not os.path.exists(scripts_dir) or not os.path.exists(templates_scripts_dir):
-        return  # Skip if directories don't exist
-    
-    # System files that should be synced
-    system_files = ["whats_next.py", "validate_vibesafe_structure.py"]
-    
-    for filename in system_files:
-        script_path = os.path.join(scripts_dir, filename)
-        template_path = os.path.join(templates_scripts_dir, filename)
-        
-        if not os.path.exists(script_path):
-            continue  # Skip if file doesn't exist in scripts/
-        
-        if not os.path.exists(template_path):
-            result.add_error(
-                f"System file drift: {filename} exists in scripts/ but not in templates/scripts/",
-                script_path
-            )
-            continue
-        
-        # Compare file sizes as a quick drift check
-        script_size = os.path.getsize(script_path)
-        template_size = os.path.getsize(template_path)
-        
-        if script_size != template_size:
-            result.add_error(
-                f"System file drift: {filename} differs between scripts/ ({script_size} bytes) "
-                f"and templates/scripts/ ({template_size} bytes). "
-                f"Run: cp scripts/{filename} templates/scripts/{filename}",
-                script_path
-            )
+    if os.path.exists(scripts_dir) and os.path.exists(templates_scripts_dir):
+        # Find all Python files in templates/scripts/ (source of truth)
+        for filename in os.listdir(templates_scripts_dir):
+            if not filename.endswith('.py'):
+                continue
+            
+            template_path = os.path.join(templates_scripts_dir, filename)
+            runtime_path = os.path.join(scripts_dir, filename)
+            
+            if not os.path.isfile(template_path):
+                continue
+            
+            if not os.path.exists(runtime_path):
+                result.add_warning(
+                    f"System file missing: {filename} exists in templates/scripts/ but not in scripts/",
+                    template_path
+                )
+                continue
+            
+            # Compare file sizes as a quick drift check
+            template_size = os.path.getsize(template_path)
+            runtime_size = os.path.getsize(runtime_path)
+            
+            if template_size != runtime_size:
+                result.add_error(
+                    f"System file drift: {filename} differs between templates/scripts/ ({template_size} bytes, SOURCE OF TRUTH) "
+                    f"and scripts/ ({runtime_size} bytes, runtime copy). "
+                    f"⚠️  Investigate divergence before syncing. Templates version is principal. "
+                    f"If templates/ is correct: cp templates/scripts/{filename} scripts/{filename}",
+                    runtime_path
+                )
 
 
 def main():
