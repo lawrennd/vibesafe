@@ -1,7 +1,7 @@
 ---
 id: "2026-01-08_integrate-documentation-spec"
 title: "Integrate Documentation Specification with Compression Tools"
-status: "Proposed"
+status: "In Progress"
 priority: "High"
 created: "2026-01-08"
 last_updated: "2026-01-08"

@@ -202,6 +202,134 @@ def has_expected_frontmatter(file_path: str, expected_keys: List[str]) -> bool:
     
     return True
 
+def load_documentation_spec(vibesafe_dir: str = ".vibesafe") -> Optional[Dict[str, Any]]:
+    """Load documentation specification from .vibesafe/documentation.yml.
+    
+    Tries multiple locations in order of preference:
+    1. .vibesafe/documentation.yml
+    2. .vibesafe/docs.yml
+    3. docs/.vibesafe.yml
+    
+    Args:
+        vibesafe_dir: Directory containing VibeSafe configuration.
+        
+    Returns:
+        Dictionary containing documentation specification, or None if not found/invalid.
+    """
+    locations = [
+        os.path.join(vibesafe_dir, "documentation.yml"),
+        os.path.join(vibesafe_dir, "docs.yml"),
+        os.path.join("docs", ".vibesafe.yml"),
+    ]
+    
+    for spec_file in locations:
+        if os.path.exists(spec_file):
+            try:
+                with open(spec_file, 'r', encoding='utf-8') as f:
+                    spec = yaml.safe_load(f)
+                    if spec and 'documentation' in spec:
+                        return spec
+            except yaml.YAMLError as e:
+                print(f"⚠️  Could not parse {spec_file}")
+                print(f"Error: {e}")
+                print(f"→ Fix or remove file to continue")
+                return None
+            except Exception as e:
+                print(f"Error reading {spec_file}: {e}")
+                return None
+    
+    return None
+
+def detect_cip_type(cip_path: str, cip_info: Dict[str, Any]) -> str:
+    """Detect CIP type from tags, title, and content.
+    
+    Detection order:
+    1. Explicit 'type' field in frontmatter
+    2. Tags in frontmatter (e.g., ['infrastructure'])
+    3. Keywords in title
+    4. Keywords in summary/motivation (first 500 chars of content)
+    5. Default to 'guides'
+    
+    Args:
+        cip_path: Path to the CIP file.
+        cip_info: Dictionary containing CIP frontmatter and metadata.
+        
+    Returns:
+        String indicating CIP type: 'infrastructure', 'feature', 'process', or 'guides'
+    """
+    # Type keywords for each category
+    type_keywords = {
+        'infrastructure': ['install', 'architecture', 'system', 'deployment', 'setup', 'structure'],
+        'feature': ['implement', 'add', 'create', 'functionality', 'user', 'interface'],
+        'process': ['workflow', 'process', 'methodology', 'compression', 'lifecycle', 'documentation'],
+    }
+    
+    # 1. Check explicit type field
+    if 'type' in cip_info:
+        cip_type = cip_info['type'].lower()
+        if cip_type in type_keywords or cip_type == 'guides':
+            return cip_type
+    
+    # 2. Check tags
+    if 'tags' in cip_info and isinstance(cip_info['tags'], list):
+        for tag in cip_info['tags']:
+            tag_lower = tag.lower()
+            if tag_lower in type_keywords or tag_lower == 'guides':
+                return tag_lower
+            # Check if tag contains type keywords
+            for cip_type, keywords in type_keywords.items():
+                if any(keyword in tag_lower for keyword in keywords):
+                    return cip_type
+    
+    # 3. Check title
+    title = cip_info.get('title', '').lower()
+    for cip_type, keywords in type_keywords.items():
+        if any(keyword in title for keyword in keywords):
+            return cip_type
+    
+    # 4. Check content (first 500 chars after frontmatter)
+    try:
+        with open(cip_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        # Skip frontmatter
+        content_match = re.search(r'^---\s*\n.*?\n---\s*\n(.{0,500})', content, re.DOTALL)
+        if content_match:
+            sample = content_match.group(1).lower()
+            for cip_type, keywords in type_keywords.items():
+                if sum(sample.count(keyword) for keyword in keywords) >= 2:
+                    return cip_type
+    except Exception:
+        pass
+    
+    # 5. Default to guides
+    return 'guides'
+
+def get_compression_target(cip_type: str, doc_spec: Optional[Dict[str, Any]]) -> Optional[str]:
+    """Get compression target location for a CIP type.
+    
+    Args:
+        cip_type: Type of CIP ('infrastructure', 'feature', 'process', 'guides').
+        doc_spec: Documentation specification dictionary (from load_documentation_spec).
+        
+    Returns:
+        Target file/directory path, or None if no spec available.
+    """
+    if not doc_spec:
+        return None
+    
+    targets = doc_spec.get('documentation', {}).get('targets', {})
+    if not targets:
+        return None
+    
+    # Get target for this CIP type
+    target = targets.get(cip_type)
+    
+    # If no specific target, try 'guides' as fallback
+    if not target and cip_type != 'guides':
+        target = targets.get('guides')
+    
+    return target
+
 def scan_cips() -> Dict[str, Any]:
     """Scan all CIP files and collect their status.
     
@@ -535,7 +663,7 @@ def detect_batch_compression_opportunity(cips_info: Dict[str, Any]) -> bool:
 def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
     """Generate compression suggestions for the 'Suggested Next Steps' section.
     
-    Implements REQ-000E Triggers 1-8.
+    Implements REQ-000E Triggers 1-8 and REQ-000F Trigger 4.
     
     Args:
         cips_info: Dictionary containing CIP information from scan_cips()
@@ -550,8 +678,25 @@ def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
     if not candidates:
         return suggestions
     
+    # Load documentation specification (REQ-000F)
+    doc_spec = load_documentation_spec()
+    
     # Detect batch compression opportunity
     is_batch = detect_batch_compression_opportunity(cips_info)
+    
+    # Enrich candidates with type and target information
+    for cip in candidates:
+        # Find CIP file by ID
+        cip_id = cip['id']
+        cip_files = glob.glob(f"cip/*{cip_id}*.md")
+        if cip_files:
+            cip_path = cip_files[0]
+            cip['cip_type'] = detect_cip_type(cip_path, cip)
+            cip['target'] = get_compression_target(cip['cip_type'], doc_spec)
+        else:
+            # Fallback if file not found
+            cip['cip_type'] = 'guides'
+            cip['target'] = get_compression_target('guides', doc_spec)
     
     # Generate main suggestion
     if len(candidates) == 1:
@@ -564,23 +709,55 @@ def generate_compression_suggestions(cips_info: Dict[str, Any]) -> List[str]:
             details = ", ".join(filter(None, [days_str, priority_str]))
             suggestion = f"{suggestion} ({details})"
         
+        # Add target if available
+        if cip['target']:
+            suggestion += f"\n      → Compress to: {cip['target']} ({cip['cip_type']})"
+        
         suggestions.append(suggestion)
     elif len(candidates) > 1:
         # Multiple CIPs need compression
         if is_batch:
-            suggestions.append(f"{Colors.YELLOW}Batch compression opportunity:{Colors.ENDC} {len(candidates)} CIPs closed within 7 days")
+            header = f"{Colors.YELLOW}Batch compression opportunity:{Colors.ENDC} {len(candidates)} CIPs closed within 7 days"
+            if doc_spec:
+                header += " (per .vibesafe/documentation.yml)"
+            suggestions.append(header)
         else:
             suggestions.append(f"Compress {len(candidates)} closed CIPs into formal documentation:")
         
-        # Show details for first 3
-        for cip in candidates[:3]:
-            days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
-            priority_str = f", {cip['priority'].capitalize()} priority" if cip['priority'] != 'medium' else ""
+        # Group by target if we have doc spec
+        if doc_spec:
+            # Group CIPs by target
+            by_target = {}
+            for cip in candidates:
+                target = cip['target'] or "docs/ (no specific target)"
+                cip_type = cip['cip_type']
+                if target not in by_target:
+                    by_target[target] = {'type': cip_type, 'cips': []}
+                by_target[target]['cips'].append(cip)
             
-            suggestions.append(f"   - CIP-{cip['id']}: {cip['title']} ({days_str}{priority_str})")
-        
-        if len(candidates) > 3:
-            suggestions.append(f"   ... and {len(candidates) - 3} more")
+            # Show grouped by target (limit to first 3 targets)
+            for idx, (target, info) in enumerate(list(by_target.items())[:3]):
+                suggestions.append(f"   ")
+                suggestions.append(f"   {info['type'].capitalize()} CIPs → {target}:")
+                for cip in info['cips'][:2]:  # Show max 2 CIPs per target
+                    days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+                    suggestions.append(f"     - CIP-{cip['id']}: {cip['title']} ({days_str})")
+                if len(info['cips']) > 2:
+                    suggestions.append(f"     ... and {len(info['cips']) - 2} more")
+            
+            if len(by_target) > 3:
+                remaining_cips = sum(len(info['cips']) for target, info in list(by_target.items())[3:])
+                suggestions.append(f"   ... and {remaining_cips} more CIPs across {len(by_target) - 3} targets")
+        else:
+            # No doc spec - show flat list (original behavior)
+            for cip in candidates[:3]:
+                days_str = f"{cip['days_since_closure']} days ago" if cip['days_since_closure'] is not None else "recently"
+                priority_str = f", {cip['priority'].capitalize()} priority" if cip['priority'] != 'medium' else ""
+                
+                suggestions.append(f"   - CIP-{cip['id']}: {cip['title']} ({days_str}{priority_str})")
+            
+            if len(candidates) > 3:
+                suggestions.append(f"   ... and {len(candidates) - 3} more")
         
         suggestions.append(f"   {Colors.BLUE}Use template:{Colors.ENDC} templates/compression_checklist.md")
         suggestions.append(f"   {Colors.BLUE}Or run:{Colors.ENDC} ./whats-next --compression-check")
