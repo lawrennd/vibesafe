@@ -148,6 +148,23 @@ VIBESAFE_PLATFORM=all bash install-script.sh       # All platforms (default)
 - *Simple*: No complex options or modes
 - *Always Current*: System files stay up-to-date with latest VibeSafe
 
+### Preventing System File Drift (Optional)
+
+VibeSafe provides a pre-commit hook to prevent accidentally committing when system files are out of sync:
+
+```bash
+# Install the pre-commit hook (optional, recommended for VibeSafe contributors)
+cp templates/git-hooks/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+This hook:
+- ✅ Validates that `scripts/` and `templates/scripts/` are in sync
+- ✅ Checks YAML frontmatter and cross-references
+- ✅ Prevents commits that would break the installation
+
+See [REQ-0006](requirements/req0006_process-conformance-validation.md) for the validation approach.
+
 ## Repository Structure
 
 This repository follows a "dogfooding" approach - VibeSafe follows its own practices while also providing templates for other projects:

@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# VibeSafe pre-commit hook
+# Prevents commits when system files are out of sync
+#
+# Install: cp templates/git-hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+echo "Running VibeSafe validation..."
+
+# Run validation script
+if ! python scripts/validate_vibesafe_structure.py --no-color 2>&1 | grep -q "Validation PASSED"; then
+    echo ""
+    echo "❌ Commit blocked: Validation failed"
+    echo ""
+    echo "Common issues:"
+    echo "  - System file drift: scripts/ and templates/scripts/ out of sync"
+    echo "  - YAML frontmatter errors"
+    echo "  - Invalid cross-references"
+    echo ""
+    echo "Run: python scripts/validate_vibesafe_structure.py"
+    echo "To see details and fix issues"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Validation passed"
+exit 0
+
