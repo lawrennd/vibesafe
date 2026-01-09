@@ -76,6 +76,75 @@ The DOCUMENT stage extracts:
 
 ---
 
+## Process: Human-AI Collaboration Patterns
+
+**Implemented in:** [CIP-0008](../../cip/cip0008.md) - Unified Philosophy and New Tenets
+
+### Overview
+
+VibeSafe's approach to human-AI collaboration is grounded in research on how humans and AI systems can effectively work together. CIP-0008 formalized this through new tenets and documented patterns.
+
+### New Tenets Created
+
+1. **Shared Information Landmarks**: Creates explicit "information landmarks" (CIPs, tenets, directory structures) that serve as fixed reference points for both humans and AI
+
+2. **Information Exploration Patterns**: Supports different patterns of navigation - from detailed focus on specific improvements to broader conceptual understanding
+
+**Key insight**: Reliable collaboration between humans and AI requires shared reference points and flexible exploration patterns, similar to how human visual attention works.
+
+### The Breadcrumbs Pattern
+
+Through development, an emergent pattern was recognized: leaving explicit traces of thinking through CIPs, tenets, and documentation. This creates a navigable trail that both humans and AI can follow to understand rationale and context.
+
+**Examples**:
+- CIPs that document not just WHAT was built, but WHY decisions were made
+- Requirements that trace back to tenets (showing WHY this matters)
+- Documentation that links to CIPs (showing HOW it was built)
+
+**Impact**: Makes VibeSafe self-documenting and enables effective context restoration for both humans and AI assistants.
+
+**See also:**
+- [Shared Information Landmarks tenet](../../tenets/vibesafe/shared-information-landmarks.md)
+- [Information Exploration Patterns tenet](../../tenets/vibesafe/information-exploration-patterns.md)
+- [CIP-0008 details](../../cip/cip0008.md) - Full rationale and research foundations
+
+---
+
+## Process: AI-Assisted Requirements Gathering
+
+**Implemented in:** [CIP-0009](../../cip/cip0009.md) - Requirements Conversation Framework
+
+### Overview
+
+VibeSafe provides a structured framework for AI-assisted requirements gathering through conversation patterns and stage-specific prompts. Located in `templates/ai-requirements/`, this framework helps teams articulate and refine requirements through guided conversations with AI assistants.
+
+### Four Stages
+
+1. **Discovery**: Initial requirements identification through open conversation
+2. **Refinement**: Clarifying and detailing requirements
+3. **Validation**: Ensuring requirements are clear, testable, and complete
+4. **Testing**: Defining acceptance criteria and test strategies
+
+### Conversation Patterns
+
+**Stakeholder Identification**: Systematically identify who is affected by requirements  
+**Goal Decomposition**: Break high-level goals into concrete, actionable requirements
+
+### Integration with VibeSafe
+
+- Requirements link to tenets (WHY) via `related_tenets` field
+- CIPs reference requirements (HOW implements WHAT)  
+- Backlog tasks reference CIPs (DO executes HOW)
+- Status synchronization across all levels
+
+**Key insight**: AI assistants excel at helping humans articulate implicit knowledge through structured conversation, making requirements more explicit and actionable.
+
+**See also:**
+- [AI-Requirements Framework](../../templates/ai-requirements/README.md) - Full framework documentation
+- [CIP-0009 details](../../cip/cip0009.md) - Implementation history and rationale
+
+---
+
 *Last updated: 2026-01-09*
 *This file is part of the VibeSafe formal documentation system.*
 
