@@ -97,9 +97,10 @@ VibeSafe's approach to human-AI collaboration is grounded in research on how hum
 Through development, an emergent pattern was recognized: leaving explicit traces of thinking through CIPs, tenets, and documentation. This creates a navigable trail that both humans and AI can follow to understand rationale and context.
 
 **Examples**:
-- CIPs that document not just WHAT was built, but WHY decisions were made
-- Requirements that trace back to tenets (showing WHY this matters)
-- Documentation that links to CIPs (showing HOW it was built)
+- CIPs that document HOW (implementation approach) with rationale linking to WHY (tenets)
+- Requirements that document WHAT (desired outcomes) tracing back to WHY (tenets)
+- Backlog tasks that document DO (specific work) linking to HOW (CIPs)
+- Documentation that links throughout (showing the full WHY→WHAT→HOW→DO hierarchy)
 
 **Impact**: Makes VibeSafe self-documenting and enables effective context restoration for both humans and AI assistants.
 
