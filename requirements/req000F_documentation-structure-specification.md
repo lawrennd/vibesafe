@@ -1,7 +1,7 @@
 ---
 id: "000F"
 title: "Projects Have Documented Documentation Structure"
-status: "Ready"
+status: "In Progress"
 priority: "High"
 created: "2026-01-08"
 last_updated: "2026-01-08"
