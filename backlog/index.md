@@ -11,7 +11,7 @@ This file provides an overview of all current backlog items organized by categor
 
 ### In Progress
 
-*No tasks currently in_progress.*
+- [Migrate Documentation to Consistent Sphinx Structure](documentation/2026-01-08_migrate-docs-to-sphinx.md)
 
 
 ### Proposed
