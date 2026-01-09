@@ -2,9 +2,13 @@
 author: Neil Lawrence
 created: '2025-05-11'
 id: 000A
-last_updated: '2026-01-03'
+last_updated: '2026-01-09'
 compressed: true  # Compressed 2026-01-08: Documented in docs/whats_next_script.md and README
 status: Closed
+related_requirements:
+  - "0005"  # Clear Understanding of Project Status
+related_tenets:
+  - effortless-context-restoration
 tags:
 - project-management
 - automation

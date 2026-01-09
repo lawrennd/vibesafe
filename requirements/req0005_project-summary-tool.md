@@ -1,9 +1,11 @@
 ---
 created: '2026-01-03'
 id: '0005'
-last_updated: '2026-01-03'
+last_updated: '2026-01-09'
 priority: High
-related_tenets: []
+related_tenets:
+  - effortless-context-restoration
+  - simplicity-of-use
 stakeholders:
 - developers
 - project-managers

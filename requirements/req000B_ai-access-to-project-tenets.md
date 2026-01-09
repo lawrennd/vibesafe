@@ -4,9 +4,10 @@ title: "AI Access to Project Tenets"
 status: "Implemented"
 priority: "High"
 created: "2026-01-03"
-last_updated: "2026-01-03"
+last_updated: "2026-01-09"
 related_tenets:
   - shared-information-landmarks
+  - effortless-context-restoration
 stakeholders:
   - ai-assistants
   - developers

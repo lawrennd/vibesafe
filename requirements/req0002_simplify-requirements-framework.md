@@ -1,10 +1,11 @@
 ---
 created: '2026-01-03'
 id: '0002'
-last_updated: '2026-01-03'
+last_updated: '2026-01-09'
 priority: High
 related_tenets:
-- simplicity-of-use
+  - simplicity-of-use
+  - effortless-context-restoration
 stakeholders:
 - developers
 - product-managers

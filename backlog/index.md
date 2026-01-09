@@ -16,6 +16,8 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Traceability in Compressed Documentation](documentation/2026-01-09_traceability-in-compressed-documentation.md)
+
 - [Document Status Workflow and What](documentation/2026-01-03_document-status-workflow-whats-next.md)
 
 - [Unify Philosophy Documents (about.md and philosophy.md)](documentation/2026-01-03_unify-philosophy-documents.md)
@@ -50,6 +52,8 @@ This file provides an overview of all current backlog items organized by categor
 
 
 ### Proposed
+
+- [Validate Human Authorship in YAML Frontmatter](infrastructure/2026-01-09_validate-human-authorship.md)
 
 - [Extend Validation Script with Compression Checks](infrastructure/2026-01-08_extend-validation-compression-checks.md)
 

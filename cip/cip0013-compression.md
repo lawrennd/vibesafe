@@ -160,7 +160,7 @@ After completing all updates:
    Updated README.md with compression guide link
    Updated docs/whats_next_script.md with compression detection docs
    Marked CIP-0013 compressed: true
-   ```
+```
 
 ---
 
