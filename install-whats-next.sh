@@ -51,6 +51,19 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
+# Ensure scripts/whats_next.py exists (dogfood installs copy from templates/)
+if [ ! -f "scripts/whats_next.py" ]; then
+    if [ -f "templates/scripts/whats_next.py" ]; then
+        echo "Installing scripts/whats_next.py from templates..."
+        mkdir -p scripts
+        cp -f "templates/scripts/whats_next.py" "scripts/whats_next.py"
+    else
+        echo "Error: scripts/whats_next.py not found."
+        echo "Run the installer first (scripts/install-minimal.sh) or provide templates/scripts/whats_next.py."
+        exit 3
+    fi
+fi
+
 # Make the script executable
 echo "Making script executable..."
 chmod +x scripts/whats_next.py

@@ -7,17 +7,37 @@
 
 echo "Running VibeSafe validation..."
 
+# Canonical validator lives in templates/ (installer materializes runtime copies).
+VALIDATOR="templates/scripts/validate_vibesafe_structure.py"
+
+if [ ! -f "$VALIDATOR" ]; then
+    echo ""
+    echo "❌ Commit blocked: validator not found at $VALIDATOR"
+    echo "This repository expects templates/ to be present."
+    echo ""
+    exit 1
+fi
+
+# Pick a Python that has dependencies available.
+# Prefer VibeSafe venv if present, else Poetry, else system python.
+PY="python"
+if [ -x ".venv-vibesafe/bin/python" ]; then
+    PY=".venv-vibesafe/bin/python"
+elif command -v poetry >/dev/null 2>&1; then
+    PY="poetry run python"
+fi
+
 # Run validation script
-if ! python scripts/validate_vibesafe_structure.py --no-color 2>&1 | grep -q "Validation PASSED"; then
+if ! $PY "$VALIDATOR" --no-color 2>&1 | grep -q "Validation PASSED"; then
     echo ""
     echo "❌ Commit blocked: Validation failed"
     echo ""
     echo "Common issues:"
-    echo "  - System file drift: templates/ (principal) differs from runtime copies"
+    echo "  - Template/runtime drift (templates/ is the source of truth)"
     echo "  - YAML frontmatter errors"
     echo "  - Invalid cross-references"
     echo ""
-    echo "Run: python scripts/validate_vibesafe_structure.py"
+    echo "Run: $PY $VALIDATOR"
     echo ""
     echo "⚠️  For drift: Investigate WHY files diverged before syncing!"
     echo "   templates/ is the source of truth (propagates on install)"

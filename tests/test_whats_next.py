@@ -25,7 +25,7 @@ load_module_from_path(
     Path(__file__).resolve().parents[1] / "templates" / "scripts" / "whats_next.py",
 )
 
-from scripts.whats_next import (
+from scripts.whats_next import (  # pyright: ignore[reportMissingImports]
     extract_frontmatter,
     has_expected_frontmatter,
     run_command,
@@ -388,7 +388,7 @@ def test_cmd_args_requirements_only():
         mock_prompts.return_value = []
         
         # Run the main function
-        from scripts.whats_next import main
+        from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
         main()
         
         # Verify that generate_next_steps was called with 7 arguments including tenet_info, validation_info, and gaps_info
@@ -583,12 +583,17 @@ Content goes here.
             '',
             None
         ]
-        
-        # Import normalize_status from update_index
-        import sys
-        import os
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backlog'))
-        import update_index  # pyright: ignore[reportMissingImports]
+
+        # Load the canonical template implementation under a simple module name.
+        from test_support import load_module_from_path
+
+        update_index = load_module_from_path(
+            "update_index",
+            Path(__file__).resolve().parents[1]
+            / "templates"
+            / "backlog"
+            / "update_index.py",
+        )
         
         for test_case in test_cases:
             whats_next_result = normalize_status(test_case)

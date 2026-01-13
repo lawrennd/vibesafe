@@ -879,41 +879,80 @@ def check_system_file_drift(root_dir, result):
         root_dir: Root directory of the repository
         result: ValidationResult to update
     """
-    # Check scripts/ against templates/scripts/
-    scripts_dir = os.path.join(root_dir, "scripts")
-    templates_scripts_dir = os.path.join(root_dir, "templates", "scripts")
-    
-    if os.path.exists(scripts_dir) and os.path.exists(templates_scripts_dir):
-        # Find all Python files in templates/scripts/ (source of truth)
-        for filename in os.listdir(templates_scripts_dir):
-            if not filename.endswith('.py'):
-                continue
-            
-            template_path = os.path.join(templates_scripts_dir, filename)
-            runtime_path = os.path.join(scripts_dir, filename)
-            
-            if not os.path.isfile(template_path):
-                continue
-            
-            if not os.path.exists(runtime_path):
-                result.add_warning(
-                    f"System file missing: {filename} exists in templates/scripts/ but not in scripts/",
-                    template_path
-                )
-                continue
-            
-            # Compare file sizes as a quick drift check
-            template_size = os.path.getsize(template_path)
-            runtime_size = os.path.getsize(runtime_path)
-            
-            if template_size != runtime_size:
-                result.add_error(
-                    f"System file drift: {filename} differs between templates/scripts/ ({template_size} bytes, SOURCE OF TRUTH) "
-                    f"and scripts/ ({runtime_size} bytes, runtime copy). "
-                    f"⚠️  Investigate divergence before syncing. Templates version is principal. "
-                    f"If templates/ is correct: cp templates/scripts/{filename} scripts/{filename}",
-                    runtime_path
-                )
+    def _read_text_normalized(path: str) -> str:
+        # Normalize newlines to avoid false drift due to editor/platform settings.
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read().replace("\r\n", "\n")
+
+    def _check_pair(template_rel: str, runtime_rel: str) -> None:
+        template_path = os.path.join(root_dir, template_rel)
+        runtime_path = os.path.join(root_dir, runtime_rel)
+
+        if not os.path.exists(template_path):
+            # Template missing is a real problem: templates are the canonical source.
+            result.add_error(f"Missing template system file: {template_rel}", template_path)
+            return
+
+        if not os.path.exists(runtime_path):
+            # In this repo, runtime copies may be absent (templates are canonical).
+            # In downstream projects, these are materialized on install.
+            return
+
+        # Compare content; only warn on divergence.
+        try:
+            template_text = _read_text_normalized(template_path)
+            runtime_text = _read_text_normalized(runtime_path)
+        except Exception as e:
+            result.add_warning(f"Could not read system file drift pair ({runtime_rel}): {e}", runtime_path)
+            return
+
+        if template_text == runtime_text:
+            return
+
+        # Heuristic: if runtime copy is newer, it's likely an agent edited the wrong file.
+        try:
+            template_mtime = os.path.getmtime(template_path)
+            runtime_mtime = os.path.getmtime(runtime_path)
+        except Exception:
+            template_mtime = None
+            runtime_mtime = None
+
+        ahead = (
+            runtime_mtime is not None
+            and template_mtime is not None
+            and runtime_mtime > template_mtime
+        )
+
+        # Drift is treated as an error when templates are present: it indicates a
+        # process problem (wrong file edited) or a missing propagation step.
+        if ahead:
+            result.add_error(
+                "System file drift (runtime AHEAD of templates): "
+                f"{runtime_rel} differs from {template_rel}. "
+                "This strongly suggests an agent edited the runtime copy instead of the canonical template. "
+                "Port the changes into templates/ (preferred), then reinstall/recopy runtime files as needed.",
+                runtime_path,
+            )
+        else:
+            result.add_error(
+                "System file drift (runtime differs from templates): "
+                f"{runtime_rel} differs from {template_rel}. "
+                "If templates/ is canonical (VibeSafe repo), update templates/ then reinstall/recopy runtime files. "
+                "If this is a downstream project, reinstall will refresh runtime from templates.",
+                runtime_path,
+            )
+
+    # Only enforce drift checks when templates exist (VibeSafe repo / dogfood).
+    # In downstream projects, templates/ won't be present and drift checks should be skipped.
+    if not os.path.isdir(os.path.join(root_dir, "templates")):
+        return
+
+    # Focused pairs that the installer materializes from templates.
+    # (We intentionally do NOT require these runtime copies to exist.)
+    _check_pair("templates/scripts/whats_next.py", "scripts/whats_next.py")
+    _check_pair("templates/scripts/validate_vibesafe_structure.py", "scripts/validate_vibesafe_structure.py")
+    _check_pair("templates/backlog/update_index.py", "backlog/update_index.py")
+    _check_pair("templates/tenets/combine_tenets.py", "tenets/combine_tenets.py")
 
 
 def main():
