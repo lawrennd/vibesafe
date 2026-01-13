@@ -6,7 +6,7 @@ priority: "High"
 created: "2026-01-03"
 last_updated: "2026-01-03"
 category: "features"
-owner: ""
+owner: "Neil Lawrence"
 dependencies: ["2026-01-03_yaml-frontmatter-standardization", "2026-01-03_simplify-requirements-framework", "2026-01-03_tenets-sustainability-process"]
 related_cips: ["0011"]
 ---

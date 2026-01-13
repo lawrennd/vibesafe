@@ -7,7 +7,7 @@ dependencies:
 effort: medium
 id: 2025-05-08_ai-requirements-backlog-integration
 last_updated: '2025-05-12'
-owner: lawrennd
+owner: Neil Lawrence
 priority: High
 related_cips: []
 status: Completed

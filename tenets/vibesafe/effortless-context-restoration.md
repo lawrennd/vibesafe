@@ -6,11 +6,6 @@ created: "2026-01-09"
 last_reviewed: "2026-01-09"
 review_frequency: "Annual"
 conflicts_with: ["user-autonomy", "simplicity-of-use"]
-related_requirements:
-  - "0005"  # Clear Understanding of Project Status
-  - "0001"  # Standardized Component Metadata
-  - "0002"  # Simple and Accessible Requirements Framework
-  - "000B"  # AI Access to Project Tenets
 tags:
   - cognitive-load
   - workflow

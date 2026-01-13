@@ -3,7 +3,7 @@ category: features
 created: '2025-05-05'
 id: 2025-05-05_gist-integration
 last_updated: '2026-01-03'
-owner: lawrennd
+owner: Neil Lawrence
 priority: Medium
 related_cips: []
 status: Abandoned

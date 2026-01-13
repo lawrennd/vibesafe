@@ -8,7 +8,7 @@ effort: medium
 github_issue: null
 id: 2025-05-12_ai-requirements-integration
 last_updated: '2025-05-12'
-owner: lawrennd
+owner: Neil Lawrence
 priority: High
 related_cips: []
 status: Completed

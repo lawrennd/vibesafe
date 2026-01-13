@@ -7,7 +7,7 @@ dependencies:
 effort: medium
 id: 2025-05-08_goal-decomposition-pattern
 last_updated: '2025-05-12'
-owner: lawernnd
+owner: Neil Lawrence
 priority: High
 related_cips: []
 status: In Progress

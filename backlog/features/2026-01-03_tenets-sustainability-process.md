@@ -6,7 +6,7 @@ priority: "Medium"
 created: "2026-01-03"
 last_updated: "2026-01-03"
 category: "features"
-owner: ""
+owner: "Neil Lawrence"
 dependencies: ["2026-01-03_yaml-frontmatter-standardization"]
 related_cips: ["0004", "0011"]
 ---

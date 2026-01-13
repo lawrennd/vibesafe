@@ -3,7 +3,7 @@ category: documentation
 created: '2026-01-03'
 id: 2026-01-03_unify-philosophy-documents
 last_updated: '2026-01-03'
-owner: ''
+owner: 'Neil Lawrence'
 priority: Low
 related_cips: ["0008"]
 status: Proposed

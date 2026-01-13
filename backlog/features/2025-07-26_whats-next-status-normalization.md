@@ -5,6 +5,7 @@ id: 2025-07-26_whats-next-status-normalization
 last_updated: '2025-07-26'
 priority: Medium
 related_cips: []
+owner: "Neil Lawrence"
 status: Completed
 title: What's Next Script Status Normalization Enhancement
 ---

@@ -21,6 +21,7 @@ import re
 import argparse
 from pathlib import Path
 from datetime import datetime
+from typing import Optional, List
 
 try:
     import frontmatter
@@ -55,6 +56,165 @@ def colored(text, color):
     return f"{color}{text}{Colors.END}"
 
 
+# REQ-0010: Human-authored responsibility (AIs advise; humans decide)
+_ATTRIBUTION_BRACKET_PLACEHOLDER_RE = re.compile(r'^\[.*\]$')
+_ATTRIBUTION_DISALLOWED_EXACT = {
+    "",
+    "unknown",
+    "n/a",
+    "na",
+    "none",
+    "tbd",
+    "todo",
+    "and date",
+    "vibesafe team",
+    "team",
+    "ai",
+    "assistant",
+    "openai",
+    "chatgpt",
+    "claude",
+    "copilot",
+    "codex",
+}
+_ATTRIBUTION_DISALLOWED_SUBSTRINGS = [
+    "your name",
+    "author name",
+    "person name",
+]
+
+
+def validate_human_attribution(component_type, file_path, field_name, value, result):
+    """
+    Validate that an attribution field (e.g. author/owner) names a specific human.
+
+    Enforces REQ-0010: values must be non-empty and must not be placeholders or
+    non-human/tool attributions.
+    """
+    if not isinstance(value, str):
+        result.add_error(f"Invalid '{field_name}': expected string, got {type(value).__name__}", file_path)
+        return
+
+    raw = value
+    v = value.strip()
+    v_lower = v.lower()
+
+    if v_lower in _ATTRIBUTION_DISALLOWED_EXACT:
+        result.add_error(f"Invalid '{field_name}': must be a human name (got '{raw}')", file_path)
+        return
+
+    if _ATTRIBUTION_BRACKET_PLACEHOLDER_RE.match(v):
+        result.add_error(f"Invalid '{field_name}': placeholder value '{raw}'", file_path)
+        return
+
+    for s in _ATTRIBUTION_DISALLOWED_SUBSTRINGS:
+        if s in v_lower:
+            result.add_error(f"Invalid '{field_name}': placeholder value '{raw}'", file_path)
+            return
+
+    # Single-threaded ownership: one primary accountable human per artifact
+    if "," in v or ";" in v or " & " in v_lower or " and " in v_lower or "/" in v:
+        result.add_error(
+            f"Invalid '{field_name}': must name a single primary accountable human (got '{raw}')",
+            file_path,
+        )
+        return
+
+
+def _get_git_changed_paths(root_dir: str) -> Optional[List[str]]:
+    """Return a list of changed file paths from `git status --porcelain`, or None if not a git repo."""
+    try:
+        import subprocess
+
+        # Are we in a git repo?
+        p = subprocess.run(
+            ['git', '-C', root_dir, 'rev-parse', '--is-inside-work-tree'],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if p.returncode != 0 or p.stdout.strip() != "true":
+            return None
+
+        status = subprocess.run(
+            ['git', '-C', root_dir, 'status', '--porcelain'],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if status.returncode != 0:
+            return None
+
+        changed: List[str] = []
+        for line in status.stdout.splitlines():
+            if not line.strip():
+                continue
+            # Format: XY <path> (or rename: XY old -> new)
+            path = line[3:].strip()
+            if " -> " in path:
+                path = path.split(" -> ", 1)[1].strip()
+            changed.append(path)
+        return changed
+    except Exception:
+        return None
+
+
+def check_governance_drift(root_dir: str, result):
+    """
+    Warn when implementation/tooling changes occur without updating planning artifacts.
+
+    This catches "own goal" process failures like: updating validators/scripts/templates
+    without recording intent in CIP/backlog and/or without updating requirements where appropriate.
+    """
+    changed = _get_git_changed_paths(root_dir)
+    if changed is None or len(changed) == 0:
+        return
+
+    def any_prefix(prefixes) -> bool:
+        return any(p.startswith(prefixes) for p in changed)
+
+    implementation_prefixes = (
+        "scripts/",
+        "templates/scripts/",
+        "tests/",
+        "install-minimal.sh",
+        "install-whats-next.sh",
+        "whats-next",
+        "combine_tenets.py",
+        "tenets/combine_tenets.py",
+        "templates/.cursor/rules/",
+    )
+    planning_prefixes = ("cip/", "backlog/")
+    requirements_prefixes = ("requirements/",)
+    tenets_prefixes = ("tenets/",)
+
+    has_impl = any_prefix(implementation_prefixes)
+    has_planning = any_prefix(planning_prefixes)
+    has_requirements = any_prefix(requirements_prefixes)
+    has_tenets = any_prefix(tenets_prefixes)
+
+    if has_impl and not has_planning:
+        result.add_warning(
+            "Governance drift: implementation/tooling changed but no CIP/backlog changed. "
+            "Consider creating/updating a CIP (HOW) and/or backlog task (DO) to record intent and accountability.",
+            os.path.join(root_dir, ".git"),
+        )
+
+    if has_impl and has_requirements and not has_planning:
+        result.add_warning(
+            "Traceability gap: requirements (WHAT) changed alongside implementation, but no CIP/backlog changed. "
+            "This often means we skipped documenting HOW (CIP) or DO (task).",
+            os.path.join(root_dir, ".git"),
+        )
+
+    if has_impl and has_tenets and not (has_requirements or has_planning):
+        result.add_warning(
+            "Tenet→implementation gap: tenets (WHY) and implementation changed, but no requirements/CIPs/backlog were updated. "
+            "Consider adding a requirement to encode WHAT the tenet implies, and a CIP/task if behavior changed.",
+            os.path.join(root_dir, ".git"),
+        )
+
+
 # Component specifications (from REQ-0001: Standardized Component Metadata)
 COMPONENT_SPECS = {
     'requirement': {
@@ -62,18 +222,19 @@ COMPONENT_SPECS = {
         'pattern': r'^req([0-9A-Fa-f]{4})_[\w-]+\.md$',
         'id_format': 'XXXX (4-digit hex)',
         'required_fields': ['id', 'title', 'status', 'priority', 'created', 'last_updated', 'related_tenets', 'stakeholders'],
-        'optional_fields': ['related_cips', 'related_backlog', 'tags'],
+        'optional_fields': ['tags'],
         'allowed_status': ['Proposed', 'Ready', 'In Progress', 'Implemented', 'Validated', 'Deferred', 'Rejected'],
         'allowed_priority': ['High', 'Medium', 'Low'],
         'links_to': ['related_tenets'],  # Bottom-up: requirements → tenets
-        'should_not_have': ['related_requirements'],  # Violates bottom-up
+        # Requirements are WHAT and should not link down into HOW/DO.
+        'should_not_have': ['related_requirements', 'related_cips', 'related_backlog'],  # Violates bottom-up
     },
     'cip': {
         'dir': 'cip',
         'pattern': r'^cip([0-9A-Fa-f]{4})(_[\w-]+)?\.md$',
         'id_format': 'XXXX (4-digit hex)',
-        'required_fields': ['id', 'title', 'status', 'created', 'last_updated'],
-        'optional_fields': ['author', 'related_requirements', 'related_cips', 'blocked_by', 'superseded_by', 'tags'],
+        'required_fields': ['id', 'title', 'status', 'created', 'last_updated', 'author'],
+        'optional_fields': ['related_requirements', 'related_cips', 'blocked_by', 'superseded_by', 'tags'],
         'allowed_status': ['Proposed', 'Accepted', 'In Progress', 'Implemented', 'Closed', 'Rejected', 'Deferred'],
         'links_to': ['related_requirements'],  # Bottom-up: CIPs → requirements
         'should_not_have': ['related_backlog'],  # Violates bottom-up
@@ -82,12 +243,13 @@ COMPONENT_SPECS = {
         'dir': 'backlog',
         'pattern': r'^(\d{4})-(\d{2})-(\d{2})_[\w-]+\.md$',
         'id_format': 'YYYY-MM-DD_short-name',
-        'required_fields': ['id', 'title', 'status', 'priority', 'created', 'last_updated', 'category', 'related_cips'],
-        'optional_fields': ['owner', 'dependencies', 'tags'],
+        'required_fields': ['id', 'title', 'status', 'priority', 'created', 'last_updated', 'category', 'related_cips', 'owner'],
+        # Exception path (Option B): allow backlog → requirement only when explicitly justified.
+        'optional_fields': ['dependencies', 'tags', 'related_requirements', 'no_cip_reason'],
         'allowed_status': ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned'],
         'allowed_priority': ['High', 'Medium', 'Low'],
         'links_to': ['related_cips'],  # Bottom-up: backlog → CIPs
-        'should_not_have': ['related_requirements'],  # Violates bottom-up
+        'should_not_have': [],  # 'related_requirements' is allowed only via explicit exception (validated below)
     },
     'tenet': {
         'dir': 'tenets',
@@ -390,15 +552,19 @@ def fix_reverse_links(root_dir, result, dry_run=False):
         write_frontmatter(cip_file, cip_fm_updated, dry_run)
         result.add_fix(f"Removed reverse link: related_backlog (moved to backlog items)", cip_file)
     
-    # Pattern: backlog → requirement (INVALID - should go through CIP)
-    # If backlog has related_requirements, warn (cannot auto-fix without knowing which CIP)
+    # Pattern: backlog → requirement (Option B - allowed only with explicit justification)
     for backlog_file in find_component_files(root_dir, 'backlog'):
         backlog_fm = extract_frontmatter(backlog_file)
-        if backlog_fm and 'related_requirements' in backlog_fm:
+        if not backlog_fm or not backlog_fm.get('related_requirements'):
+            continue
+
+        related_cips = backlog_fm.get('related_cips')
+        no_cip_reason = backlog_fm.get('no_cip_reason')
+        if not isinstance(related_cips, list) or len(related_cips) != 0 or not isinstance(no_cip_reason, str) or not no_cip_reason.strip():
             result.add_warning(
-                f"Invalid link pattern: backlog has 'related_requirements'. "
-                f"Backlog should link to CIPs, not requirements directly. Manual fix required.",
-                backlog_file
+                "Backlog has related_requirements but does not satisfy the exception conditions "
+                "(requires related_cips: [] and non-empty no_cip_reason).",
+                backlog_file,
             )
     
     return fixes_applied
@@ -441,6 +607,39 @@ def validate_yaml_frontmatter(component_type, file_path, result, auto_fix=False,
         if field not in frontmatter:
             result.add_error(f"Missing required field: '{field}'", file_path)
     
+    # REQ-0010: Human attribution must be explicit for responsibility-bearing artifacts
+    if component_type == 'cip':
+        if 'author' in frontmatter:
+            validate_human_attribution(component_type, file_path, 'author', frontmatter.get('author'), result)
+    elif component_type == 'backlog':
+        if 'owner' in frontmatter:
+            validate_human_attribution(component_type, file_path, 'owner', frontmatter.get('owner'), result)
+
+    # Backlog exception path (Option B):
+    # Allow backlog to reference requirements directly ONLY when:
+    # - related_cips exists and is empty (no CIP)
+    # - no_cip_reason is present and non-empty (explicit justification)
+    if component_type == 'backlog' and frontmatter.get('related_requirements'):
+        related_reqs = frontmatter.get('related_requirements')
+        if not isinstance(related_reqs, list):
+            result.add_error("Invalid 'related_requirements': expected list of requirement IDs", file_path)
+        related_cips = frontmatter.get('related_cips')
+        if related_cips is None:
+            result.add_error("Invalid exception: backlog has related_requirements but missing required field 'related_cips'", file_path)
+        elif not isinstance(related_cips, list):
+            result.add_error("Invalid 'related_cips': expected list", file_path)
+        elif len(related_cips) != 0:
+            result.add_error(
+                "Invalid exception: backlog has related_requirements but related_cips is non-empty (use a CIP instead of direct requirement linkage)",
+                file_path,
+            )
+        no_cip_reason = frontmatter.get('no_cip_reason')
+        if not isinstance(no_cip_reason, str) or not no_cip_reason.strip():
+            result.add_error(
+                "Invalid exception: backlog has related_requirements but missing/empty 'no_cip_reason' (explicit justification required)",
+                file_path,
+            )
+
     # Validate field values
     if 'status' in frontmatter:
         if 'allowed_status' in spec:
@@ -554,6 +753,18 @@ def validate_cross_references(component_type, file_path, frontmatter, all_ids, r
                             f"Broken reference: {link_field} references '{ref_id}' which doesn't exist",
                             file_path
                         )
+
+    # Backlog exception path (Option B): if related_requirements is present, validate requirement IDs.
+    if component_type == 'backlog' and frontmatter.get('related_requirements'):
+        refs = frontmatter.get('related_requirements')
+        if not isinstance(refs, list):
+            refs = [refs]
+        for ref_id in refs:
+            if ref_id not in all_ids.get('requirement', set()):
+                result.add_warning(
+                    f"Broken reference: related_requirements references '{ref_id}' which doesn't exist",
+                    file_path,
+                )
 
 
 def validate_component(root_dir, component_type, file_path, all_ids, result, auto_fix=False, dry_run=False):
@@ -749,6 +960,11 @@ Examples:
         help='Disable colored output'
     )
     parser.add_argument(
+        '--no-governance-drift',
+        action='store_true',
+        help='Skip git-based governance drift warnings (implementation changes without CIP/backlog updates)'
+    )
+    parser.add_argument(
         '--root',
         default='.',
         help='Root directory of VibeSafe project (default: current directory)'
@@ -799,6 +1015,10 @@ Examples:
     
     # Step 4: Check for system file drift (REQ-0006)
     check_system_file_drift(root_dir, result)
+
+    # Step 5: Optional git-based process warnings
+    if not args.no_governance_drift:
+        check_governance_drift(root_dir, result)
     
     # Print results
     print_results(result, strict=args.strict, dry_run=dry_run)

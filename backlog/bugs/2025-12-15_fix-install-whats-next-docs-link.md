@@ -5,7 +5,7 @@ dependencies: ''
 github_issue: ''
 id: 2025-12-15_fix-install-whats-next-docs-link
 last_updated: '2025-12-15'
-owner: ''
+owner: 'Neil Lawrence'
 priority: Medium
 related_cips: []
 status: Proposed

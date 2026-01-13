@@ -7,7 +7,7 @@ created: "2026-01-04"
 last_updated: "2026-01-04"
 category: "features"
 related_cips: ["0012"]
-owner: ""
+owner: "Neil Lawrence"
 dependencies: ["2026-01-04_cip0012-phase1-base-prompts"]
 tags: ["framework-independence", "ai-assistants", "installation"]
 ---

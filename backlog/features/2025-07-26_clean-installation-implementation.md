@@ -5,6 +5,7 @@ id: 2025-07-26_clean-installation-implementation
 last_updated: '2025-07-26'
 priority: High
 related_cips: []
+owner: "Neil Lawrence"
 status: Completed
 title: Implement Clean Installation Philosophy
 ---

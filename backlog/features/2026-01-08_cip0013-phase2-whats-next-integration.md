@@ -7,7 +7,7 @@ created: "2026-01-08"
 last_updated: "2026-01-08"
 category: "features"
 related_cips: ["0013"]
-owner: ""
+owner: "Neil Lawrence"
 dependencies: ["2026-01-08_cip0013-phase0-compression-metadata"]
 tags: ["documentation", "compression", "workflow", "whats-next", "automation"]
 ---

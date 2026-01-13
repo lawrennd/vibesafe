@@ -3,7 +3,7 @@ category: infrastructure
 created: '2025-05-05'
 id: 2025-05-05_github-repository-setup
 last_updated: '2025-05-12'
-owner: lawrennd
+owner: Neil Lawrence
 priority: High
 related_cips: []
 status: Completed

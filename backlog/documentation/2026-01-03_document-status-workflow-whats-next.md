@@ -7,6 +7,7 @@ created: "2026-01-03"
 last_updated: "2026-01-03"
 category: "documentation"
 related_cips: ["0011"]
+owner: "Neil Lawrence"
 ---
 
 # Task: Document Status Workflow and What's Next Script Logic

@@ -1,4 +1,5 @@
 ---
+author: "Neil Lawrence"
 id: "2025-07-26_vibesafe-auto-gitignore-protection"
 title: "VibeSafe Auto-Gitignore Protection"
 status: "Closed"

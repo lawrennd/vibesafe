@@ -3,7 +3,7 @@ category: infrastructure
 created: '2025-05-05'
 id: 2025-05-05_implement-tenets
 last_updated: '2026-01-03'
-owner: lawrennd
+owner: Neil Lawrence
 priority: High
 related_cips: []
 status: Completed

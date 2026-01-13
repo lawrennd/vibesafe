@@ -159,6 +159,76 @@ def get_git_status() -> Dict[str, Any]:
     
     return git_info
 
+
+def detect_governance_drift(git_info: Dict[str, Any]) -> List[str]:
+    """
+    Detect "governance drift": implementation changes without corresponding planning artifacts.
+
+    This is a lightweight heuristic intended to catch "own goals" where we implement policy
+    or tooling changes (scripts/templates/tests) without updating the VibeSafe planning layer
+    (CIPs/backlog), and/or without aligning the change to requirements.
+    """
+    if not git_info:
+        return []
+
+    modified_paths = [m.get('path') for m in git_info.get('modified_files', []) if m.get('path')]
+    untracked_paths = list(git_info.get('untracked_files', []) or [])
+    changed = modified_paths + untracked_paths
+    if not changed:
+        return []
+
+    def any_prefix(prefixes: Tuple[str, ...]) -> bool:
+        return any(p.startswith(prefixes) for p in changed)
+
+    # "Implementation" here includes tooling and validators: it's where behavior changes.
+    implementation_prefixes = (
+        "scripts/",
+        "templates/scripts/",
+        "tests/",
+        "install-minimal.sh",
+        "install-whats-next.sh",
+        "whats-next",
+        "combine_tenets.py",
+        "tenets/combine_tenets.py",
+        "templates/.cursor/rules/",
+    )
+    planning_prefixes = ("cip/", "backlog/")
+    requirements_prefixes = ("requirements/",)
+    tenet_prefixes = ("tenets/",)
+
+    has_impl = any_prefix(implementation_prefixes) or any(p.endswith(".py") for p in changed)
+    has_planning = any_prefix(planning_prefixes)
+    has_requirements = any_prefix(requirements_prefixes)
+    has_tenets = any_prefix(tenet_prefixes)
+
+    suggestions: List[str] = []
+
+    # Core heuristic: if you changed implementation but didn't touch CIP/backlog, call it out.
+    if has_impl and not has_planning:
+        suggestions.append(
+            f"{Colors.YELLOW}Governance drift check:{Colors.ENDC} "
+            "Implementation/tooling changes detected without any CIP/backlog updates. "
+            "Consider creating/updating a CIP (HOW) and/or a backlog task (DO) to record intent and accountability."
+        )
+
+    # If you changed requirements and implementation but didn't touch CIP/backlog, that's often the specific "own goal".
+    if has_impl and has_requirements and not has_planning:
+        suggestions.append(
+            f"{Colors.YELLOW}Traceability gap check:{Colors.ENDC} "
+            "Requirements (WHAT) changed alongside implementation (HOW/DO), but no CIP/backlog changed. "
+            "This often means we skipped documenting HOW (CIP) or DO (task)."
+        )
+
+    # Tenet changes paired with implementation changes should usually be reflected in requirements/CIPs.
+    if has_impl and has_tenets and not (has_requirements or has_planning):
+        suggestions.append(
+            f"{Colors.YELLOW}Tenet→implementation check:{Colors.ENDC} "
+            "Tenets (WHY) and implementation changed together, but no requirements/CIPs/backlog were updated. "
+            "Consider adding a requirement to encode WHAT the tenet implies, and a CIP/task if behavior changed."
+        )
+
+    return suggestions
+
 def extract_frontmatter(file_path: str) -> Optional[Dict[str, Any]]:
     """Extract YAML frontmatter from a markdown file if it exists.
     
@@ -1181,6 +1251,9 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
                          gaps_info: Dict[str, Any] = None) -> List[str]:
     """Generate suggested next steps based on the project state."""
     next_steps = []
+
+    # Governance drift checks based on git working tree (high-signal early warning)
+    next_steps.extend(detect_governance_drift(git_info))
     
     # Add validation issues as highest priority if present
     if validation_info and not validation_info.get('error'):

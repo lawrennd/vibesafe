@@ -6,7 +6,7 @@ priority: "High"
 category: "documentation"
 created: "2026-01-09"
 last_updated: "2026-01-09"
-owner: ""
+owner: "Neil Lawrence"
 related_cips: ["0013"]
 tags: ["documentation", "compression", "traceability", "quality"]
 ---

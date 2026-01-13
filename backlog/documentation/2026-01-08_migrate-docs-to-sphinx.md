@@ -7,8 +7,7 @@ created: "2026-01-08"
 last_updated: "2026-01-08"
 category: "documentation"
 related_cips: ["0013"]
-related_requirements: ["000F"]
-owner: ""
+owner: "Neil Lawrence"
 dependencies: []
 tags: ["documentation", "sphinx", "structure", "migration", "compression"]
 ---

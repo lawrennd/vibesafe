@@ -7,7 +7,7 @@ created: "2026-01-08"
 last_updated: "2026-01-08"
 category: "infrastructure"
 related_cips: ["0011", "0013"]
-owner: ""
+owner: "Neil Lawrence"
 dependencies: []
 tags: ["validation", "compression", "documentation", "quality"]
 ---

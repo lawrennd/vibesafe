@@ -6,7 +6,7 @@ priority: "Medium"
 created: "2026-01-03"
 last_updated: "2026-01-03"
 category: "features"
-owner: ""
+owner: "Neil Lawrence"
 dependencies: ["2026-01-03_simplify-requirements-framework", "2026-01-03_patterns-to-vibesafe-guidance", "2026-01-03_tenets-sustainability-process", "2026-01-03_project-summary-tool"]
 related_cips: ["0011"]
 ---

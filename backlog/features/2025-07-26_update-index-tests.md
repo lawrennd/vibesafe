@@ -5,6 +5,7 @@ id: 2025-07-26_update-index-tests
 last_updated: '2025-07-26'
 priority: High
 related_cips: []
+owner: "Neil Lawrence"
 status: Completed
 title: Update Tests for Status Normalization in update_index.py
 ---

@@ -3,7 +3,7 @@ category: documentation
 created: '2025-05-05'
 id: 2025-05-05_documentation-system-evaluation
 last_updated: '2025-05-11'
-owner: lawrennd
+owner: Neil Lawrence
 priority: Medium
 related_cips: []
 status: Proposed

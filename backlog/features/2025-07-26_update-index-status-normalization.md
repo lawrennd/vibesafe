@@ -5,6 +5,7 @@ id: 2025-07-26_update-index-status-normalization
 last_updated: '2025-07-26'
 priority: Medium
 related_cips: []
+owner: "Neil Lawrence"
 status: Completed
 title: Update Index Script Status Normalization Enhancement
 ---

@@ -36,6 +36,11 @@ VibeSafe is guided by a set of core [tenets](tenets/vibesafe-tenets.md) that sha
 1. *[User Autonomy Over Prescription](tenets/vibesafe/user-autonomy.md)*: *"We optimize for configurability over our own preferences."*
 2. *[Simplicity at All Levels](tenets/vibesafe/simplicity-of-use.md)*: *"Simplicity matters everywhere - in usage, code, and dependencies."* We prioritize lightweight implementation with minimal dependencies.
 3. *[Documentation and Implementation as a Unified Whole](tenets/vibesafe/documentation-as-code.md)*: *"Document to guide implementation; implement to validate documentation."*
+4. *[Human Authorship and Accountability](tenets/vibesafe/human-authorship.md)*: *"AIs advise; humans decide."* Responsibility-bearing artifacts are explicitly owned by a named human.
+5. *[Build Verification Before Implementation](tenets/vibesafe/validation-led-development.md)*: *"Validate the spec, then build to the spec."*
+6. *[Effortless Context Restoration](tenets/vibesafe/effortless-context-restoration.md)*: *"The system remembers, so you don't have to—but you're always in control."*
+7. *[Shared Information Landmarks](tenets/vibesafe/shared-information-landmarks.md)*: *"Reliable collaboration requires shared reference points."*
+8. *[Information Exploration Patterns](tenets/vibesafe/information-exploration-patterns.md)*: *"Navigate from detail to context and back again."*
 
 [View all tenets →](tenets/vibesafe-tenets.md)
 

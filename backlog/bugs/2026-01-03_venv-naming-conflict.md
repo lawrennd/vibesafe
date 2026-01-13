@@ -5,6 +5,7 @@ id: 2026-01-03_venv-naming-conflict
 last_updated: '2026-01-03'
 priority: High
 related_cips: []
+owner: "Neil Lawrence"
 status: Completed
 title: VibeSafe .venv conflicts with user project virtual environments
 ---

@@ -200,6 +200,7 @@ status: "Proposed"
 priority: "high"
 category: "features"
 related_cips: []
+owner: "Test Human"
 ---
 
 # Test Content
@@ -249,6 +250,7 @@ priority: "High"
 created: "2026-01-03"
 last_updated: "2026-01-03"
 related_cips: []
+owner: "Test Human"
 ---
 
 # Test Content
@@ -274,6 +276,7 @@ priority: "High"
 category: "features"
 created: "2026-01-03"
 last_updated: "2026-01-03"
+owner: "Test Human"
 ---
 
 # Test Content
@@ -396,7 +399,7 @@ stakeholders: []
         error_messages = [msg for msg, _ in result.errors]
         self.assertTrue(any('Invalid date format' in msg for msg in error_messages))
     
-    def test_bottom_up_pattern_violation(self):
+    def test_backlog_related_requirements_requires_no_cip_reason(self):
         test_file = os.path.join(self.temp_dir, 'test.md')
         content = """---
 id: "2026-01-03_test"
@@ -407,6 +410,7 @@ category: "features"
 created: "2026-01-03"
 last_updated: "2026-01-03"
 related_cips: []
+owner: "Test Human"
 related_requirements: ["0001"]
 ---
 
@@ -418,9 +422,61 @@ related_requirements: ["0001"]
         result = ValidationResult()
         validate_yaml_frontmatter('backlog', test_file, result)
         
-        self.assertTrue(result.has_warnings())
-        warning_messages = [msg for msg, _ in result.warnings]
-        self.assertTrue(any('bottom-up pattern' in msg for msg in warning_messages))
+        self.assertTrue(result.has_errors())
+        error_messages = [msg for msg, _ in result.errors]
+        self.assertTrue(any("no_cip_reason" in msg for msg in error_messages))
+
+    def test_backlog_related_requirements_valid_exception(self):
+        test_file = os.path.join(self.temp_dir, 'test.md')
+        content = """---
+id: "2026-01-03_test"
+title: "Test"
+status: "Proposed"
+priority: "High"
+category: "features"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+related_cips: []
+owner: "Test Human"
+related_requirements: ["0001"]
+no_cip_reason: "Trivial bugfix: narrow change, no design decision needed"
+---
+
+# Test Content
+"""
+        with open(test_file, 'w') as f:
+            f.write(content)
+
+        result = ValidationResult()
+        validate_yaml_frontmatter('backlog', test_file, result)
+
+        self.assertFalse(result.has_errors())
+
+    def test_invalid_owner_multi_name(self):
+        test_file = os.path.join(self.temp_dir, 'test.md')
+        content = """---
+id: "2026-01-03_test"
+title: "Test"
+status: "Proposed"
+priority: "High"
+category: "features"
+created: "2026-01-03"
+last_updated: "2026-01-03"
+related_cips: []
+owner: "Alice and Bob"
+---
+
+# Test Content
+"""
+        with open(test_file, 'w') as f:
+            f.write(content)
+
+        result = ValidationResult()
+        validate_yaml_frontmatter('backlog', test_file, result)
+
+        self.assertTrue(result.has_errors())
+        error_messages = [msg for msg, _ in result.errors]
+        self.assertTrue(any("single primary accountable human" in msg for msg in error_messages))
 
 
 class TestCrossReferences(unittest.TestCase):
@@ -539,6 +595,7 @@ title: "Test CIP"
 status: "Proposed"
 created: "2026-01-03"
 last_updated: "2026-01-03"
+author: "Test Human"
 ---
 
 # Test CIP
@@ -644,6 +701,7 @@ title: "Test CIP"
 status: "Proposed"
 created: "2026-01-03"
 last_updated: "2026-01-03"
+author: "Test Human"
 ---
 
 # Test CIP

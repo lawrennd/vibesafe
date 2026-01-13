@@ -7,8 +7,7 @@ created: "2026-01-08"
 last_updated: "2026-01-08"
 category: "features"
 related_cips: ["0013"]
-related_requirements: ["000F"]
-owner: ""
+owner: "Neil Lawrence"
 dependencies: ["2026-01-08_migrate-docs-to-sphinx"]
 tags: ["documentation", "compression", "whats-next", "integration", "req-000f"]
 ---

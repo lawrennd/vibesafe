@@ -23,6 +23,7 @@ These principles guide how VibeSafe itself works and provide guidance to all pro
 4. **user-autonomy**: Respect users' freedom to make their own choices
 5. **shared-information-landmarks**: Create explicit reference points for collaboration
 6. **information-exploration-patterns**: Support different patterns of information exploration
+7. **human-authorship**: AI advises; humans decide (humans author decisions and own outcomes)
 
 ## How They're Deployed to User Projects
 
