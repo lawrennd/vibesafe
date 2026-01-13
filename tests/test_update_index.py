@@ -13,7 +13,14 @@ import shutil
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-# Import the module
+# Load canonical template module under the legacy import name, then import it.
+from test_support import load_module_from_path
+
+load_module_from_path(
+    "backlog.update_index",
+    Path(__file__).resolve().parents[1] / "templates" / "backlog" / "update_index.py",
+)
+
 import backlog.update_index as update_index
 
 class TestUpdateIndex(unittest.TestCase):

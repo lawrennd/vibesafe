@@ -14,8 +14,17 @@ from unittest.mock import patch, MagicMock
 from unittest import mock
 from pathlib import Path
 
-# Add the scripts directory to the path so we can import the module
+# Add repo root to path so we can import test_support
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Load canonical template module under the legacy import name.
+from test_support import load_module_from_path
+
+load_module_from_path(
+    "scripts.whats_next",
+    Path(__file__).resolve().parents[1] / "templates" / "scripts" / "whats_next.py",
+)
+
 from scripts.whats_next import (
     extract_frontmatter,
     has_expected_frontmatter,
@@ -356,7 +365,9 @@ def test_cmd_args_requirements_only():
             cip_only=False, 
             backlog_only=False, 
             requirements_only=True,
+            quiet=False,
             compression_check=False,  # Don't trigger compression check early return
+            show_doc_spec=False,  # Avoid truthy auto-created Mock attributes
             no_update=True,
             skip_validation=True
         )
@@ -577,7 +588,7 @@ Content goes here.
         import sys
         import os
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backlog'))
-        import update_index
+        import update_index  # pyright: ignore[reportMissingImports]
         
         for test_case in test_cases:
             whats_next_result = normalize_status(test_case)

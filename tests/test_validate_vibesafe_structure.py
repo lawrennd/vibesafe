@@ -12,8 +12,19 @@ import shutil
 import unittest
 from pathlib import Path
 
-# Add scripts directory to path to import the script
+# Add repo root to path so we can import test_support
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Load canonical template module under the legacy import name.
+from test_support import load_module_from_path
+
+load_module_from_path(
+    "scripts.validate_vibesafe_structure",
+    Path(__file__).resolve().parents[1]
+    / "templates"
+    / "scripts"
+    / "validate_vibesafe_structure.py",
+)
 
 from scripts.validate_vibesafe_structure import (
     extract_frontmatter,
