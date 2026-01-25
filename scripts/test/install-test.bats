@@ -171,8 +171,8 @@ teardown() {
   
   # Copy whats-next script so migration logic runs
   mkdir -p scripts
-  if [ -f "$ORIGINAL_DIR/scripts/whats_next.py" ]; then
-    cp "$ORIGINAL_DIR/scripts/whats_next.py" scripts/
+  if [ -f "$ORIGINAL_DIR/templates/scripts/whats_next.py" ]; then
+    cp "$ORIGINAL_DIR/templates/scripts/whats_next.py" scripts/whats_next.py
   fi
   
   # Run the installation script with whats-next enabled
@@ -198,8 +198,8 @@ teardown() {
   
   # Copy whats-next script so migration logic runs
   mkdir -p scripts
-  if [ -f "$ORIGINAL_DIR/scripts/whats_next.py" ]; then
-    cp "$ORIGINAL_DIR/scripts/whats_next.py" scripts/
+  if [ -f "$ORIGINAL_DIR/templates/scripts/whats_next.py" ]; then
+    cp "$ORIGINAL_DIR/templates/scripts/whats_next.py" scripts/whats_next.py
   fi
   
   # Run the installation script with whats-next enabled
@@ -223,8 +223,8 @@ teardown() {
   
   # Copy whats-next script so migration logic runs
   mkdir -p scripts
-  if [ -f "$ORIGINAL_DIR/scripts/whats_next.py" ]; then
-    cp "$ORIGINAL_DIR/scripts/whats_next.py" scripts/
+  if [ -f "$ORIGINAL_DIR/templates/scripts/whats_next.py" ]; then
+    cp "$ORIGINAL_DIR/templates/scripts/whats_next.py" scripts/whats_next.py
   fi
   
   # Run the installation script with whats-next enabled
@@ -365,7 +365,7 @@ teardown() {
 EOF
 
   # Copy the actual combine_tenets.py script for testing
-  cp "$BATS_TEST_DIRNAME/../../tenets/combine_tenets.py" tenets/combine_tenets.py
+  cp "$BATS_TEST_DIRNAME/../../templates/tenets/combine_tenets.py" tenets/combine_tenets.py
 
   # Run the installation script
   VIBESAFE_SKIP_CLONE=true bash "$INSTALL_SCRIPT"

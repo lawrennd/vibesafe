@@ -33,6 +33,7 @@ from scripts.validate_vibesafe_structure import (
     validate_file_naming,
     validate_yaml_frontmatter,
     validate_cross_references,
+    check_system_file_drift,
     fix_reverse_links,
     ValidationResult,
     COMPONENT_SPECS,
@@ -731,6 +732,85 @@ author: "Test Human"
         
         cip_fm = extract_frontmatter(cip_file)
         self.assertNotIn('related_requirements', cip_fm)
+
+
+class TestSystemFileDrift(unittest.TestCase):
+    """Tests for template/runtime drift detection (VibeSafe repo / dogfood installs)."""
+
+    def _write(self, root: str, rel: str, content: str) -> str:
+        path = os.path.join(root, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return path
+
+    def _touch(self, path: str, mtime: float) -> None:
+        os.utime(path, (mtime, mtime))
+
+    def _write_all_templates(self, root: str) -> None:
+        # The drift check iterates a fixed set of pairs; create all template sources.
+        self._write(root, "templates/scripts/whats_next.py", "# template whats-next\n")
+        self._write(root, "templates/scripts/validate_vibesafe_structure.py", "# template validator\n")
+        self._write(root, "templates/backlog/update_index.py", "# template backlog index\n")
+        self._write(root, "templates/tenets/combine_tenets.py", "# template tenets combiner\n")
+
+    def test_skips_when_no_templates_dir(self):
+        """Downstream projects won't have templates/, so drift check should skip."""
+        with tempfile.TemporaryDirectory() as tmp:
+            result = ValidationResult()
+            check_system_file_drift(tmp, result)
+            self.assertFalse(result.has_errors())
+            self.assertFalse(result.has_warnings())
+
+    def test_no_error_when_templates_exist_but_runtime_missing(self):
+        """Runtime copies may be absent; templates are canonical and should still validate."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_all_templates(tmp)
+
+            result = ValidationResult()
+            check_system_file_drift(tmp, result)
+            self.assertFalse(result.has_errors())
+
+    def test_runtime_ahead_of_templates_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # Canonical template files
+            self._write_all_templates(tmp)
+            template_path = os.path.join(tmp, "templates/scripts/whats_next.py")
+            self._write(tmp, "templates/scripts/whats_next.py", "print('template')\n")
+
+            # Runtime copy exists + differs
+            runtime_path = self._write(tmp, "scripts/whats_next.py", "print('runtime edited')\n")
+
+            # Make runtime newer than template
+            self._touch(template_path, 10.0)
+            self._touch(runtime_path, 20.0)
+
+            result = ValidationResult()
+            check_system_file_drift(tmp, result)
+
+            self.assertTrue(result.has_errors())
+            combined = "\n".join(msg for msg, _path in result.errors)
+            self.assertIn("runtime AHEAD of templates", combined)
+            self.assertIn("scripts/whats_next.py", combined)
+
+    def test_runtime_differs_but_not_ahead_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_all_templates(tmp)
+            template_path = os.path.join(tmp, "templates/scripts/whats_next.py")
+            self._write(tmp, "templates/scripts/whats_next.py", "print('template')\n")
+
+            runtime_path = self._write(tmp, "scripts/whats_next.py", "print('runtime stale')\n")
+
+            # Make runtime older than template
+            self._touch(template_path, 20.0)
+            self._touch(runtime_path, 10.0)
+
+            result = ValidationResult()
+            check_system_file_drift(tmp, result)
+
+            self.assertTrue(result.has_errors())
+            combined = "\n".join(msg for msg, _path in result.errors)
+            self.assertIn("runtime differs from templates", combined)
 
 
 if __name__ == '__main__':

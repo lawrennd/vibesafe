@@ -45,5 +45,18 @@ def load_module_from_path(module_name: str, file_path: Path) -> ModuleType:
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
+
+    # Link the module into its parent packages so tools like unittest.mock.patch()
+    # can resolve attributes (e.g. getattr(sys.modules["scripts"], "whats_next")).
+    #
+    # This mirrors what normal Python imports do automatically.
+    for i in range(1, len(parts)):
+        parent_name = ".".join(parts[:i])
+        child_name = ".".join(parts[: i + 1])
+        parent_mod = sys.modules.get(parent_name)
+        child_mod = sys.modules.get(child_name)
+        if parent_mod is not None and child_mod is not None:
+            setattr(parent_mod, parts[i], child_mod)
+
     return module
 

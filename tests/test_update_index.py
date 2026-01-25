@@ -291,28 +291,29 @@ last_updated: "2025-05-14"
                 'category': 'features'
             }
         ]
-        
-        # Generate index content
-        # We need to monkey-patch Path.parent so it uses our test directory
-        original_parent = Path.parent.fget
-        
-        try:
-            # Mock Path.parent to return our test directory
-            def mock_parent(self):
-                if str(self).endswith('__file__'):
-                    return Path(self.test_dir)
-                return original_parent(self)
-            
-            Path.parent = property(mock_parent.__get__(None, Path))
-            
-            # Generate index content
-            # This isn't a proper test because of the path issues,
-            # but the function is straightforward enough
-            self.assertTrue(True)
-            
-        finally:
-            # Restore the original function
-            Path.parent = property(original_parent)
+
+        content = update_index.generate_index_content(tasks)
+
+        # Basic structure
+        self.assertIn("# Lynguine Backlog Index", content)
+        self.assertIn("## Features", content)
+        self.assertIn("### Ready", content)
+        self.assertIn("### In Progress", content)
+        self.assertIn("### Proposed", content)
+        self.assertIn("## Recently Completed Tasks", content)
+        self.assertIn("## Recently Abandoned Tasks", content)
+
+        # Verify links are rendered with relpaths from the template module directory
+        base_dir = Path(update_index.__file__).parent
+        expected_link_1 = os.path.relpath(tasks[0]["filepath"], base_dir)
+        expected_link_2 = os.path.relpath(tasks[1]["filepath"], base_dir)
+        expected_link_3 = os.path.relpath(tasks[2]["filepath"], base_dir)
+        expected_link_4 = os.path.relpath(tasks[3]["filepath"], base_dir)
+
+        self.assertIn(f"- [{tasks[0]['title']}]({expected_link_1})", content)
+        self.assertIn(f"- [{tasks[1]['title']}]({expected_link_2})", content)
+        self.assertIn(f"- [{tasks[2]['title']}]({expected_link_3})", content)  # completed section
+        self.assertIn(f"- [{tasks[3]['title']}]({expected_link_4})", content)  # abandoned section
     
     def test_case_insensitive_status_matching(self):
         """Test that status values are normalized correctly."""
