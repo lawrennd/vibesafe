@@ -21,7 +21,7 @@ load_module_from_path(
     Path(__file__).resolve().parents[1] / "templates" / "backlog" / "update_index.py",
 )
 
-import backlog.update_index as update_index
+import backlog.update_index as update_index  # pyright: ignore[reportMissingImports]
 
 class TestUpdateIndex(unittest.TestCase):
     """Tests for the backlog/update_index.py script."""
@@ -235,6 +235,133 @@ last_updated: "2025-05-14"
         
         metadata = update_index.extract_task_metadata(Path(test_file_path))
         self.assertEqual(metadata['updated'], '2025-05-14')
+
+    def test_extract_task_metadata_filename_alt_pattern_yyyymmdd_dash(self):
+        """Covers YYYYMMDD-description.md naming convention."""
+        category = "features"
+        test_file_path = os.path.join(self.test_dir, category, "20250512-test-task.md")
+
+        with open(test_file_path, "w") as f:
+            f.write(
+                """---
+title: "Alt Pattern Task"
+status: "Ready"
+priority: "high"
+---
+
+# Task: Alt Pattern Task
+"""
+            )
+
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertIsNotNone(metadata)
+        self.assertEqual(metadata["id"], "20250512-test-task")  # from filename
+
+    def test_extract_task_metadata_falls_back_to_traditional_id_when_missing(self):
+        """Covers fallback parsing of **ID** when YAML has no id and filename doesn't match."""
+        category = "features"
+        test_file_path = os.path.join(self.test_dir, category, "task.md")  # doesn't match either pattern
+
+        with open(test_file_path, "w") as f:
+            f.write(
+                """---
+title: "No ID In YAML"
+status: "Ready"
+priority: "high"
+---
+
+# Task: No ID In YAML
+
+- **ID**: fallback-id-123
+"""
+            )
+
+        metadata = update_index.extract_task_metadata(Path(test_file_path))
+        self.assertIsNotNone(metadata)
+        self.assertEqual(metadata["id"], "fallback-id-123")
+
+    def test_extract_task_metadata_missing_file_returns_none(self):
+        missing = Path(self.test_dir) / "features" / "does-not-exist.md"
+        metadata = update_index.extract_task_metadata(missing)
+        self.assertIsNone(metadata)
+
+    def test_find_all_task_files_and_update_index_writes_index(self):
+        """Covers scanning categories and writing index.md."""
+        # Point the module's __file__ at our temp dir so Path(__file__).parent == self.test_dir
+        old_file = getattr(update_index, "__file__", None)
+        update_index.__file__ = os.path.join(self.test_dir, "update_index.py")
+        try:
+            # Create a couple of task files, plus excluded files.
+            with open(os.path.join(self.test_dir, "features", "README.md"), "w") as f:
+                f.write("ignored")
+            with open(os.path.join(self.test_dir, "features", "index.md"), "w") as f:
+                f.write("ignored")
+            with open(os.path.join(self.test_dir, "features", "_ignored.md"), "w") as f:
+                f.write("ignored")
+
+            task_path = os.path.join(self.test_dir, "features", "2026-01-01_test.md")
+            with open(task_path, "w") as f:
+                f.write(
+                    """---
+id: "2026-01-01_test"
+title: "Index Write Task"
+status: "Ready"
+priority: "High"
+created: "2026-01-01"
+last_updated: "2026-01-01"
+---
+
+# Task: Index Write Task
+"""
+                )
+
+            # Ensure scan finds the task.
+            task_files = update_index.find_all_task_files()
+            self.assertEqual(len(task_files), 1)
+            self.assertEqual(task_files[0].name, "2026-01-01_test.md")
+
+            # Ensure update_index writes an index file in the temp backlog dir.
+            update_index.update_index()
+            index_path = Path(self.test_dir) / "index.md"
+            self.assertTrue(index_path.exists())
+            index_text = index_path.read_text(encoding="utf-8")
+            self.assertIn("Lynguine Backlog Index", index_text)
+            self.assertIn("Index Write Task", index_text)
+        finally:
+            if old_file is not None:
+                update_index.__file__ = old_file
+
+    def test_generate_index_content_with_no_completed_or_abandoned(self):
+        """Covers 'no recently completed/abandoned' branches + invalid task skipping."""
+        tasks = [
+            None,
+            {"category": None, "status": "ready"},
+            {
+                "filepath": Path(os.path.join(self.test_dir, "features", "2026-01-01_task.md")),
+                "id": "2026-01-01_task",
+                "title": "Only Ready Task",
+                "status": "ready",
+                "priority": "High",
+                "created": "2026-01-01",
+                "updated": "2026-01-01",
+                "category": "features",
+            },
+            {
+                # invalid status should be skipped
+                "filepath": Path(os.path.join(self.test_dir, "features", "2026-01-02_task.md")),
+                "id": "2026-01-02_task",
+                "title": "Bad Status Task",
+                "status": "not_a_status",
+                "priority": "High",
+                "created": "2026-01-02",
+                "updated": "2026-01-02",
+                "category": "features",
+            },
+        ]
+
+        content = update_index.generate_index_content(tasks)
+        self.assertIn("*No tasks recently completed.*", content)
+        self.assertIn("*No tasks recently abandoned.*", content)
     
     def test_generate_index_content(self):
         """Test generating index content from task metadata."""

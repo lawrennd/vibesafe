@@ -48,6 +48,8 @@ from scripts.whats_next import (  # pyright: ignore[reportMissingImports]
     detect_cip_type,
     get_compression_target,
     generate_documentation_spec_prompts,
+    scan_cips,
+    scan_backlog,
 )
 
 
@@ -114,6 +116,65 @@ class TestWhatsNextCore(unittest.TestCase):
         self.assertEqual(git_info["modified_files"][0]["path"], "file1.txt")
         self.assertEqual(len(git_info["untracked_files"]), 1)
         self.assertEqual(git_info["untracked_files"][0], "file2.txt")
+
+    def test_scan_cips_without_frontmatter_uses_regex(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, "cip"), exist_ok=True)
+            cip_path = os.path.join(tmp, "cip", "cip0001.md")
+            with open(cip_path, "w", encoding="utf-8") as f:
+                f.write(
+                    """# CIP-0001: Regex Title
+
+## Status
+- [ ] Proposed
+- [x] Accepted
+- [ ] Implemented
+
+## Summary
+Text
+"""
+                )
+
+            cwd = os.getcwd()
+            os.chdir(tmp)
+            try:
+                info = scan_cips()
+            finally:
+                os.chdir(cwd)
+
+        self.assertEqual(info["total"], 1)
+        self.assertEqual(len(info["without_frontmatter"]), 1)
+        self.assertEqual(info["without_frontmatter"][0]["id"], "cip0001")
+        accepted = info["by_status"]["accepted"]
+        self.assertEqual(len(accepted), 1)
+        self.assertTrue(accepted[0].get("no_frontmatter"))
+
+    def test_scan_backlog_without_frontmatter_uses_regex(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, "backlog", "features"), exist_ok=True)
+            task_path = os.path.join(tmp, "backlog", "features", "2026-01-01_test.md")
+            with open(task_path, "w", encoding="utf-8") as f:
+                f.write(
+                    """# Task: Regex Task
+
+- **ID**: 2026-01-01_test
+- **Status**: Ready
+- **Priority**: High
+"""
+                )
+
+            cwd = os.getcwd()
+            os.chdir(tmp)
+            try:
+                info = scan_backlog()
+            finally:
+                os.chdir(cwd)
+
+        self.assertEqual(info["total"], 1)
+        self.assertEqual(len(info["without_frontmatter"]), 1)
+        self.assertTrue(info["without_frontmatter"][0].get("no_frontmatter"))
+        self.assertEqual(len(info["by_status"]["ready"]), 1)
+        self.assertEqual(len(info["by_priority"]["high"]), 1)
 
     def test_extract_frontmatter(self):
         """Test the extract_frontmatter function."""
