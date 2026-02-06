@@ -401,6 +401,176 @@ def test_cmd_args_requirements_only():
         assert isinstance(tenet_arg, dict)  # tenet_info should be a dict
 
 
+def test_cmd_args_show_doc_spec_missing():
+    """Test that --show-doc-spec prints guidance and exits early when missing."""
+    with mock.patch('argparse.ArgumentParser.parse_args') as mock_args, \
+         mock.patch('scripts.whats_next.load_documentation_spec', return_value=None), \
+         mock.patch('scripts.whats_next.print_section') as mock_section, \
+         mock.patch('scripts.whats_next.generate_next_steps') as mock_generate, \
+         mock.patch('builtins.print'):
+
+        mock_args.return_value = mock.Mock(
+            no_git=True,
+            no_color=True,
+            cip_only=False,
+            backlog_only=False,
+            requirements_only=False,
+            quiet=False,
+            compression_check=False,
+            show_doc_spec=True,
+            no_update=True,
+            skip_validation=True,
+        )
+
+        from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
+        main()
+
+        mock_section.assert_called_once()
+        # Should return early: no next steps generated.
+        mock_generate.assert_not_called()
+
+
+def test_cmd_args_show_doc_spec_present_and_shows_targets_and_files():
+    """Test --show-doc-spec when a spec exists, including key file existence checks."""
+    spec = {
+        "documentation": {
+            "system": "sphinx",
+            "source_dir": "docs/source",
+            "targets": {"infrastructure": "docs/source/architecture.md"},
+            "compression_guide": "docs/source/compression-guide.md",
+        }
+    }
+
+    def fake_exists(path: str) -> bool:
+        return path in {"docs/source/compression-guide.md"}
+
+    with mock.patch('argparse.ArgumentParser.parse_args') as mock_args, \
+         mock.patch('scripts.whats_next.load_documentation_spec', return_value=spec), \
+         mock.patch('scripts.whats_next.print_section'), \
+         mock.patch('os.path.exists', side_effect=fake_exists), \
+         mock.patch('builtins.print') as mock_print:
+
+        mock_args.return_value = mock.Mock(
+            no_git=True,
+            no_color=True,
+            cip_only=False,
+            backlog_only=False,
+            requirements_only=False,
+            quiet=False,
+            compression_check=False,
+            show_doc_spec=True,
+            no_update=True,
+            skip_validation=True,
+        )
+
+        from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
+        main()
+
+        printed = " ".join(" ".join(map(str, c.args)) for c in mock_print.call_args_list)
+        assert "Documentation specification found" in printed
+        assert "architecture.md" in printed
+
+
+def test_main_runs_update_scripts_when_enabled():
+    with mock.patch('argparse.ArgumentParser.parse_args') as mock_args, \
+         mock.patch('scripts.whats_next.run_update_scripts', return_value=["✓ Updated backlog/update_index.py"]) as mock_update, \
+         mock.patch('scripts.whats_next.check_tenet_status', return_value={"status": "exists", "needs_review": False}), \
+         mock.patch('scripts.whats_next.run_validation', return_value={"has_issues": False}), \
+         mock.patch('scripts.whats_next.detect_gaps', return_value={"has_codebase": True, "has_tenets": True, "has_requirements": True, "has_cips": True, "has_backlog": True}), \
+         mock.patch('scripts.whats_next.generate_ai_prompts', return_value=[]), \
+         mock.patch('scripts.whats_next.generate_next_steps', return_value=[]), \
+         mock.patch('scripts.whats_next.scan_requirements', return_value={"has_framework": True, "patterns": [], "prompts": {"discovery": [], "refinement": [], "validation": [], "testing": []}, "integrations": [], "examples": [], "guidance": []}), \
+         mock.patch('builtins.print'):
+
+        mock_args.return_value = mock.Mock(
+            no_git=True,
+            no_color=True,
+            cip_only=True,  # avoid scanning cips/backlog (IO)
+            backlog_only=False,
+            requirements_only=False,
+            quiet=False,
+            compression_check=False,
+            show_doc_spec=False,
+            no_update=False,
+            skip_validation=True,
+        )
+
+        from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
+        main()
+
+        mock_update.assert_called_once()
+
+
+def test_cmd_args_compression_check_no_candidates():
+    """Test that --compression-check exits early when nothing to compress."""
+    with mock.patch('argparse.ArgumentParser.parse_args') as mock_args, \
+         mock.patch('scripts.whats_next.scan_cips', return_value={'by_status': {'closed': []}}), \
+         mock.patch('scripts.whats_next.get_closed_cips_needing_compression', return_value=[]), \
+         mock.patch('scripts.whats_next.print_section') as mock_section, \
+         mock.patch('builtins.print') as mock_print:
+
+        mock_args.return_value = mock.Mock(
+            no_git=True,
+            no_color=True,
+            cip_only=False,
+            backlog_only=False,
+            requirements_only=False,
+            quiet=False,
+            compression_check=True,
+            show_doc_spec=False,
+            no_update=True,
+            skip_validation=True,
+        )
+
+        from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
+        main()
+
+        mock_section.assert_called_once()
+        # Should include the "No closed CIPs need compression" message somewhere.
+        printed = " ".join(" ".join(map(str, c.args)) for c in mock_print.call_args_list)
+        assert "No closed CIPs need compression" in printed
+
+
+def test_cmd_args_compression_check_with_candidates():
+    """Test --compression-check prints candidates and batch hint."""
+    candidates = [
+        {
+            "id": "cip0001",
+            "title": "Test CIP",
+            "days_since_closure": 5,
+            "priority": "high",
+            "compressed": False,
+        }
+    ]
+
+    with mock.patch('argparse.ArgumentParser.parse_args') as mock_args, \
+         mock.patch('scripts.whats_next.scan_cips', return_value={'by_status': {'closed': candidates}}), \
+         mock.patch('scripts.whats_next.get_closed_cips_needing_compression', return_value=candidates), \
+         mock.patch('scripts.whats_next.detect_batch_compression_opportunity', return_value=True), \
+         mock.patch('scripts.whats_next.print_section') as mock_section, \
+         mock.patch('builtins.print') as mock_print:
+
+        mock_args.return_value = mock.Mock(
+            no_git=True,
+            no_color=True,
+            cip_only=False,
+            backlog_only=False,
+            requirements_only=False,
+            quiet=False,
+            compression_check=True,
+            show_doc_spec=False,
+            no_update=True,
+            skip_validation=True,
+        )
+
+        from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
+        main()
+
+        mock_section.assert_called_once()
+        printed = " ".join(" ".join(map(str, c.args)) for c in mock_print.call_args_list)
+        assert "Batch compression opportunity" in printed
+
+
 class TestStatusNormalization(unittest.TestCase):
     """Test the status normalization functionality in What's Next script."""
 

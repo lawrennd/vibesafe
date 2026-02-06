@@ -10,6 +10,7 @@ import sys
 import tempfile
 import shutil
 import unittest
+from unittest import mock
 from pathlib import Path
 
 # Add repo root to path so we can import test_support
@@ -26,7 +27,7 @@ load_module_from_path(
     / "validate_vibesafe_structure.py",
 )
 
-from scripts.validate_vibesafe_structure import (
+from scripts.validate_vibesafe_structure import (  # pyright: ignore[reportMissingImports]
     extract_frontmatter,
     write_frontmatter,
     auto_fix_frontmatter,
@@ -34,6 +35,8 @@ from scripts.validate_vibesafe_structure import (
     validate_yaml_frontmatter,
     validate_cross_references,
     check_system_file_drift,
+    validate_human_attribution,
+    check_governance_drift,
     fix_reverse_links,
     ValidationResult,
     COMPONENT_SPECS,
@@ -615,9 +618,6 @@ author: "Test Human"
         with open(cip_file, 'w') as f:
             f.write(cip_content)
         
-        # Import fix_reverse_links
-        from scripts.validate_vibesafe_structure import fix_reverse_links, ValidationResult
-        
         # Fix reverse links
         result = ValidationResult()
         fixes = fix_reverse_links(self.temp_dir, result, dry_run=False)
@@ -671,8 +671,6 @@ stakeholders: []
         with open(req_file, 'w') as f:
             f.write(req_content)
         
-        from scripts.validate_vibesafe_structure import fix_reverse_links, ValidationResult
-        
         result = ValidationResult()
         fixes = fix_reverse_links(self.temp_dir, result, dry_run=False)
         
@@ -721,8 +719,6 @@ author: "Test Human"
         with open(cip_file, 'w') as f:
             f.write(cip_content)
         
-        from scripts.validate_vibesafe_structure import fix_reverse_links, ValidationResult
-        
         result = ValidationResult()
         fix_reverse_links(self.temp_dir, result, dry_run=True)
         
@@ -733,6 +729,71 @@ author: "Test Human"
         cip_fm = extract_frontmatter(cip_file)
         self.assertNotIn('related_requirements', cip_fm)
 
+
+class TestHumanAttribution(unittest.TestCase):
+    """Tests for REQ-0010 attribution validation."""
+
+    def test_rejects_non_string(self):
+        result = ValidationResult()
+        validate_human_attribution("cip", "cip/cip0001.md", "author", None, result)
+        self.assertTrue(result.has_errors())
+
+    def test_rejects_ai_and_placeholders(self):
+        bad_values = [
+            "AI",
+            "assistant",
+            "Unknown",
+            "N/A",
+            "[Author Name]",
+            "Your Name Here",
+            "OpenAI",
+        ]
+        for v in bad_values:
+            result = ValidationResult()
+            validate_human_attribution("cip", "cip/cip0001.md", "author", v, result)
+            self.assertTrue(result.has_errors(), msg=f"Expected error for value: {v}")
+
+    def test_rejects_multiple_owners(self):
+        result = ValidationResult()
+        validate_human_attribution("backlog", "backlog/features/x.md", "owner", "Alice, Bob", result)
+        self.assertTrue(result.has_errors())
+
+    def test_accepts_single_human_name(self):
+        result = ValidationResult()
+        validate_human_attribution("cip", "cip/cip0001.md", "author", "Neil Lawrence", result)
+        self.assertFalse(result.has_errors())
+
+
+class TestGovernanceDriftWarnings(unittest.TestCase):
+    """Tests for git-based governance drift warnings."""
+
+    def test_warns_when_impl_changed_without_planning(self):
+        from scripts import validate_vibesafe_structure as v
+
+        result = ValidationResult()
+        # Simulate changes to implementation without CIP/backlog updates
+        with unittest.mock.patch.object(
+            v, "_get_git_changed_paths", return_value=["templates/scripts/whats_next.py"]
+        ):
+            check_governance_drift("/tmp", result)
+
+        self.assertTrue(result.has_warnings())
+        messages = [m for m, _p in result.warnings]
+        self.assertTrue(any("Governance drift" in m for m in messages))
+
+    def test_warns_when_requirements_and_impl_changed_without_planning(self):
+        from scripts import validate_vibesafe_structure as v
+
+        result = ValidationResult()
+        with unittest.mock.patch.object(
+            v,
+            "_get_git_changed_paths",
+            return_value=["requirements/req0001_x.md", "templates/scripts/whats_next.py"],
+        ):
+            check_governance_drift("/tmp", result)
+
+        messages = [m for m, _p in result.warnings]
+        self.assertTrue(any("Traceability gap" in m for m in messages))
 
 class TestSystemFileDrift(unittest.TestCase):
     """Tests for template/runtime drift detection (VibeSafe repo / dogfood installs)."""
@@ -811,6 +872,46 @@ class TestSystemFileDrift(unittest.TestCase):
             self.assertTrue(result.has_errors())
             combined = "\n".join(msg for msg, _path in result.errors)
             self.assertIn("runtime differs from templates", combined)
+
+
+class TestGitChangedPaths(unittest.TestCase):
+    """Unit tests for _get_git_changed_paths parsing logic."""
+
+    def test_parses_renames_and_skips_blanks(self):
+        from scripts import validate_vibesafe_structure as v
+
+        with mock.patch("subprocess.run") as m:
+            # First call: rev-parse
+            m.side_effect = [
+                mock.Mock(returncode=0, stdout="true\n"),
+                mock.Mock(
+                    returncode=0,
+                    stdout="\n".join(
+                        [
+                            " M templates/scripts/whats_next.py",
+                            "R  old/name.txt -> new/name.txt",
+                            "?? untracked.file",
+                            "",
+                        ]
+                    ),
+                ),
+            ]
+
+            changed = v._get_git_changed_paths("/repo")
+
+        self.assertEqual(
+            changed,
+            ["templates/scripts/whats_next.py", "new/name.txt", "untracked.file"],
+        )
+
+
+class TestColors(unittest.TestCase):
+    def test_disable_clears_codes(self):
+        from scripts.validate_vibesafe_structure import Colors  # pyright: ignore[reportMissingImports]
+
+        Colors.disable()
+        self.assertEqual(Colors.GREEN, "")
+        self.assertEqual(Colors.END, "")
 
 
 if __name__ == '__main__':
