@@ -1,3 +1,20 @@
+---
+id: "0013-compression"
+title: "Compression Checklist: CIP-0013 (Documentation Compression Stage)"
+status: "Proposed"
+created: "2026-01-08"
+last_updated: "2026-02-06"
+author: "Neil Lawrence"
+related_cips: ["0013"]
+tags:
+  - cip
+  - compression
+  - checklist
+---
+
+> **Note**: This file is a compression checklist associated with CIP-0013.  
+> It lives in `cip/` for discoverability by `whats-next`.
+
 # Compression Checklist: CIP-0013 (Documentation Compression Stage)
 
 **CIP**: 0013  
