@@ -56,7 +56,9 @@ if ! run_with_timeout "kcov --include-pattern=install-minimal.sh $COVERAGE_DIR b
 fi
 
 # Run Python tests if they exist
-if [ -d "tests" ] && [ -f "scripts/whats_next.py" ]; then
+# VibeSafe dogfoods: canonical tooling lives under templates/, and runtime copies
+# may not be present in this repository checkout.
+if [ -d "tests" ] && [ -f "templates/scripts/whats_next.py" ]; then
   echo "Running Python tests..."
   # Make the script executable if it exists but isn't executable
   if [ -f "scripts/run-python-tests.sh" ]; then
@@ -76,8 +78,10 @@ if [ -d "tests" ] && [ -f "scripts/whats_next.py" ]; then
       source "$VENV_DIR/bin/activate"
       
       # Install dependencies in the virtual environment
-      python3 -m pip install --quiet pytest pytest-cov pyyaml
-      python3 -m pytest tests/ --cov=scripts/ --cov-report=xml:$COVERAGE_DIR/python-coverage.xml
+      python3 -m pip install --quiet pytest pytest-cov pyyaml python-frontmatter
+
+      # Coverage: focus on canonical template code (templates/)
+      python3 -m pytest tests/ --cov=templates --cov-report=xml:$COVERAGE_DIR/python-coverage.xml
       
       # Deactivate virtual environment
       deactivate
