@@ -65,6 +65,34 @@ class TestWhatsNextCore(unittest.TestCase):
         output, exit_code = run_command(["ls", "non_existent_directory"])
         self.assertTrue(exit_code != 0)
 
+    def test_run_command_exception(self):
+        """If subprocess.run raises, run_command should return exit_code 1."""
+        from scripts import whats_next as wn
+        with mock.patch("subprocess.run", side_effect=RuntimeError("boom")):
+            out, code = wn.run_command(["echo", "x"])
+        self.assertEqual(code, 1)
+        self.assertIn("Error executing command", out)
+
+    @patch("scripts.whats_next.run_command")
+    def test_run_update_scripts_success_and_failure(self, mock_run_command):
+        """run_update_scripts should report success and failure for existing scripts."""
+        from scripts import whats_next as wn
+
+        # Only treat two scripts as existing
+        def exists_side_effect(path: str) -> bool:
+            return path in {"backlog/update_index.py", "cip/update_index.py"}
+
+        mock_run_command.side_effect = [
+            ("ok", 0),      # backlog/update_index.py
+            ("nope", 1),    # cip/update_index.py
+        ]
+
+        with mock.patch("os.path.exists", side_effect=exists_side_effect):
+            results = wn.run_update_scripts()
+
+        self.assertTrue(any("✓ Updated backlog/update_index.py" in r for r in results))
+        self.assertTrue(any("✗ Failed to update cip/update_index.py" in r for r in results))
+
     @patch("scripts.whats_next.run_command")
     def test_get_git_status(self, mock_run_command):
         """Test the get_git_status function."""

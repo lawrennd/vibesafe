@@ -873,6 +873,40 @@ class TestSystemFileDrift(unittest.TestCase):
             combined = "\n".join(msg for msg, _path in result.errors)
             self.assertIn("runtime differs from templates", combined)
 
+    def test_missing_template_is_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # templates/ exists but required template file is missing
+            os.makedirs(os.path.join(tmp, "templates", "scripts"), exist_ok=True)
+
+            result = ValidationResult()
+            check_system_file_drift(tmp, result)
+
+            self.assertTrue(result.has_errors())
+            combined = "\n".join(msg for msg, _path in result.errors)
+            self.assertIn("Missing template system file", combined)
+
+    def test_read_error_adds_warning(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_all_templates(tmp)
+            # runtime exists so drift check tries to read it
+            runtime_path = self._write(tmp, "scripts/whats_next.py", "print('runtime')\n")
+
+            from scripts import validate_vibesafe_structure as v
+
+            real_open = open
+
+            def open_side_effect(path, *args, **kwargs):
+                if str(path).endswith("scripts/whats_next.py"):
+                    raise OSError("boom")
+                return real_open(path, *args, **kwargs)
+
+            with mock.patch.object(v, "open", side_effect=open_side_effect):
+                result = ValidationResult()
+                check_system_file_drift(tmp, result)
+
+            self.assertTrue(result.has_warnings())
+            combined = "\n".join(msg for msg, _path in result.warnings)
+            self.assertIn("Could not read system file drift pair", combined)
 
 class TestGitChangedPaths(unittest.TestCase):
     """Unit tests for _get_git_changed_paths parsing logic."""
