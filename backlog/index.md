@@ -101,6 +101,14 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Proposed
 
+- [Validator checks for VibeSafe system files under templates/ in user projects](bugs/2026-05-10_validator-assumes-templates-is-vibesafe-dir.md)
+
+- [Auto-generated .gitignore blanket-ignores templates/ and silently swallows user content](bugs/2026-05-10_gitignore-blanket-templates-ignore.md)
+
+- [Fix Python CI failure from missing scripts.whats_next runtime module](bugs/2026-01-25_fix-python-ci-missing-scripts-whats-next-module.md)
+
+- [Fix installation test failures (venv migration/preservation and combine_tenets path)](bugs/2026-01-25_fix-installation-tests-venv-migration-and-combine-tenets-path.md)
+
 - [Fix install-whats-next messaging and requirements rule installation in minimal](bugs/2025-12-15_fix-install-whats-next-docs-link.md)
 
 
