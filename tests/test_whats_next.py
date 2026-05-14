@@ -50,6 +50,8 @@ from scripts.whats_next import (  # pyright: ignore[reportMissingImports]
     generate_documentation_spec_prompts,
     scan_cips,
     scan_backlog,
+    _load_local_module,
+    _render_local_sections,
 )
 
 
@@ -480,9 +482,12 @@ def test_cmd_args_requirements_only():
         from scripts.whats_next import main  # pyright: ignore[reportMissingImports]
         main()
         
-        # Verify that generate_next_steps was called with 7 arguments including tenet_info, validation_info, and gaps_info
+        # Verify that generate_next_steps was called with the expected positional arguments.
+        # The signature is: (git_info, cips_info, backlog_info, requirements_info,
+        #                    tenet_info, validation_info, gaps_info, local_mod, context)
         mock_generate.assert_called_once()
-        _, cips_arg, backlog_arg, req_arg, tenet_arg, validation_arg, gaps_arg = mock_generate.call_args[0]
+        call_args = mock_generate.call_args[0]
+        _, cips_arg, backlog_arg, req_arg, tenet_arg = call_args[:5]
         assert 'by_status' in cips_arg
         assert 'by_status' in backlog_arg
         assert 'by_priority' in backlog_arg
@@ -2204,6 +2209,278 @@ priority: "medium"
         
         # Should not suggest creating spec if it exists and no compression needed
         self.assertEqual(len(prompts), 0)
+
+
+class TestLocalHooks(unittest.TestCase):
+    """Tests for CIP-0017: Local Function Hooks for whats-next.
+
+    All tests use tmp_path-style temporary directories (via tempfile.TemporaryDirectory)
+    to create transient local modules so they are fully self-contained.
+    """
+
+    # ------------------------------------------------------------------
+    # _load_local_module() tests
+    # ------------------------------------------------------------------
+
+    def test_load_local_module_missing_file_returns_none(self):
+        """Returns None silently when the file does not exist."""
+        with tempfile.TemporaryDirectory() as td:
+            result = _load_local_module(os.path.join(td, "nonexistent.py"))
+        self.assertIsNone(result)
+
+    def test_load_local_module_valid_file_returns_module(self):
+        """Returns the loaded module when the file is valid Python."""
+        with tempfile.TemporaryDirectory() as td:
+            p = os.path.join(td, "hook.py")
+            with open(p, "w") as f:
+                f.write("MARKER = 42\n")
+            mod = _load_local_module(p)
+        self.assertIsNotNone(mod)
+        self.assertEqual(mod.MARKER, 42)
+
+    def test_load_local_module_has_expected_attributes(self):
+        """Loaded module exposes functions defined in the stub."""
+        with tempfile.TemporaryDirectory() as td:
+            p = os.path.join(td, "hook.py")
+            with open(p, "w") as f:
+                f.write(
+                    "def get_local_next_steps(ctx): return []\n"
+                    "def get_local_sections(ctx): return []\n"
+                )
+            mod = _load_local_module(p)
+        self.assertTrue(hasattr(mod, "get_local_next_steps"))
+        self.assertTrue(hasattr(mod, "get_local_sections"))
+
+    def test_load_local_module_syntax_error_returns_none_and_warns(self):
+        """Prints a warning and returns None when the file has a syntax error."""
+        with tempfile.TemporaryDirectory() as td:
+            p = os.path.join(td, "hook.py")
+            with open(p, "w") as f:
+                f.write("def broken(: pass\n")
+            with patch("builtins.print") as mock_print:
+                mod = _load_local_module(p)
+        self.assertIsNone(mod)
+        printed = " ".join(str(c) for call in mock_print.call_args_list for c in call[0])
+        self.assertIn("Warning", printed)
+
+    def test_load_local_module_runtime_error_returns_none_and_warns(self):
+        """Prints a warning and returns None when the module raises on import."""
+        with tempfile.TemporaryDirectory() as td:
+            p = os.path.join(td, "hook.py")
+            with open(p, "w") as f:
+                f.write("raise RuntimeError('boom')\n")
+            with patch("builtins.print") as mock_print:
+                mod = _load_local_module(p)
+        self.assertIsNone(mod)
+        printed = " ".join(str(c) for call in mock_print.call_args_list for c in call[0])
+        self.assertIn("Warning", printed)
+
+    # ------------------------------------------------------------------
+    # generate_next_steps() + get_local_next_steps() integration tests
+    # ------------------------------------------------------------------
+
+    def _minimal_infos(self):
+        """Return minimal scan-result dicts that satisfy generate_next_steps()."""
+        return (
+            {},  # git_info
+            {"total": 0, "with_frontmatter": 0, "without_frontmatter": [],
+             "by_status": {"proposed": [], "accepted": [], "implemented": [], "closed": []}},
+            {"total": 0, "with_frontmatter": 0, "without_frontmatter": [],
+             "by_priority": {"high": [], "medium": [], "low": []},
+             "by_status": {"proposed": [], "ready": [], "in_progress": [],
+                           "completed": [], "abandoned": [], "superseded": []}},
+            {"has_framework": False},  # requirements_info
+        )
+
+    def _make_hook(self, code: str):
+        """Write code to a temp file, load it, and return (module, tmpdir)."""
+        td = tempfile.mkdtemp()
+        p = os.path.join(td, "hook.py")
+        with open(p, "w") as f:
+            f.write(code)
+        mod = _load_local_module(p)
+        return mod, td
+
+    def test_local_next_steps_plain_string_appended(self):
+        """Plain string items are appended after VibeSafe suggestions."""
+        mod, td = self._make_hook(
+            "def get_local_next_steps(ctx): return ['extra step']\n"
+        )
+        git, cips, backlog, reqs = self._minimal_infos()
+        steps = generate_next_steps(git, cips, backlog, reqs, local_mod=mod, context={})
+        self.assertIn("extra step", steps)
+        self.assertEqual(steps[-1], "extra step")
+        shutil.rmtree(td)
+
+    def test_local_next_steps_high_prepended(self):
+        """("high", …) items are prepended before all VibeSafe suggestions."""
+        mod, td = self._make_hook(
+            "def get_local_next_steps(ctx): return [('high', 'URGENT ITEM')]\n"
+        )
+        git, cips, backlog, reqs = self._minimal_infos()
+        steps = generate_next_steps(git, cips, backlog, reqs, local_mod=mod, context={})
+        self.assertIn("URGENT ITEM", steps)
+        self.assertEqual(steps[0], "URGENT ITEM")
+        shutil.rmtree(td)
+
+    def test_local_next_steps_low_appended(self):
+        """("low", …) items are appended after all VibeSafe suggestions."""
+        mod, td = self._make_hook(
+            "def get_local_next_steps(ctx): return [('low', 'low priority')]\n"
+        )
+        git, cips, backlog, reqs = self._minimal_infos()
+        steps = generate_next_steps(git, cips, backlog, reqs, local_mod=mod, context={})
+        self.assertIn("low priority", steps)
+        self.assertEqual(steps[-1], "low priority")
+        shutil.rmtree(td)
+
+    def test_local_next_steps_mixed_ordering(self):
+        """Mixed list: high items first, low/plain items last."""
+        mod, td = self._make_hook(
+            "def get_local_next_steps(ctx):\n"
+            "    return [('high', 'H1'), 'P1', ('low', 'L1')]\n"
+        )
+        git, cips, backlog, reqs = self._minimal_infos()
+        steps = generate_next_steps(git, cips, backlog, reqs, local_mod=mod, context={})
+        self.assertEqual(steps[0], "H1")
+        self.assertIn("P1", steps)
+        self.assertIn("L1", steps)
+        vibesafe_end = steps.index("P1") if "P1" in steps else -1
+        self.assertGreater(steps.index("P1"), 0)
+        self.assertGreater(steps.index("L1"), steps.index("P1"))
+        shutil.rmtree(td)
+
+    def test_local_next_steps_exception_caught_and_warned(self):
+        """Exception inside get_local_next_steps is caught; output unaffected."""
+        mod, td = self._make_hook(
+            "def get_local_next_steps(ctx): raise ValueError('hook error')\n"
+        )
+        git, cips, backlog, reqs = self._minimal_infos()
+        with patch("builtins.print") as mock_print:
+            steps = generate_next_steps(git, cips, backlog, reqs, local_mod=mod, context={})
+        printed = " ".join(str(c) for call in mock_print.call_args_list for c in call[0])
+        self.assertIn("Warning", printed)
+        self.assertIsInstance(steps, list)
+        shutil.rmtree(td)
+
+    def test_local_next_steps_missing_function_no_error(self):
+        """No error when module lacks get_local_next_steps."""
+        mod, td = self._make_hook("MARKER = 1\n")
+        git, cips, backlog, reqs = self._minimal_infos()
+        steps = generate_next_steps(git, cips, backlog, reqs, local_mod=mod, context={})
+        self.assertIsInstance(steps, list)
+        shutil.rmtree(td)
+
+    def test_no_local_module_unchanged_behaviour(self):
+        """When local_mod is None, generate_next_steps() behaves as before."""
+        git, cips, backlog, reqs = self._minimal_infos()
+        steps_without = generate_next_steps(git, cips, backlog, reqs)
+        steps_with_none = generate_next_steps(git, cips, backlog, reqs, local_mod=None, context={})
+        self.assertEqual(steps_without, steps_with_none)
+
+    # ------------------------------------------------------------------
+    # _render_local_sections() + get_local_sections() integration tests
+    # ------------------------------------------------------------------
+
+    def _capture_render(self, mod, context, position):
+        """Run _render_local_sections and return all printed lines as a list."""
+        printed = []
+        with patch("builtins.print", side_effect=lambda *a, **kw: printed.append(" ".join(str(x) for x in a))):
+            _render_local_sections(mod, context, position)
+        return printed
+
+    def test_sections_2tuple_rendered_in_after_pass(self):
+        """2-tuple (title, lines) defaults to "after" position."""
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx):\n"
+            "    return [('My Section', ['  line1', '  line2'])]\n"
+        )
+        out = self._capture_render(mod, {"position": "after"}, "after")
+        full = "\n".join(out)
+        self.assertIn("My Section", full)
+        self.assertIn("line1", full)
+        shutil.rmtree(td)
+
+    def test_sections_2tuple_not_rendered_in_before_pass(self):
+        """2-tuple defaults to "after" so it should NOT appear in "before" pass."""
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx):\n"
+            "    return [('After Only', ['  content'])]\n"
+        )
+        out = self._capture_render(mod, {"position": "before"}, "before")
+        full = "\n".join(out)
+        self.assertNotIn("After Only", full)
+        shutil.rmtree(td)
+
+    def test_sections_3tuple_before_rendered_in_before_pass(self):
+        """3-tuple with position="before" appears in the "before" pass."""
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx):\n"
+            "    return [('BLOCKER', ['  fix me'], 'before')]\n"
+        )
+        out = self._capture_render(mod, {"position": "before"}, "before")
+        full = "\n".join(out)
+        self.assertIn("BLOCKER", full)
+        shutil.rmtree(td)
+
+    def test_sections_3tuple_before_not_rendered_in_after_pass(self):
+        """3-tuple with position="before" does NOT appear in the "after" pass."""
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx):\n"
+            "    return [('BLOCKER', ['  fix me'], 'before')]\n"
+        )
+        out = self._capture_render(mod, {"position": "after"}, "after")
+        full = "\n".join(out)
+        self.assertNotIn("BLOCKER", full)
+        shutil.rmtree(td)
+
+    def test_sections_3tuple_after_rendered_in_after_pass(self):
+        """3-tuple with position="after" appears in the "after" pass."""
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx):\n"
+            "    return [('EXTRAS', ['  extra info'], 'after')]\n"
+        )
+        out = self._capture_render(mod, {"position": "after"}, "after")
+        full = "\n".join(out)
+        self.assertIn("EXTRAS", full)
+        shutil.rmtree(td)
+
+    def test_sections_exception_caught_and_warned(self):
+        """Exception inside get_local_sections is caught; warning printed."""
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx): raise RuntimeError('oops')\n"
+        )
+        printed = []
+        with patch("builtins.print", side_effect=lambda *a, **kw: printed.append(" ".join(str(x) for x in a))):
+            _render_local_sections(mod, {"position": "after"}, "after")
+        full = "\n".join(printed)
+        self.assertIn("Warning", full)
+        shutil.rmtree(td)
+
+    def test_sections_missing_function_no_error(self):
+        """No error when module lacks get_local_sections."""
+        mod, td = self._make_hook("MARKER = 1\n")
+        out = self._capture_render(mod, {"position": "after"}, "after")
+        self.assertEqual(out, [])
+        shutil.rmtree(td)
+
+    def test_no_local_mod_render_is_noop(self):
+        """_render_local_sections with local_mod=None prints nothing."""
+        out = self._capture_render(None, {"position": "after"}, "after")
+        self.assertEqual(out, [])
+
+    def test_context_position_key_passed_to_hook(self):
+        """The 'position' key in the context forwarded to get_local_sections."""
+        received = []
+        mod, td = self._make_hook(
+            "def get_local_sections(ctx):\n"
+            "    import builtins; builtins._test_pos = ctx.get('position')\n"
+            "    return []\n"
+        )
+        import builtins as _builtins
+        _render_local_sections(mod, {}, "before")
+        self.assertEqual(getattr(_builtins, "_test_pos", None), "before")
+        shutil.rmtree(td)
 
 
 if __name__ == "__main__":

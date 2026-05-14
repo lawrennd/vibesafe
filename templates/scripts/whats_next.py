@@ -37,6 +37,7 @@ import subprocess
 import re
 import glob
 import argparse
+import importlib.util
 from datetime import datetime
 import yaml
 from pathlib import Path
@@ -70,6 +71,28 @@ class Colors:
         cls.ENDC = ''
         cls.BOLD = ''
         cls.UNDERLINE = ''
+
+def _load_local_module(path: str = ".vibesafe/whats_next_local.py"):
+    """Discover and load the optional project-local extension module.
+
+    Args:
+        path: Location of the local module relative to the working directory.
+
+    Returns:
+        The loaded module object on success, None if the file does not exist or
+        fails to import (import errors are printed as warnings).
+    """
+    if not os.path.exists(path):
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location("whats_next_local", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception as exc:
+        print(f"\u26a0\ufe0f  Warning: could not load {path}: {exc}")
+        return None
+
 
 def normalize_status(status):
     """Normalize status to lowercase with underscores."""
@@ -1248,7 +1271,9 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
                          backlog_info: Dict[str, Any], requirements_info: Dict[str, Any],
                          tenet_info: Dict[str, Any] = None,
                          validation_info: Dict[str, Any] = None,
-                         gaps_info: Dict[str, Any] = None) -> List[str]:
+                         gaps_info: Dict[str, Any] = None,
+                         local_mod=None,
+                         context: Dict[str, Any] = None) -> List[str]:
     """Generate suggested next steps based on the project state."""
     next_steps = []
 
@@ -1297,13 +1322,13 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
             next_steps.append("Review and update project tenets to reflect current practices")
     
     # Add suggestion to create requirements framework if missing
-    if not requirements_info['has_framework']:
+    if not requirements_info.get('has_framework'):
         next_steps.append(
             "Create requirements directory: mkdir -p requirements"
         )
     # Check if there are actual requirement files (not just templates/README)
     # Use scan to count actual requirement files
-    elif requirements_info['has_framework']:
+    elif requirements_info.get('has_framework'):
         req_count = len([f for f in Path('requirements').glob('req*.md')])
         if req_count == 0:
             next_steps.append(
@@ -1330,7 +1355,7 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     next_steps.extend(doc_spec_prompts)
     
     # Requirements process recommendations
-    if requirements_info['has_framework']:
+    if requirements_info.get('has_framework'):
         # Check for in-progress backlog items that are explicitly linked to requirements
         # Only suggest if they have related_requirements field populated
         requirements_related_items = []
@@ -1408,10 +1433,26 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     if not next_steps:
         next_steps.append("Review and update project roadmap")
         next_steps.append("Consider creating new CIPs for upcoming features")
-        if requirements_info['has_framework']:
+        if requirements_info.get('has_framework'):
             # Suggest general requirements activities (patterns are now optional VibeSafe guidance)
             next_steps.append("Review existing requirements - are they WHAT (outcomes) not HOW (implementation)?")
-    
+
+    # CIP-0017: Merge project-local next-step suggestions from .vibesafe/whats_next_local.py
+    if local_mod and hasattr(local_mod, "get_local_next_steps"):
+        high_local: List[str] = []
+        low_local: List[str] = []
+        try:
+            for item in local_mod.get_local_next_steps(context or {}):
+                if isinstance(item, tuple) and len(item) == 2 and item[0] == "high":
+                    high_local.append(str(item[1]))
+                elif isinstance(item, tuple) and len(item) == 2 and item[0] == "low":
+                    low_local.append(str(item[1]))
+                else:
+                    low_local.append(str(item))
+        except Exception as exc:
+            print(f"\u26a0\ufe0f  Warning: get_local_next_steps() failed: {exc}")
+        next_steps = high_local + next_steps + low_local
+
     return next_steps
 
 def run_update_scripts() -> List[str]:
@@ -1437,6 +1478,38 @@ def run_update_scripts() -> List[str]:
     
     return results
 
+def _render_local_sections(local_mod, context: Dict[str, Any], position: str) -> None:
+    """Render project-local output sections for the given position.
+
+    Called twice from main(): once with position="before" (before all built-in
+    sections) and once with position="after" (after all built-in sections).
+
+    Args:
+        local_mod: The loaded local extension module, or None.
+        context: The context dict passed to the hook; a copy with 'position' set
+                 is forwarded to the hook so it can filter by position.
+        position: Either "before" or "after".
+    """
+    if not local_mod or not hasattr(local_mod, "get_local_sections"):
+        return
+    ctx = {**context, "position": position}
+    try:
+        for item in local_mod.get_local_sections(ctx):
+            if len(item) == 2:
+                title, lines = item
+                sec_position = "after"
+            elif len(item) == 3:
+                title, lines, sec_position = item
+            else:
+                continue
+            if sec_position == position:
+                print_section(title)
+                for line in lines:
+                    print(line)
+    except Exception as exc:
+        print(f"\u26a0\ufe0f  Warning: get_local_sections() failed: {exc}")
+
+
 def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(description="What's Next for VibeSafe projects")
@@ -1454,7 +1527,10 @@ def main():
     
     if args.no_color:
         Colors.disable()
-    
+
+    # CIP-0017: Load optional project-local extension module
+    local_mod = _load_local_module()
+
     # Handle --compression-check flag (focused view)
     # Handle --show-doc-spec flag
     if args.show_doc_spec:
@@ -1566,6 +1642,11 @@ def main():
         print(f"  4. Set compressed: true in CIP frontmatter\n")
         
         return
+
+    # CIP-0017: Render any "before" local sections (project-specific alerts/blockers)
+    # Context is not yet fully assembled here, so we pass an args-only context for
+    # the "before" pass. Full context is built after scans for the "after" pass.
+    _render_local_sections(local_mod, {"args": args}, "before")
 
     # Run update scripts first if not disabled
     if not args.no_update and not args.quiet:
@@ -1708,17 +1789,26 @@ def main():
         'gaps': gaps,
         'prompts': ai_prompts
     }
-    
+
+    # CIP-0017: Build context dict for local hooks (Task 2)
+    context = {
+        "git_info": git_info,
+        "cips_info": cips_info,
+        "backlog_info": backlog_info,
+        "requirements_info": requirements_info,
+        "args": args,
+    }
+
     # Generate next steps
     if args.cip_only:
-        next_steps = generate_next_steps(git_info, cips_info, {}, {}, tenet_info, validation_info, gaps_info)
+        next_steps = generate_next_steps(git_info, cips_info, {}, {}, tenet_info, validation_info, gaps_info, local_mod, context)
     elif args.backlog_only:
-        next_steps = generate_next_steps(git_info, {}, backlog_info, {}, tenet_info, validation_info, gaps_info)
+        next_steps = generate_next_steps(git_info, {}, backlog_info, {}, tenet_info, validation_info, gaps_info, local_mod, context)
     elif args.requirements_only:
-        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info, validation_info, gaps_info)
+        next_steps = generate_next_steps(git_info, {'by_status': {'proposed': []}}, {'by_status': {'proposed': []}, 'by_priority': {'high': []}}, requirements_info, tenet_info, validation_info, gaps_info, local_mod, context)
     else:
-        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info, gaps_info)
-    
+        next_steps = generate_next_steps(git_info, cips_info, backlog_info, requirements_info, tenet_info, validation_info, gaps_info, local_mod, context)
+
     if next_steps:
         print_section("Suggested Next Steps")
         for i, step in enumerate(next_steps, 1):
@@ -1738,6 +1828,9 @@ def main():
             for item in backlog_info['without_frontmatter']:
                 print(f"  {Colors.YELLOW}{item['path']}{Colors.ENDC}")
     
+    # CIP-0017: Render any "after" local sections (supplementary project-specific info)
+    _render_local_sections(local_mod, context, "after")
+
     if not args.requirements_only and not args.quiet:
         print("\n")
 

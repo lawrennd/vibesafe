@@ -1,0 +1,133 @@
+"""whats_next_local.py — Project-specific extension for whats-next.
+
+Copy this file to .vibesafe/whats_next_local.py (remove the .example suffix)
+to extend the whats-next output with project-specific sections and next steps.
+
+VibeSafe will automatically discover and load it. No installation step is required.
+
+ACTIVATION
+----------
+    cp .vibesafe/whats_next_local.py.example .vibesafe/whats_next_local.py
+    # Then edit to suit your project.
+
+DESIGN PRINCIPLES (CIP-0017)
+-----------------------------
+- Zero cost when absent: if this file does not exist, whats-next is unchanged.
+- Errors in this file are caught and shown as warnings; they never crash whats-next.
+- The context dict is read-only; mutating it has no effect on the core script.
+"""
+
+from __future__ import annotations
+from typing import Any
+
+
+def get_local_sections(context: dict) -> list:
+    """Return additional output sections for whats-next.
+
+    Called twice per run — once with position="before" (before all VibeSafe
+    sections) and once with position="after" (after all VibeSafe sections).
+    Filter on context["position"] to control where each section appears.
+
+    Args:
+        context: Dict containing:
+            git_info         (dict)  – output of get_git_status()
+            cips_info        (dict)  – output of scan_cips()
+            backlog_info     (dict)  – output of scan_backlog()
+            requirements_info(dict)  – output of scan_requirements()
+            args             (argparse.Namespace) – CLI arguments
+            position         (str)   – "before" or "after" (current call)
+
+    Returns:
+        List of section descriptors. Each item is either:
+            (title, lines)              → rendered at "after" position (default)
+            (title, lines, position)    → rendered only at the declared position
+
+        where:
+            title  (str)       – section heading
+            lines  (list[str]) – content lines to print under the heading
+            position (str)     – "before" or "after"
+    """
+    sections = []
+    position = context.get("position", "after")
+
+    # --- "before" sections: shown before all VibeSafe sections ---------------
+    # Use these for urgent project-wide alerts or blockers that must be seen
+    # before anything else (e.g. failing CI, broken environment).
+
+    if position == "before":
+        pass  # Add "before" sections here.
+
+        # Example: warn if a CI-failure sentinel file exists.
+        # from pathlib import Path
+        # if Path(".ci-failing").exists():
+        #     sections.append((
+        #         "CI FAILING",
+        #         ["  Fix CI before merging — see .ci-failing for details."],
+        #         "before",
+        #     ))
+
+    # --- "after" sections: shown after all VibeSafe sections -----------------
+    # Use these for supplementary project-specific information.
+
+    if position == "after":
+        pass  # Add "after" sections here.
+
+        # Example: dataset freshness check for a data-science project.
+        # from pathlib import Path
+        # from datetime import datetime, timedelta
+        # data_dir = Path("data/processed")
+        # if data_dir.exists():
+        #     stale = [
+        #         f for f in data_dir.glob("*.parquet")
+        #         if (datetime.now() - datetime.fromtimestamp(f.stat().st_mtime))
+        #            > timedelta(days=7)
+        #     ]
+        #     lines = [f"  - {f.name}" for f in stale] or ["  All datasets are fresh."]
+        #     sections.append(("Data Freshness", lines))  # defaults to "after"
+
+    return sections
+
+
+def get_local_next_steps(context: dict) -> list:
+    """Return additional next-step suggestions for whats-next.
+
+    Called once per run after all VibeSafe suggestions are assembled.
+    Items with priority "high" are prepended before VibeSafe suggestions;
+    items with priority "low" (or plain strings) are appended after them.
+
+    Args:
+        context: Dict containing the same keys as get_local_sections(), but
+                 without the "position" key.
+
+    Returns:
+        List of suggestion items. Each item is either:
+            str                → appended after VibeSafe suggestions ("low")
+            ("high", str)      → prepended before VibeSafe suggestions
+            ("low",  str)      → appended after VibeSafe suggestions
+
+    Examples::
+
+        return [
+            # High-priority items appear BEFORE all VibeSafe suggestions:
+            ("high", "Pipeline failed — fix before anything else: make run"),
+
+            # Plain strings and ("low", …) appear AFTER VibeSafe suggestions:
+            "Clean up tmp/: rm -rf tmp/",
+            ("low", "Update project README with latest benchmark results"),
+        ]
+    """
+    steps = []
+
+    # Add your project-specific next steps here.
+
+    # Example: remind to run the pipeline if the results file is missing.
+    # from pathlib import Path
+    # if not Path("results/latest_run.json").exists():
+    #     steps.append(("high", "Run the pipeline: make run"))
+
+    # Example: tidy up after a successful run.
+    # from pathlib import Path
+    # if Path("tmp/").exists():
+    #     steps.append("Clean up tmp/: rm -rf tmp/")
+
+    return steps
