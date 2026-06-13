@@ -434,6 +434,7 @@ AGENTS.md
 
 # VibeSafe scripts and tools
 scripts/whats_next.py
+scripts/validate_vibesafe_structure.py
 install-whats-next.sh
 whats-next
 EOF
