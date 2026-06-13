@@ -35,7 +35,9 @@ Each CIP can have one of the following statuses:
 
 ## Current CIPs
 
-- [CIP-0001](./cip0001.md): 
+- [CIP-0001](./cip0001.md):
+- [CIP-0018](./cip0018.md): Global Claude Code Context File (~/.claude/CLAUDE.md)
+- [CIP-0019](./cip0019.md): CIP-Backlog Coverage Check in validate_vibesafe_structure.py
 
 ## Creating a Good CIP
 
