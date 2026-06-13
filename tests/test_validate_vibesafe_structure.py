@@ -39,6 +39,7 @@ from scripts.validate_vibesafe_structure import (  # pyright: ignore[reportMissi
     check_system_file_drift,
     validate_human_attribution,
     check_governance_drift,
+    check_cip_backlog_coverage,
     fix_reverse_links,
     ValidationResult,
     COMPONENT_SPECS,
@@ -1434,6 +1435,146 @@ class TestColors(unittest.TestCase):
         Colors.disable()
         self.assertEqual(Colors.GREEN, "")
         self.assertEqual(Colors.END, "")
+
+
+class TestCipBacklogCoverage(unittest.TestCase):
+    """Tests for check_cip_backlog_coverage() (CIP-0019)."""
+
+    def _write(self, root: str, rel: str, content: str) -> str:
+        path = os.path.join(root, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return path
+
+    def _cip(self, root: str, cip_id: str, status: str, title: str = "Test CIP") -> str:
+        content = f"""---
+id: "{cip_id}"
+title: "{title}"
+status: "{status}"
+author: "Test"
+created: "2026-01-01"
+last_updated: "2026-01-01"
+---
+# CIP-{cip_id}: {title}
+"""
+        return self._write(root, f"cip/cip{cip_id}.md", content)
+
+    def _backlog(self, root: str, name: str, related_cips: list) -> str:
+        cips_yaml = ", ".join(f'"{c}"' for c in related_cips)
+        content = f"""---
+id: "{name}"
+title: "Task {name}"
+status: "Ready"
+priority: "Medium"
+created: "2026-01-01"
+last_updated: "2026-01-01"
+category: "features"
+owner: "Test User"
+related_cips: [{cips_yaml}]
+---
+# Task: {name}
+"""
+        return self._write(root, f"backlog/features/{name}.md", content)
+
+    def test_in_progress_cip_no_backlog_warns(self):
+        """CIP In Progress with no backlog tasks → warning emitted."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0001", "In Progress")
+            result = ValidationResult()
+            check_cip_backlog_coverage(tmp, result)
+            self.assertTrue(result.has_warnings())
+            messages = [m for m, _p in result.warnings]
+            self.assertTrue(any("0001" in m for m in messages))
+
+    def test_accepted_cip_no_backlog_warns(self):
+        """CIP Accepted with no backlog tasks → warning emitted."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0002", "Accepted")
+            result = ValidationResult()
+            check_cip_backlog_coverage(tmp, result)
+            self.assertTrue(result.has_warnings())
+            messages = [m for m, _p in result.warnings]
+            self.assertTrue(any("0002" in m for m in messages))
+
+    def test_proposed_cip_no_backlog_no_warning(self):
+        """CIP Proposed with no backlog tasks → no warning (not yet active)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0003", "Proposed")
+            result = ValidationResult()
+            check_cip_backlog_coverage(tmp, result)
+            self.assertFalse(result.has_warnings())
+
+    def test_implemented_cip_no_backlog_no_warning(self):
+        """CIP Implemented with no backlog tasks → no warning (done)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0004", "Implemented")
+            result = ValidationResult()
+            check_cip_backlog_coverage(tmp, result)
+            self.assertFalse(result.has_warnings())
+
+    def test_closed_cip_no_backlog_no_warning(self):
+        """CIP Closed with no backlog tasks → no warning (done)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0005", "Closed")
+            result = ValidationResult()
+            check_cip_backlog_coverage(tmp, result)
+            self.assertFalse(result.has_warnings())
+
+    def test_in_progress_cip_with_matching_backlog_no_warning(self):
+        """CIP In Progress with a matching backlog task → no warning."""
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0006", "In Progress")
+            self._backlog(tmp, "2026-01-01_task-one", ["0006"])
+            result = ValidationResult()
+            check_cip_backlog_coverage(tmp, result)
+            self.assertFalse(result.has_warnings())
+
+    def test_no_cip_backlog_check_flag_suppresses_warning(self):
+        """--no-cip-backlog-check flag prevents warnings from this check."""
+        import sys
+        from scripts import validate_vibesafe_structure as v  # pyright: ignore[reportMissingImports]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0007", "Accepted")
+            # Call main() with --no-cip-backlog-check
+            with (
+                unittest.mock.patch("sys.argv", [
+                    "validate_vibesafe_structure.py",
+                    "--root", tmp,
+                    "--no-governance-drift",
+                    "--no-cip-backlog-check",
+                ]),
+                unittest.mock.patch.object(v, "check_system_file_drift"),
+                unittest.mock.patch.object(v, "print_results") as mock_print,
+            ):
+                try:
+                    v.main()
+                except SystemExit:
+                    pass
+            # Inspect the ValidationResult passed to print_results
+            result_arg = mock_print.call_args[0][0]
+            self.assertFalse(result_arg.has_warnings())
+
+    def test_strict_mode_exits_1_on_uncovered_cip(self):
+        """--strict escalates coverage warning to failing exit code."""
+        import sys
+        from scripts import validate_vibesafe_structure as v  # pyright: ignore[reportMissingImports]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            self._cip(tmp, "0008", "Accepted")
+            with (
+                unittest.mock.patch("sys.argv", [
+                    "validate_vibesafe_structure.py",
+                    "--root", tmp,
+                    "--no-governance-drift",
+                    "--strict",
+                ]),
+                unittest.mock.patch.object(v, "check_system_file_drift"),
+            ):
+                with self.assertRaises(SystemExit) as ctx:
+                    v.main()
+            self.assertEqual(ctx.exception.code, 1)
 
 
 if __name__ == '__main__':

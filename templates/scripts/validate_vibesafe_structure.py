@@ -215,6 +215,48 @@ def check_governance_drift(root_dir: str, result):
         )
 
 
+def check_cip_backlog_coverage(root_dir: str, result) -> None:
+    """Warn when an Accepted or In-Progress CIP has no backlog tasks.
+
+    Scans all CIPs with status 'Accepted' or 'In Progress' and checks
+    whether at least one backlog task references each CIP via related_cips.
+    Implements the CIP→backlog workflow traceability check (CIP-0019).
+
+    Args:
+        root_dir: Root directory of the repository
+        result: ValidationResult to update
+    """
+    # 1. Collect active CIPs (Accepted or In Progress)
+    active_cips = {}  # id → (title, file_path)
+    for file_path in find_component_files(root_dir, "cip"):
+        fm = extract_frontmatter(file_path)
+        if fm and fm.get("status") in ("Accepted", "In Progress"):
+            cip_id = str(fm.get("id", "")).strip()
+            if cip_id:
+                active_cips[cip_id] = (fm.get("title", "Untitled"), file_path)
+
+    if not active_cips:
+        return
+
+    # 2. Collect all CIP ids referenced by any backlog task
+    covered_ids: set = set()
+    for file_path in find_component_files(root_dir, "backlog"):
+        fm = extract_frontmatter(file_path)
+        if fm:
+            for ref in fm.get("related_cips", []):
+                covered_ids.add(str(ref).strip())
+
+    # 3. Warn for each uncovered active CIP
+    for cip_id, (title, file_path) in sorted(active_cips.items()):
+        if cip_id not in covered_ids:
+            result.add_warning(
+                f"CIP '{cip_id}' ({title}) is Accepted/In Progress but has no backlog "
+                "tasks referencing it. Break it down into backlog tasks before implementing "
+                "(VibeSafe workflow: Accepted → backlog tasks → In Progress).",
+                file_path,
+            )
+
+
 # Component specifications (from REQ-0001: Standardized Component Metadata)
 COMPONENT_SPECS = {
     'requirement': {
@@ -1004,6 +1046,11 @@ Examples:
         help='Skip git-based governance drift warnings (implementation changes without CIP/backlog updates)'
     )
     parser.add_argument(
+        '--no-cip-backlog-check',
+        action='store_true',
+        help='Skip CIP→backlog coverage warnings'
+    )
+    parser.add_argument(
         '--root',
         default='.',
         help='Root directory of VibeSafe project (default: current directory)'
@@ -1058,6 +1105,10 @@ Examples:
     # Step 5: Optional git-based process warnings
     if not args.no_governance_drift:
         check_governance_drift(root_dir, result)
+
+    # Step 6: Check CIP → backlog task coverage (CIP-0019)
+    if not args.no_cip_backlog_check:
+        check_cip_backlog_coverage(root_dir, result)
     
     # Print results
     print_results(result, strict=args.strict, dry_run=dry_run)

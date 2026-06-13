@@ -310,6 +310,41 @@ def get_local_next_steps(context):
 
 ## For Developers
 
+### Validation Checks
+
+The `scripts/validate_vibesafe_structure.py` script runs automatically as a pre-commit hook
+and validates VibeSafe structure conformance. It performs six steps:
+
+| Step | Check | Flag to skip |
+|------|-------|--------------|
+| 1 | Fix reverse links (if `--fix-links`) | — |
+| 2 | Collect all IDs | — |
+| 3 | Validate each component's YAML frontmatter | `--component` to limit scope |
+| 4 | System file drift (template vs runtime) | — |
+| 5 | Git-based governance drift | `--no-governance-drift` |
+| 6 | CIP→backlog coverage | `--no-cip-backlog-check` |
+
+#### CIP-Backlog Coverage Check (`--no-cip-backlog-check`)
+
+**What it checks:** Every CIP with status `Accepted` or `In Progress` must have at least
+one backlog task whose `related_cips` field references that CIP's id.
+
+**Severity:** Warning (yellow) in normal mode; escalates to error (exit code 1) with `--strict`.
+
+**Example warning:**
+```
+  cip/cip0019.md:
+    CIP '0019' (CIP-Backlog Coverage Check) is Accepted/In Progress but has no backlog
+    tasks referencing it. Break it down into backlog tasks before implementing
+    (VibeSafe workflow: Accepted → backlog tasks → In Progress).
+```
+
+**How to fix:** Create one or more backlog tasks with `related_cips: ["0019"]` in their
+YAML frontmatter (replacing `0019` with the relevant CIP id).
+
+**How to skip:** Pass `--no-cip-backlog-check` to the validator, or use the `--strict`
+flag only when you want hard enforcement.
+
 ### Testing
 
 The script includes unit tests to ensure its functionality. To run the tests:
