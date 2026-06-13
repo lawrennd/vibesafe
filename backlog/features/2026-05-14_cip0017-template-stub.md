@@ -1,10 +1,10 @@
 ---
 id: "2026-05-14_cip0017-template-stub"
 title: "CIP-0017: Add whats_next_local.py template stub"
-status: "Ready"
+status: "Completed"
 priority: "Medium"
 created: "2026-05-14"
-last_updated: "2026-05-14"
+last_updated: "2026-06-13"
 category: "features"
 related_cips: ["0017"]
 owner: "Neil Lawrence"

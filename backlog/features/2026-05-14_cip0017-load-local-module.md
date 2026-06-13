@@ -1,10 +1,10 @@
 ---
 id: "2026-05-14_cip0017-load-local-module"
 title: "CIP-0017: Add _load_local_module() helper to whats_next.py"
-status: "Ready"
+status: "Completed"
 priority: "High"
 created: "2026-05-14"
-last_updated: "2026-05-14"
+last_updated: "2026-06-13"
 category: "features"
 related_cips: ["0017"]
 owner: "Neil Lawrence"
