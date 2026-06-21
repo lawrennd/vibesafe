@@ -14,90 +14,86 @@ tags:
 - bugs
 - whats-next
 - cip-status
-title: whats-next silently drops CIPs with status "In Progress"
+title: 'Inconsistency between CIP status checklist and official status values'
 ---
 
-# Task: whats-next silently drops CIPs with status "In Progress"
+# Task: Inconsistency between CIP status checklist and official status values
 
 ## Description
 
-`scripts/whats_next.py` does not handle `in_progress` as a valid CIP status.
-The `scan_cips()` function initialises `by_status` with only four keys
-(`proposed`, `accepted`, `implemented`, `closed`) and the subsequent if/elif
-chain has no `in_progress` branch. As a result, any CIP whose YAML frontmatter
-contains `status: "In Progress"` is silently dropped — it appears in no
-category in the output, and the suggestion engine never references it.
+The CIP template body (`cip_template.md`) includes five status checkboxes:
 
-The bug manifests in two ways:
+```
+- [ ] Proposed
+- [ ] Accepted
+- [ ] In Progress
+- [ ] Implemented
+- [ ] Closed
+```
 
-1. **Wrong normalisation**: `status` is extracted with `.lower()` (line ~463),
-   which converts `"In Progress"` to `"in progress"` (with a space). The
-   comparison checks for `'in_progress'` (with an underscore), so the match
-   always fails even if a branch existed.
+But the cursor rule guidance (`cip.mdc`, "Status Tracking" section) lists only
+four valid frontmatter status values:
 
-2. **Missing branch and bucket**: Even if normalisation were correct, there is
-   no `'in_progress'` entry in the `by_status` dict and no `elif` branch to
-   populate it — unlike backlog items, which do handle `in_progress`.
+```
+Proposed → Accepted → Implemented → Closed
+```
 
-The display and suggestions sections already reference
-`cips_info['by_status']['in_progress']` (line ~1413), but since the key is
-never populated, nothing is ever shown.
+"In Progress" appears in the template body but not in the authoritative
+guidance. This creates two downstream problems:
+
+1. **User confusion**: the template body implies "In Progress" is a valid
+   frontmatter `status:` value, leading users (and AI assistants) to set
+   `status: "In Progress"` in frontmatter.
+
+2. **Dead code in whats-next**: `scripts/whats_next.py` already references
+   `cips_info['by_status']['in_progress']` in the suggestions section
+   (line ~1413), but `scan_cips()` never populates that key — it only handles
+   `proposed`, `accepted`, `implemented`, `closed`. If "In Progress" is not
+   a valid frontmatter status this is dead code; if it is valid, it is a bug.
+
+## Decision Required
+
+Before implementing a fix, decide whether "In Progress" should be:
+
+**Option A — Remove it**: Drop the checkbox from the template body and remove
+the dead `in_progress` reference from the script. The four-status model
+(`Proposed → Accepted → Implemented → Closed`) is the intended workflow.
+`Accepted` covers the period when implementation is actively underway.
+
+**Option B — Adopt it**: Make "In Progress" an official fifth frontmatter
+status, add it to the cursor rule, and fix `scan_cips()` to handle it.
 
 ## Acceptance Criteria
 
+*(After the decision above is made)*
+
+**If Option A:**
+- [ ] Remove "In Progress" checkbox from `cip_template.md` status section
+- [ ] Remove `in_progress` dead-code reference from `scripts/whats_next.py`
+- [ ] Cursor rule remains unchanged (already correct)
+
+**If Option B:**
+- [ ] Add "In Progress" to `cip.mdc` Status Tracking section
 - [ ] `scan_cips()` initialises `by_status` with an `in_progress` key
-- [ ] CIP status strings are normalised consistently (spaces → underscores,
-      lowercase) before comparison — ideally using the existing
-      `normalize_status()` helper, which already handles this correctly
-- [ ] CIPs with `status: "In Progress"` are collected into `by_status['in_progress']`
-      and displayed under an **In Progress** heading in the output
-- [ ] The fallback (no-frontmatter) parsing path receives the same fix
-- [ ] `whats-next` output and suggestions correctly reference in-progress CIPs
-- [ ] Existing behaviour for `proposed`, `accepted`, `implemented`, and
-      `closed` CIPs is unchanged
-- [ ] Test or manual verification: a CIP with `status: "In Progress"` in
-      frontmatter appears in the `whats-next` output
-
-## Implementation Notes
-
-In `scan_cips()`:
-
-```python
-# 1. Add in_progress bucket
-'by_status': {
-    'proposed': [],
-    'accepted': [],
-    'in_progress': [],   # add this
-    'implemented': [],
-    'closed': []
-}
-
-# 2. Use normalize_status() instead of .lower()
-status = normalize_status(frontmatter.get('status', 'unknown'))
-
-# 3. Add branch
-elif status == 'in_progress':
-    cips_info['by_status']['in_progress'].append({
-        'id': file_id,
-        'title': frontmatter.get('title', 'Untitled')
-    })
-```
-
-Apply the same three changes to the fallback (no-frontmatter) code path.
-
-In the display section, add an **In Progress** line between Accepted and
-Implemented (consistent with backlog display order).
+- [ ] CIP status strings normalised with `normalize_status()` (not `.lower()`)
+      so "In Progress" → `in_progress` correctly
+- [ ] Display and suggestions sections handle `in_progress` CIPs
+- [ ] Fallback (no-frontmatter) parsing path updated consistently
 
 ## Related
 
-- Script: `scripts/whats_next.py`
-- Reported while using tax-tools project (CIP-000A and CIP-000E both have
-  `status: "In Progress"` and both disappear from output)
+- Template: `cip/cip_template.md`
+- Rule: `.cursor/rules/cip.mdc`
+- Script: `scripts/whats_next.py` (line ~463 for parsing, ~1413 for suggestions)
+- Reported via tax-tools project where `status: "In Progress"` was set on a
+  CIP frontmatter and the CIP disappeared from `whats-next` output
 
 ## Progress Updates
 
 ### 2026-06-21
 
-Bug observed in tax-tools project. Two CIPs with `status: "In Progress"` in
-frontmatter were not appearing in `whats-next` output, causing the suggestion
-engine to keep recommending already-completed workflow steps.
+Discovered while using the tax-tools project. A CIP with `status: "In Progress"`
+in frontmatter disappeared from `whats-next` output. Investigation revealed the
+template body and cursor rule guidance are inconsistent, and the script has dead
+code referencing `in_progress`. The correct fix depends on a design decision
+about whether the five-status or four-status model is intended.
