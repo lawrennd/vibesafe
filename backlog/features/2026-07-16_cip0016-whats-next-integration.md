@@ -1,7 +1,7 @@
 ---
 id: "2026-07-16_cip0016-whats-next-integration"
 title: "CIP-0016: Integrate CoE status into whats-next output"
-status: "Ready"
+status: "Completed"
 priority: "Medium"
 created: "2026-07-16"
 last_updated: "2026-07-16"

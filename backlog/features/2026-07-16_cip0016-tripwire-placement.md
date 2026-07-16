@@ -1,7 +1,7 @@
 ---
 id: "2026-07-16_cip0016-tripwire-placement"
 title: "CIP-0016: Decide where preventative tripwire warnings live"
-status: "Ready"
+status: "Completed"
 priority: "Medium"
 created: "2026-07-16"
 last_updated: "2026-07-16"

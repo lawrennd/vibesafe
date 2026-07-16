@@ -425,6 +425,10 @@ backlog/index.md
 cip/README.md
 cip/cip_template.md
 
+# CoE system files
+coe/README.md
+coe/coe_template.md
+
 # AI assistant context files (VibeSafe-managed, CIP-0012)
 .cursor/rules/
 .cursor/rules/project_tenet_*.mdc

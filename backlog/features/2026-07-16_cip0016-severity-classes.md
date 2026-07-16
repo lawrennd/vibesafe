@@ -1,7 +1,7 @@
 ---
 id: "2026-07-16_cip0016-severity-classes"
 title: "CIP-0016: Finalise severity class definitions and CoE checklist"
-status: "Ready"
+status: "Completed"
 priority: "High"
 created: "2026-07-16"
 last_updated: "2026-07-16"
