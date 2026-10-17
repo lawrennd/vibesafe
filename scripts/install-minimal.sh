@@ -368,7 +368,7 @@ setup_whats_next() {
       fi
 
       # Install dependencies
-      .venv-vibesafe/bin/pip install -q PyYAML python-frontmatter
+      .venv-vibesafe/bin/pip install -q PyYAML 'python-frontmatter>=1.0.0,<1.2'
       
       # Create wrapper script (always overwrite - it's a system file)
 cat > whats-next << 'EOF'

@@ -497,9 +497,14 @@ def write_frontmatter(file_path, metadata, dry_run=False):
         # Update metadata
         post.metadata = metadata
         
-        # Write back
-        with open(file_path, 'wb') as f:
-            frontmatter.dump(post, f)
+        # python-frontmatter <1.2 dumps bytes; 1.3+ dumps str. Support both.
+        serialized = frontmatter.dumps(post)
+        if isinstance(serialized, bytes):
+            with open(file_path, 'wb') as f:
+                f.write(serialized)
+        else:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(serialized)
         
         return True
     
