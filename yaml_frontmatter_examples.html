@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YAML Frontmatter Examples &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VibeSafe YAML Frontmatter Schema" href="yaml_frontmatter_schema.html" />
+    <link rel="prev" title="Contributing to VibeSafe" href="contributing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">VibeSafe Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats_next_script.html">What’s Next Script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression-guide.html">VibeSafe Documentation Compression Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">YAML Frontmatter Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cip-frontmatter-example">CIP Frontmatter Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-fields-for-cips">Required Fields for CIPs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-fields-for-cips">Optional Fields for CIPs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#backlog-item-frontmatter-example">Backlog Item Frontmatter Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-fields-for-backlog-items">Required Fields for Backlog Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-fields-for-backlog-items">Optional Fields for Backlog Items</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-github-links-cip-001a">Optional GitHub Links (CIP-001A)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-yaml-frontmatter">Using YAML Frontmatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#migration-script">Migration Script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_schema.html">VibeSafe YAML Frontmatter Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/README.html">VibeSafe Thinking Patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/goal-decomposition.html">Goal Decomposition Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">YAML Frontmatter Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/yaml_frontmatter_examples.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="yaml-frontmatter-examples">
+<h1>YAML Frontmatter Examples<a class="headerlink" href="#yaml-frontmatter-examples" title="Link to this heading"></a></h1>
+<p>This document provides examples of the standardized YAML frontmatter format for CIPs and backlog items.</p>
+<section id="cip-frontmatter-example">
+<h2>CIP Frontmatter Example<a class="headerlink" href="#cip-frontmatter-example" title="Link to this heading"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"000A"</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"Project</span><span class="nv"> </span><span class="s">Status</span><span class="nv"> </span><span class="s">Summarizer</span><span class="nv"> </span><span class="s">('What's</span><span class="nv"> </span><span class="s">Next'</span><span class="nv"> </span><span class="s">Script)"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"proposed"</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-05-11"</span>
+<span class="nt">last_updated</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-05-11"</span>
+<span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="s">"Neil</span><span class="nv"> </span><span class="s">Lawrence"</span>
+<span class="nt">tags</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"project-management"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"automation"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"tooling"</span>
+<span class="nt">github_prs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">101</span><span class="p p-Indicator">]</span>
+<span class="nn">---</span>
+</pre></div>
+</div>
+<section id="required-fields-for-cips">
+<h3>Required Fields for CIPs<a class="headerlink" href="#required-fields-for-cips" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: The CIP identifier (e.g., “0001”, “000A”)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: The title of the CIP</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code>: One of “proposed”, “accepted”, “implemented”, or “closed”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">created</span></code>: The date the CIP was created (YYYY-MM-DD)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">last_updated</span></code>: The date the CIP was last updated (YYYY-MM-DD)</p></li>
+</ul>
+</section>
+<section id="optional-fields-for-cips">
+<h3>Optional Fields for CIPs<a class="headerlink" href="#optional-fields-for-cips" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">author</span></code>: The name of the CIP author</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: A list of relevant tags</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">related_cips</span></code>: A list of related CIP IDs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">related_requirements</span></code>: Requirement IDs this CIP implements</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">implementation_date</span></code>: The date the CIP was implemented (for implemented CIPs)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">completion_date</span></code>: The date the CIP was closed (for closed CIPs)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_issues</span></code>: List of related GitHub issue numbers (optional; CIP-001A)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_prs</span></code>: List of related GitHub pull request numbers (optional; CIP-001A)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_discussions</span></code>: List of related GitHub discussion numbers (optional; CIP-001A)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_issue</span></code>: Legacy single issue number; treated as <code class="docutils literal notranslate"><span class="pre">github_issues:</span> <span class="pre">[n]</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="backlog-item-frontmatter-example">
+<h2>Backlog Item Frontmatter Example<a class="headerlink" href="#backlog-item-frontmatter-example" title="Link to this heading"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-05-11_feature-x-implementation"</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"Implement</span><span class="nv"> </span><span class="s">Feature</span><span class="nv"> </span><span class="s">X"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"proposed"</span>
+<span class="nt">priority</span><span class="p">:</span><span class="w"> </span><span class="s">"high"</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-05-11"</span>
+<span class="nt">last_updated</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-05-11"</span>
+<span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="s">"Neil</span><span class="nv"> </span><span class="s">Lawrence"</span>
+<span class="nt">github_issues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">42</span><span class="p p-Indicator">]</span>
+<span class="nt">github_prs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">101</span><span class="p p-Indicator">]</span>
+<span class="nt">dependencies</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"2025-05-01_prerequisite-feature"</span>
+<span class="nt">tags</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"feature"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"ui"</span>
+<span class="nn">---</span>
+</pre></div>
+</div>
+<section id="required-fields-for-backlog-items">
+<h3>Required Fields for Backlog Items<a class="headerlink" href="#required-fields-for-backlog-items" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: The backlog item identifier (typically date-based: YYYY-MM-DD_short-description)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: The title of the backlog item</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code>: One of “proposed”, “ready”, “in_progress”, “completed”, or “abandoned”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority</span></code>: One of “high”, “medium”, or “low”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">created</span></code>: The date the item was created (YYYY-MM-DD)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">last_updated</span></code>: The date the item was last updated (YYYY-MM-DD)</p></li>
+</ul>
+</section>
+<section id="optional-fields-for-backlog-items">
+<h3>Optional Fields for Backlog Items<a class="headerlink" href="#optional-fields-for-backlog-items" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">owner</span></code>: The person responsible for the task</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_issues</span></code>: List of related GitHub issue numbers (preferred; CIP-001A)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_prs</span></code>: List of related GitHub pull request numbers (optional; CIP-001A)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_discussions</span></code>: List of related GitHub discussion numbers (optional; CIP-001A)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">github_issue</span></code>: Legacy single issue number; treated as <code class="docutils literal notranslate"><span class="pre">github_issues:</span> <span class="pre">[n]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dependencies</span></code>: A list of dependent item IDs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: A list of relevant tags</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">completion_date</span></code>: The date the item was completed (for completed items)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">related_cips</span></code>: CIP numbers related to this backlog item</p></li>
+</ul>
+</section>
+</section>
+<section id="optional-github-links-cip-001a">
+<h2>Optional GitHub Links (CIP-001A)<a class="headerlink" href="#optional-github-links-cip-001a" title="Link to this heading"></a></h2>
+<p>VibeSafe remains the planning source of truth. When a project uses GitHub, artifacts may optionally declare collaboration links in frontmatter:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">github_issues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">42</span><span class="p p-Indicator">]</span>
+<span class="nt">github_prs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">101</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">102</span><span class="p p-Indicator">]</span>
+<span class="nt">github_discussions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">7</span><span class="p p-Indicator">]</span>
+<span class="c1"># Legacy alias (still accepted):</span>
+<span class="nt">github_issue</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
+</pre></div>
+</div>
+<p>Rules:</p>
+<ul class="simple">
+<li><p>Fields are optional; empty string, <code class="docutils literal notranslate"><span class="pre">null</span></code>, or <code class="docutils literal notranslate"><span class="pre">N/A</span></code> means absent</p></li>
+<li><p>Prefer lists of positive integers; a bare integer is also accepted</p></li>
+<li><p>Invalid values produce validator <strong>warnings</strong>, not hard failures</p></li>
+<li><p>Closing a GitHub item does not automatically change VibeSafe status</p></li>
+</ul>
+</section>
+<section id="using-yaml-frontmatter">
+<h2>Using YAML Frontmatter<a class="headerlink" href="#using-yaml-frontmatter" title="Link to this heading"></a></h2>
+<p>YAML frontmatter should be placed at the very beginning of the markdown file, enclosed between triple-dash lines (<code class="docutils literal notranslate"><span class="pre">---</span></code>). For example:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span>---
+id: "000A"
+title: "Project Status Summarizer"
+status: "proposed"
+created: "2025-05-11"
+<span class="gu">last_updated: "2025-05-11"</span>
+<span class="gu">---</span>
+
+<span class="gh"># CIP-000A: Project Status Summarizer</span>
+
+<span class="gu">## Status</span>
+
+<span class="k">- [x]</span> Proposed: [2025-05-11]
+<span class="k">- [ ]</span> Accepted
+<span class="k">- [ ]</span> Implemented
+<span class="k">- [ ]</span> Closed
+
+... rest of the CIP document ...
+</pre></div>
+</div>
+<p>The frontmatter provides structured metadata that can be programmatically parsed, while the rest of the document maintains its readability and follows the established format.</p>
+</section>
+<section id="migration-script">
+<h2>Migration Script<a class="headerlink" href="#migration-script" title="Link to this heading"></a></h2>
+<p>The “what’s next” script will automatically detect files without proper YAML frontmatter and list them as action items. A migration script will be provided to help add frontmatter to existing CIPs and backlog items.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contributing.html" class="btn btn-neutral float-left" title="Contributing to VibeSafe" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="yaml_frontmatter_schema.html" class="btn btn-neutral float-right" title="VibeSafe YAML Frontmatter Schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goal Decomposition Pattern &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Stakeholder Identification Pattern" href="stakeholder-identification.html" />
+    <link rel="prev" title="VibeSafe Thinking Patterns" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">VibeSafe Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_next_script.html">What’s Next Script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression-guide.html">VibeSafe Documentation Compression Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml_frontmatter_examples.html">YAML Frontmatter Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml_frontmatter_schema.html">VibeSafe YAML Frontmatter Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">VibeSafe Thinking Patterns</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Goal Decomposition Pattern</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#when-to-use-this-pattern">When to Use This Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pattern-structure">Pattern Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-questions">Example Questions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#goal-clarification">Goal Clarification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user-centered-decomposition">User-Centered Decomposition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#feature-identification">Feature Identification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#requirements-specification">Requirements Specification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#verification-mapping">Verification Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gap-analysis">Gap Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#priority-alignment">Priority Alignment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#goal-decomposition-approaches">Goal Decomposition Approaches</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#top-down-hierarchical-decomposition">1. Top-Down Hierarchical Decomposition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user-story-mapping">2. User Story Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#goal-question-metric-gqm-approach">3. Goal-Question-Metric (GQM) Approach</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#goal-decomposition-matrix">Goal Decomposition Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-vibesafe">Integration with VibeSafe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-requirements-process">Integration with Requirements Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-pitfalls">Common Pitfalls</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Goal Decomposition Pattern</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/patterns/goal-decomposition.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="goal-decomposition-pattern">
+<h1>Goal Decomposition Pattern<a class="headerlink" href="#goal-decomposition-pattern" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><strong>Note</strong>: This is a VibeSafe thinking tool, not a required process. Use it when you’re stuck breaking down goals into requirements.</p>
+</div></blockquote>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h2>
+<p>This pattern helps systematically break down high-level goals into specific, actionable requirements. Goal decomposition is a critical process for translating abstract project objectives into concrete, implementable features and tasks. This approach helps ensure that all aspects of a goal are considered and that the resulting requirements directly contribute to the project’s overall objectives.</p>
+</section>
+<section id="when-to-use-this-pattern">
+<h2>When to Use This Pattern<a class="headerlink" href="#when-to-use-this-pattern" title="Link to this heading"></a></h2>
+<p>✅ <strong>Use when</strong>:</p>
+<ul class="simple">
+<li><p>You have a broad goal but unclear how to achieve it</p></li>
+<li><p>Requirements seem vague or too high-level</p></li>
+<li><p>You need to ensure completeness (not missing important aspects)</p></li>
+<li><p>You want to trace requirements back to business objectives</p></li>
+</ul>
+<p>❌ <strong>Don’t use when</strong>:</p>
+<ul class="simple">
+<li><p>Requirements are already clear and specific</p></li>
+<li><p>You’re defining HOW to implement (that’s CIP territory)</p></li>
+<li><p>You’re breaking down implementation tasks (that’s backlog territory)</p></li>
+</ul>
+</section>
+<section id="pattern-structure">
+<h2>Pattern Structure<a class="headerlink" href="#pattern-structure" title="Link to this heading"></a></h2>
+<p>The goal decomposition conversation follows this general pattern:</p>
+<ol class="arabic simple">
+<li><p><em>Goal Clarification</em>: Understand and refine high-level goals</p></li>
+<li><p><em>User-Centered Decomposition</em>: Break goals down into user-centered outcomes</p></li>
+<li><p><em>Feature Identification</em>: Identify specific features needed to achieve outcomes</p></li>
+<li><p><em>Requirements Specification</em>: Specify detailed requirements for each feature</p></li>
+<li><p><em>Verification Mapping</em>: Map requirements back to original goals</p></li>
+<li><p><em>Gap Analysis</em>: Identify missing requirements or unexplored areas</p></li>
+<li><p><em>Priority Alignment</em>: Ensure requirements prioritization aligns with goal importance</p></li>
+</ol>
+</section>
+<section id="example-questions">
+<h2>Example Questions<a class="headerlink" href="#example-questions" title="Link to this heading"></a></h2>
+<section id="goal-clarification">
+<h3>Goal Clarification<a class="headerlink" href="#goal-clarification" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“What specific problem or opportunity does this goal address?”</p></li>
+<li><p>“How would you measure success for this goal?”</p></li>
+<li><p>“Who are the primary beneficiaries when this goal is achieved?”</p></li>
+<li><p>“Are there any constraints or boundaries that should limit the scope of this goal?”</p></li>
+<li><p>“How does this goal align with broader strategic objectives?”</p></li>
+</ul>
+</section>
+<section id="user-centered-decomposition">
+<h3>User-Centered Decomposition<a class="headerlink" href="#user-centered-decomposition" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“What specific outcomes would users experience if this goal is achieved?”</p></li>
+<li><p>“What different user groups are affected by this goal?”</p></li>
+<li><p>“What user journeys would be improved or created by achieving this goal?”</p></li>
+<li><p>“What pain points would be eliminated for each user group?”</p></li>
+<li><p>“What new capabilities would users gain?”</p></li>
+</ul>
+</section>
+<section id="feature-identification">
+<h3>Feature Identification<a class="headerlink" href="#feature-identification" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“What features or functions would enable each user outcome?”</p></li>
+<li><p>“Are there existing systems or components that could support these outcomes?”</p></li>
+<li><p>“What are the minimal features needed for a viable solution?”</p></li>
+<li><p>“What features would enhance the core solution but aren’t essential?”</p></li>
+<li><p>“Are there technical capabilities that need to be developed to enable these features?”</p></li>
+</ul>
+</section>
+<section id="requirements-specification">
+<h3>Requirements Specification<a class="headerlink" href="#requirements-specification" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“What specific behaviors should each feature exhibit?”</p></li>
+<li><p>“What inputs and outputs are expected for each feature?”</p></li>
+<li><p>“What quality attributes (performance, security, usability) are important?”</p></li>
+<li><p>“What edge cases or exception scenarios should be handled?”</p></li>
+<li><p>“What integration points with other systems are needed?”</p></li>
+</ul>
+</section>
+<section id="verification-mapping">
+<h3>Verification Mapping<a class="headerlink" href="#verification-mapping" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“How will each requirement contribute to the original goal?”</p></li>
+<li><p>“Are there any requirements that don’t clearly support the goal?”</p></li>
+<li><p>“Do the requirements collectively ensure the goal will be achieved?”</p></li>
+<li><p>“What metrics could verify that each requirement supports the goal?”</p></li>
+<li><p>“Are there any conflicting requirements that might hinder goal achievement?”</p></li>
+</ul>
+</section>
+<section id="gap-analysis">
+<h3>Gap Analysis<a class="headerlink" href="#gap-analysis" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“Are there aspects of the goal not addressed by the current requirements?”</p></li>
+<li><p>“What assumptions have we made that might create gaps?”</p></li>
+<li><p>“Are there user groups or stakeholders whose needs aren’t represented?”</p></li>
+<li><p>“What potential obstacles might prevent goal achievement despite meeting requirements?”</p></li>
+<li><p>“Are there dependencies on external factors not captured in requirements?”</p></li>
+</ul>
+</section>
+<section id="priority-alignment">
+<h3>Priority Alignment<a class="headerlink" href="#priority-alignment" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“Which requirements are most critical to achieving the core goal?”</p></li>
+<li><p>“Are there requirements that could be deferred without compromising the goal?”</p></li>
+<li><p>“How should requirements be sequenced to deliver value incrementally?”</p></li>
+<li><p>“Are there quick wins that could demonstrate progress toward the goal?”</p></li>
+<li><p>“How do resource constraints affect requirement prioritization?”</p></li>
+</ul>
+</section>
+</section>
+<section id="goal-decomposition-approaches">
+<h2>Goal Decomposition Approaches<a class="headerlink" href="#goal-decomposition-approaches" title="Link to this heading"></a></h2>
+<p>There are multiple approaches to goal decomposition depending on the project context:</p>
+<section id="top-down-hierarchical-decomposition">
+<h3>1. Top-Down Hierarchical Decomposition<a class="headerlink" href="#top-down-hierarchical-decomposition" title="Link to this heading"></a></h3>
+<p>Break the goal into progressively smaller, more specific sub-goals until you reach implementable requirements.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Goal
+├── Sub-goal 1
+│   ├── Requirement 1.1
+│   └── Requirement 1.2
+├── Sub-goal 2
+│   ├── Requirement 2.1
+│   └── Requirement 2.2
+└── Sub-goal 3
+    ├── Requirement 3.1
+    └── Requirement 3.2
+</pre></div>
+</div>
+<p><strong>Best for</strong>: Well-defined goals with clear hierarchical structure</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Improve user onboarding experience
+├── Simplify registration process
+│   ├── Reduce registration fields to essential information only
+│   └── Add social login options (Google, GitHub)
+├── Enhance first-time user guidance
+│   ├── Create interactive tutorial for key features
+│   └── Implement contextual help tooltips
+└── Increase retention after signup
+    ├── Send personalized welcome email with next steps
+    └── Implement progress tracking for initial user actions
+</pre></div>
+</div>
+</section>
+<section id="user-story-mapping">
+<h3>2. User Story Mapping<a class="headerlink" href="#user-story-mapping" title="Link to this heading"></a></h3>
+<p>Organize requirements by user activities, backbone stories, and detailed stories.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>User Activities
+├── Activity 1
+│   ├── Backbone Story 1.1
+│   │   ├── Detailed Story 1.1.1
+│   │   └── Detailed Story 1.1.2
+│   └── Backbone Story 1.2
+│       ├── Detailed Story 1.2.1
+│       └── Detailed Story 1.2.2
+└── Activity 2
+    └── ...
+</pre></div>
+</div>
+<p><strong>Best for</strong>: User-centered projects where the user journey is paramount</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Managing Tasks
+├── Creating Tasks
+│   ├── Create basic task with title and description
+│   │   ├── Add due date to task
+│   │   └── Set priority level for task
+│   └── Create task from template
+│       ├── Select from predefined templates
+│       └── Customize template for current use
+└── Organizing Tasks
+    └── ...
+</pre></div>
+</div>
+</section>
+<section id="goal-question-metric-gqm-approach">
+<h3>3. Goal-Question-Metric (GQM) Approach<a class="headerlink" href="#goal-question-metric-gqm-approach" title="Link to this heading"></a></h3>
+<p>Structure decomposition around goals, questions that must be answered, and metrics that indicate success.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Goal
+├── Question 1
+│   ├── Metric 1.1 → Requirement 1.1
+│   └── Metric 1.2 → Requirement 1.2
+└── Question 2
+    ├── Metric 2.1 → Requirement 2.1
+    └── Metric 2.2 → Requirement 2.2
+</pre></div>
+</div>
+<p><strong>Best for</strong>: Goals where measurement and validation are critical</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Improve system performance
+├── How fast should pages load?
+│   ├── Average page load time &lt; 2s → Implement asset compression
+│   └── 95th percentile page load &lt; 3.5s → Optimize database queries
+└── How well does the system handle high traffic?
+    ├── Support 1000 concurrent users → Implement connection pooling
+    └── Zero downtime during traffic spikes → Add auto-scaling capability
+</pre></div>
+</div>
+</section>
+</section>
+<section id="goal-decomposition-matrix">
+<h2>Goal Decomposition Matrix<a class="headerlink" href="#goal-decomposition-matrix" title="Link to this heading"></a></h2>
+<p>After decomposing goals, create a matrix to visualize the relationship between goals and requirements:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Requirement</p></th>
+<th class="head"><p>Primary Goal</p></th>
+<th class="head"><p>Sub-goal</p></th>
+<th class="head"><p>Priority</p></th>
+<th class="head"><p>Complexity</p></th>
+<th class="head"><p>Dependencies</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>[Requirement ID]</p></td>
+<td><p>[Goal it supports]</p></td>
+<td><p>[Sub-goal]</p></td>
+<td><p>High/Medium/Low</p></td>
+<td><p>High/Medium/Low</p></td>
+<td><p>[Dependencies]</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="integration-with-vibesafe">
+<h2>Integration with VibeSafe<a class="headerlink" href="#integration-with-vibesafe" title="Link to this heading"></a></h2>
+<p>Use goal decomposition to create better requirements (WHAT):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Tenet (WHY) → Goal → [Goal Decomposition Pattern] → Requirements (WHAT) → CIPs (HOW) → Backlog (DO)
+</pre></div>
+</div>
+<p><strong>Example Flow</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Tenet</strong>: “Simplicity at All Levels” (WHY we care)</p></li>
+<li><p><strong>Goal</strong>: “Make VibeSafe easy to adopt”</p></li>
+<li><p><strong>Pattern</strong>: Apply Goal Decomposition</p></li>
+<li><p><strong>Requirements</strong> (WHAT):</p>
+<ul class="simple">
+<li><p>REQ-007: “Users can install with a single command”</p></li>
+<li><p>REQ-008: “Clear boundaries between system and user files”</p></li>
+</ul>
+</li>
+<li><p><strong>CIPs</strong> (HOW):</p>
+<ul class="simple">
+<li><p>CIP-000E: “Clean Installation Philosophy”</p></li>
+</ul>
+</li>
+<li><p><strong>Backlog</strong> (DO):</p>
+<ul class="simple">
+<li><p>Task: “Update <a class="reference external" href="http://install-minimal.sh">install-minimal.sh</a>”</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="integration-with-requirements-process">
+<h2>Integration with Requirements Process<a class="headerlink" href="#integration-with-requirements-process" title="Link to this heading"></a></h2>
+<p>Use goal decomposition to:</p>
+<ol class="arabic simple">
+<li><p><em>Ensure requirements traceability</em> back to project goals and tenets</p></li>
+<li><p><em>Identify missing requirements</em> that may be needed for complete goal fulfillment</p></li>
+<li><p><em>Prioritize requirements</em> based on their contribution to goals</p></li>
+<li><p><em>Validate requirements</em> against original objectives</p></li>
+<li><p><em>Communicate the purpose</em> of requirements to stakeholders</p></li>
+<li><p><em>Distinguish WHAT from HOW</em>: Decompose to outcomes, not implementation details</p></li>
+</ol>
+</section>
+<section id="common-pitfalls">
+<h2>Common Pitfalls<a class="headerlink" href="#common-pitfalls" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><em>Losing sight of the original goal</em>: Requirements drift away from supporting the goal</p></li>
+<li><p><em>Decomposing too far</em>: Creating overly detailed requirements that restrict implementation flexibility</p></li>
+<li><p><em>Incomplete decomposition</em>: Missing important aspects of the goal</p></li>
+<li><p><em>Imbalanced decomposition</em>: Over-focusing on technical aspects while neglecting user experience</p></li>
+<li><p><em>Failing to validate</em>: Not checking if requirements collectively achieve the goal</p></li>
+<li><p><em>Ignoring constraints</em>: Creating requirements that can’t be implemented within project constraints</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-left" title="VibeSafe Thinking Patterns" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="stakeholder-identification.html" class="btn btn-neutral float-right" title="Stakeholder Identification Pattern" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

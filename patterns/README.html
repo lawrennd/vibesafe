@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VibeSafe Thinking Patterns &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Goal Decomposition Pattern" href="goal-decomposition.html" />
+    <link rel="prev" title="VibeSafe YAML Frontmatter Schema" href="../yaml_frontmatter_schema.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">VibeSafe Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_next_script.html">What’s Next Script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compression-guide.html">VibeSafe Documentation Compression Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml_frontmatter_examples.html">YAML Frontmatter Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml_frontmatter_schema.html">VibeSafe YAML Frontmatter Schema</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VibeSafe Thinking Patterns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-are-patterns">What Are Patterns?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#available-patterns">Available Patterns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#goal-decomposition">Goal Decomposition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stakeholder-identification">Stakeholder Identification</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-use-patterns">How to Use Patterns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#consult-when-stuck">1. Consult When Stuck</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adapt-to-your-context">2. Adapt to Your Context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#focus-on-outcomes">3. Focus on Outcomes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-vibesafe">Integration with VibeSafe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pattern-vs-process">Pattern vs Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-patterns">Adding New Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="goal-decomposition.html">Goal Decomposition Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">VibeSafe Thinking Patterns</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/patterns/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="vibesafe-thinking-patterns">
+<h1>VibeSafe Thinking Patterns<a class="headerlink" href="#vibesafe-thinking-patterns" title="Link to this heading"></a></h1>
+<p>This directory contains optional thinking patterns for requirements discovery and analysis. These are <strong>VibeSafe guidance documents</strong>, not required project structure.</p>
+<section id="what-are-patterns">
+<h2>What Are Patterns?<a class="headerlink" href="#what-are-patterns" title="Link to this heading"></a></h2>
+<p>Patterns are structured approaches to common requirements challenges. They’re thinking tools to consult when you’re stuck, not mandatory processes to follow.</p>
+</section>
+<section id="available-patterns">
+<h2>Available Patterns<a class="headerlink" href="#available-patterns" title="Link to this heading"></a></h2>
+<section id="goal-decomposition">
+<h3>Goal Decomposition<a class="headerlink" href="#goal-decomposition" title="Link to this heading"></a></h3>
+<p><strong>Purpose</strong>: Break down high-level goals into specific, actionable requirements</p>
+<p><strong>When to use</strong>:</p>
+<ul class="simple">
+<li><p>You have a broad goal but unclear how to achieve it</p></li>
+<li><p>You need to translate abstract objectives into concrete features</p></li>
+<li><p>You want to ensure requirements trace back to project goals</p></li>
+</ul>
+<p><strong>File</strong>: <a class="reference internal" href="goal-decomposition.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">goal-decomposition.md</span></code></span></a></p>
+</section>
+<section id="stakeholder-identification">
+<h3>Stakeholder Identification<a class="headerlink" href="#stakeholder-identification" title="Link to this heading"></a></h3>
+<p><strong>Purpose</strong>: Identify all relevant stakeholders and understand their needs</p>
+<p><strong>When to use</strong>:</p>
+<ul class="simple">
+<li><p>Starting a new project or feature</p></li>
+<li><p>Requirements seem incomplete or one-sided</p></li>
+<li><p>You need to understand different user perspectives</p></li>
+<li><p>Conflicts arise between different user groups</p></li>
+</ul>
+<p><strong>File</strong>: <a class="reference internal" href="stakeholder-identification.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">stakeholder-identification.md</span></code></span></a></p>
+</section>
+</section>
+<section id="how-to-use-patterns">
+<h2>How to Use Patterns<a class="headerlink" href="#how-to-use-patterns" title="Link to this heading"></a></h2>
+<section id="consult-when-stuck">
+<h3>1. Consult When Stuck<a class="headerlink" href="#consult-when-stuck" title="Link to this heading"></a></h3>
+<p>Patterns are reference materials, not mandatory steps:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>✅ "I'm not sure how to break down this goal" → Check Goal Decomposition pattern
+✅ "Who else might be affected by this?" → Check Stakeholder Identification pattern
+❌ "I must follow all 7 steps of Goal Decomposition for every requirement"
+</pre></div>
+</div>
+</section>
+<section id="adapt-to-your-context">
+<h3>2. Adapt to Your Context<a class="headerlink" href="#adapt-to-your-context" title="Link to this heading"></a></h3>
+<p>Patterns provide structure, not rigid rules:</p>
+<ul class="simple">
+<li><p>Use the parts that help</p></li>
+<li><p>Skip the parts that don’t apply</p></li>
+<li><p>Combine patterns as needed</p></li>
+<li><p>Create your own variations</p></li>
+</ul>
+</section>
+<section id="focus-on-outcomes">
+<h3>3. Focus on Outcomes<a class="headerlink" href="#focus-on-outcomes" title="Link to this heading"></a></h3>
+<p>Patterns help you think, not create documentation:</p>
+<ul class="simple">
+<li><p><strong>Goal</strong>: Better requirements</p></li>
+<li><p><strong>Not the goal</strong>: Completed pattern worksheets</p></li>
+</ul>
+</section>
+</section>
+<section id="integration-with-vibesafe">
+<h2>Integration with VibeSafe<a class="headerlink" href="#integration-with-vibesafe" title="Link to this heading"></a></h2>
+<p>Patterns support the requirements process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Tenets (WHY) → Requirements (WHAT) → CIPs (HOW) → Backlog (DO)
+                     ↑
+              Patterns help here
+</pre></div>
+</div>
+<p><strong>Patterns help you</strong>:</p>
+<ul class="simple">
+<li><p>Discover what requirements you need (WHAT)</p></li>
+<li><p>Understand why those requirements matter (WHY - link to tenets)</p></li>
+<li><p>Avoid confusing requirements (WHAT) with implementation (HOW)</p></li>
+</ul>
+</section>
+<section id="pattern-vs-process">
+<h2>Pattern vs Process<a class="headerlink" href="#pattern-vs-process" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Pattern (This Directory)</p></th>
+<th class="head"><p>Process (VibeSafe System)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Purpose</strong></p></td>
+<td><p>Thinking tool</p></td>
+<td><p>Workflow structure</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Usage</strong></p></td>
+<td><p>Optional reference</p></td>
+<td><p>Required for organization</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Location</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs/patterns/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">requirements/</span></code>, <code class="docutils literal notranslate"><span class="pre">cip/</span></code>, <code class="docutils literal notranslate"><span class="pre">backlog/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Audience</strong></p></td>
+<td><p>When you’re stuck</p></td>
+<td><p>Always</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Example</strong></p></td>
+<td><p>“How to decompose goals”</p></td>
+<td><p>“Requirements use YAML frontmatter”</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="adding-new-patterns">
+<h2>Adding New Patterns<a class="headerlink" href="#adding-new-patterns" title="Link to this heading"></a></h2>
+<p>If you discover a useful thinking pattern:</p>
+<ol class="arabic simple">
+<li><p>Document it in this directory</p></li>
+<li><p>Follow the existing pattern structure:</p>
+<ul class="simple">
+<li><p>Purpose</p></li>
+<li><p>When to use</p></li>
+<li><p>Pattern structure</p></li>
+<li><p>Example questions</p></li>
+<li><p>Common pitfalls</p></li>
+</ul>
+</li>
+<li><p>Add it to this README</p></li>
+</ol>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Requirements Process</strong>: See <code class="docutils literal notranslate"><span class="pre">requirements/README.md</span></code></p></li>
+<li><p><strong>WHAT vs HOW Guide</strong>: See <code class="docutils literal notranslate"><span class="pre">.cursor/rules/requirements_rule.mdc</span></code></p></li>
+<li><p><strong>VibeSafe Documentation</strong>: See main <code class="docutils literal notranslate"><span class="pre">README.md</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../yaml_frontmatter_schema.html" class="btn btn-neutral float-left" title="VibeSafe YAML Frontmatter Schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="goal-decomposition.html" class="btn btn-neutral float-right" title="Goal Decomposition Pattern" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

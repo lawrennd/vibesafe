@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VibeSafe Architecture &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VibeSafe Development Workflow" href="workflow.html" />
+    <link rel="prev" title="Getting Started with VibeSafe" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VibeSafe Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-system">Installation System</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clean-installation-philosophy">Clean Installation Philosophy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auto-gitignore-protection">Auto-Gitignore Protection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-script">Update Script</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#project-status-tools">Project Status Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#whats-next-script">What’s Next Script</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tenet-system">Tenet System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-platform-ai-assistant-support">Multi-Platform AI Assistant Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#template-system">Template System</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-templates">Core Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-installation-method">Local Installation Method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation-script-architecture">Installation Script Architecture</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats_next_script.html">What’s Next Script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression-guide.html">VibeSafe Documentation Compression Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_examples.html">YAML Frontmatter Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_schema.html">VibeSafe YAML Frontmatter Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/README.html">VibeSafe Thinking Patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/goal-decomposition.html">Goal Decomposition Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">VibeSafe Architecture</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/architecture.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="vibesafe-architecture">
+<h1>VibeSafe Architecture<a class="headerlink" href="#vibesafe-architecture" title="Link to this heading"></a></h1>
+<p>This document describes VibeSafe’s technical architecture and infrastructure decisions.</p>
+<section id="installation-system">
+<h2>Installation System<a class="headerlink" href="#installation-system" title="Link to this heading"></a></h2>
+<section id="clean-installation-philosophy">
+<h3>Clean Installation Philosophy<a class="headerlink" href="#clean-installation-philosophy" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-000E</span> - Clean Installation Philosophy</p>
+<p>Every VibeSafe installation is conceptually a reinstallation. The system distinguishes between:</p>
+<ul class="simple">
+<li><p><strong>System files</strong>: Templates, scripts, cursor rules (always updated)</p></li>
+<li><p><strong>User content</strong>: Project-specific CIPs, backlog, requirements, tenets (always preserved)</p></li>
+</ul>
+<p><strong>Key principles:</strong></p>
+<ol class="arabic simple">
+<li><p>Installation is idempotent (safe to run multiple times)</p></li>
+<li><p>System files propagate from <code class="docutils literal notranslate"><span class="pre">templates/</span></code> directory</p></li>
+<li><p>User content is never modified without explicit action</p></li>
+<li><p>Clear separation prevents accidental overwrites</p></li>
+</ol>
+<p>This philosophy enables painless updates and consistent behavior across fresh installs and updates.</p>
+</section>
+<section id="auto-gitignore-protection">
+<h3>Auto-Gitignore Protection<a class="headerlink" href="#auto-gitignore-protection" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-000F</span> - Auto-Gitignore Protection</p>
+<p>VibeSafe automatically manages <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> entries to prevent users from accidentally committing system files. During installation, the script:</p>
+<ol class="arabic simple">
+<li><p>Detects existing <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code></p></li>
+<li><p>Adds/updates VibeSafe section atomically</p></li>
+<li><p>Protects templates, generated files, and installation artifacts</p></li>
+<li><p>Preserves user’s existing ignore rules</p></li>
+</ol>
+<p><strong>Benefits:</strong></p>
+<ul class="simple">
+<li><p>Users don’t need to understand which files are system vs user</p></li>
+<li><p>Reduces documentation burden</p></li>
+<li><p>Prevents common mistakes</p></li>
+<li><p>Aligns with “Simplicity at All Levels” tenet</p></li>
+</ul>
+</section>
+<section id="update-script">
+<h3>Update Script<a class="headerlink" href="#update-script" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-000B</span> - VibeSafe Update Script</p>
+<p>VibeSafe provides a self-contained update mechanism that:</p>
+<ul class="simple">
+<li><p>Fetches latest version from GitHub</p></li>
+<li><p>Updates system files in <code class="docutils literal notranslate"><span class="pre">templates/</span></code></p></li>
+<li><p>Preserves all user content</p></li>
+<li><p>Reports what was updated</p></li>
+</ul>
+<p><strong>Command:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/lawrennd/vibesafe/main/scripts/install-minimal.sh<span class="o">)</span>
+</pre></div>
+</div>
+<p>The same script handles both fresh installs and updates, demonstrating the Clean Installation Philosophy in practice.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="project-status-tools">
+<h2>Project Status Tools<a class="headerlink" href="#project-status-tools" title="Link to this heading"></a></h2>
+<section id="whats-next-script">
+<h3>What’s Next Script<a class="headerlink" href="#whats-next-script" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-000A</span> - Project Status Summarizer</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">whats-next</span></code> script provides real-time project status for both humans and AI assistants:</p>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li><p>Scans CIPs, backlog, requirements, tenets</p></li>
+<li><p>Reports current status by category</p></li>
+<li><p>Suggests next actionable steps</p></li>
+<li><p>Compression candidate detection</p></li>
+<li><p>Documentation spec integration</p></li>
+<li><p>Traceability analysis (CIP-0014)</p></li>
+</ul>
+<p><strong>Architecture:</strong></p>
+<ul class="simple">
+<li><p>Pure Python (minimal dependencies: PyYAML)</p></li>
+<li><p>Separate virtual environment (<code class="docutils literal notranslate"><span class="pre">.venv-vibesafe</span></code>)</p></li>
+<li><p>Command-line flags for filtering (<code class="docutils literal notranslate"><span class="pre">--cip-only</span></code>, <code class="docutils literal notranslate"><span class="pre">--quiet</span></code>, etc.)</p></li>
+<li><p>Extensible prompt generation system</p></li>
+</ul>
+<p><strong>Key insight</strong>: A single command should provide complete project context without requiring users to manually scan multiple directories.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tenet-system">
+<h2>Tenet System<a class="headerlink" href="#tenet-system" title="Link to this heading"></a></h2>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-0004</span> - Tenet System for Project Governance</p>
+<p>VibeSafe’s tenet system provides foundational principles that guide decision-making:</p>
+<p><strong>Architecture:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>tenets/
+├── vibesafe/          # VibeSafe's own tenets
+│   ├── user-autonomy.md
+│   ├── simplicity-at-all-levels.md
+│   └── ...
+└── [project]/         # User's project tenets
+    └── ...
+</pre></div>
+</div>
+<p><strong>Automatic Integration:</strong></p>
+<ul class="simple">
+<li><p>Tenets are automatically converted to AI assistant prompts</p></li>
+<li><p>Generated during installation for all platforms (Cursor, Copilot, Claude, Codex)</p></li>
+<li><p>No manual copying required</p></li>
+</ul>
+<p><strong>Design principles:</strong></p>
+<ol class="arabic simple">
+<li><p>Limited number (7±2 tenets optimal)</p></li>
+<li><p>Memorable and actionable</p></li>
+<li><p>Document conflicts and resolutions</p></li>
+<li><p>Include examples and counter-examples</p></li>
+</ol>
+<p><strong>Key insight</strong>: Tenets codify the “WHY” that informs all other decisions (WHAT, HOW, DO).</p>
+</section>
+<hr class="docutils" />
+<section id="multi-platform-ai-assistant-support">
+<h2>Multi-Platform AI Assistant Support<a class="headerlink" href="#multi-platform-ai-assistant-support" title="Link to this heading"></a></h2>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-0012</span> - AI Assistant Framework Independence</p>
+<p>VibeSafe works across multiple AI coding assistants without platform lock-in:</p>
+<p><strong>Supported Platforms:</strong></p>
+<ul class="simple">
+<li><p>Cursor (<code class="docutils literal notranslate"><span class="pre">.cursor/rules/*.mdc</span></code>)</p></li>
+<li><p>GitHub Copilot (<code class="docutils literal notranslate"><span class="pre">.github/copilot-instructions.md</span></code>)</p></li>
+<li><p>Claude Code (<code class="docutils literal notranslate"><span class="pre">CLAUDE.md</span></code>)</p></li>
+<li><p>Codex (<code class="docutils literal notranslate"><span class="pre">AGENTS.md</span></code>)</p></li>
+</ul>
+<p><strong>Architecture:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>templates/prompts/
+├── always-apply/      # Core VibeSafe guidance (installed for all platforms)
+├── context-specific/  # Loaded based on file context (CIPs, backlog, etc.)
+└── ...
+</pre></div>
+</div>
+<p><strong>Prompt Generation:</strong></p>
+<ol class="arabic simple">
+<li><p>Store platform-agnostic markdown in <code class="docutils literal notranslate"><span class="pre">templates/prompts/</span></code></p></li>
+<li><p>Generate platform-specific files at install time</p></li>
+<li><p>Single source of truth prevents drift</p></li>
+<li><p>Users can customize via <code class="docutils literal notranslate"><span class="pre">VIBESAFE_PLATFORM</span></code> environment variable</p></li>
+</ol>
+<p><strong>Key insight</strong>: Framework independence respects user autonomy and ensures VibeSafe remains useful regardless of tooling choices.</p>
+</section>
+<hr class="docutils" />
+<section id="template-system">
+<h2>Template System<a class="headerlink" href="#template-system" title="Link to this heading"></a></h2>
+<section id="core-templates">
+<h3>Core Templates<a class="headerlink" href="#core-templates" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-0001</span> - VibeSafe Project Management Templates</p>
+<p>VibeSafe provides a complete template system in <code class="docutils literal notranslate"><span class="pre">templates/</span></code> directory:</p>
+<ul class="simple">
+<li><p>CIP template (<code class="docutils literal notranslate"><span class="pre">cip_template.md</span></code>)</p></li>
+<li><p>Backlog task template (<code class="docutils literal notranslate"><span class="pre">backlog/task_template.md</span></code>)</p></li>
+<li><p>Requirement template (<code class="docutils literal notranslate"><span class="pre">requirements/requirement_template.md</span></code>)</p></li>
+<li><p>Tenet template (<code class="docutils literal notranslate"><span class="pre">tenets/tenet_template.md</span></code>)</p></li>
+<li><p>Compression checklist template (<code class="docutils literal notranslate"><span class="pre">compression_checklist.md</span></code>)</p></li>
+</ul>
+<p><strong>Key principle</strong>: Templates include YAML frontmatter with all required metadata fields, ensuring consistency across components.</p>
+</section>
+<section id="local-installation-method">
+<h3>Local Installation Method<a class="headerlink" href="#local-installation-method" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-0002</span> - Local Installation Method</p>
+<p>VibeSafe supports installation from local directories (not just GitHub):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">VIBESAFE_TEMPLATES_DIR</span><span class="o">=</span>/path/to/vibesafe<span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">"</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>...<span class="k">)</span><span class="s2">"</span>
+</pre></div>
+</div>
+<p><strong>Use cases:</strong></p>
+<ul class="simple">
+<li><p>Testing installation changes before pushing</p></li>
+<li><p>Working with forks</p></li>
+<li><p>Air-gapped environments</p></li>
+<li><p>Custom template modifications</p></li>
+</ul>
+<p>This aligns with “User Autonomy” tenet by giving developers full control over their installation source.</p>
+</section>
+<section id="installation-script-architecture">
+<h3>Installation Script Architecture<a class="headerlink" href="#installation-script-architecture" title="Link to this heading"></a></h3>
+<p><strong>Implemented in:</strong> <span class="xref myst">CIP-0006</span> - Installation Script Redesign</p>
+<p>The installation script (<code class="docutils literal notranslate"><span class="pre">scripts/install-minimal.sh</span></code>) embodies self-documenting principles:</p>
+<p><strong>Architecture decisions:</strong></p>
+<ul class="simple">
+<li><p>Self-contained (no dependencies beyond bash/curl)</p></li>
+<li><p>Clearly named functions (<code class="docutils literal notranslate"><span class="pre">install_system_files</span></code>, <code class="docutils literal notranslate"><span class="pre">generate_prompts_for_platform</span></code>)</p></li>
+<li><p>Environment variables document their purpose (<code class="docutils literal notranslate"><span class="pre">VIBESAFE_PLATFORM</span></code>, <code class="docutils literal notranslate"><span class="pre">VIBESAFE_SKIP_CLONE</span></code>)</p></li>
+<li><p>Idempotent operations (safe to run multiple times)</p></li>
+<li><p>Atomic updates (backup before modify)</p></li>
+</ul>
+<p><strong>Key insight</strong>: The script itself demonstrates “Documentation and Implementation as Unified Whole” - clear naming and structure reduce need for external documentation.</p>
+<p><strong>See also:</strong> <span class="xref myst">CIP-000E</span> for Clean Installation Philosophy</p>
+<hr class="docutils" />
+<p><em>Last updated: 2026-01-09</em>
+<em>This file is part of the VibeSafe formal documentation system.</em></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started with VibeSafe" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="workflow.html" class="btn btn-neutral float-right" title="VibeSafe Development Workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

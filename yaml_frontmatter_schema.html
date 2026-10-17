@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VibeSafe YAML Frontmatter Schema &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VibeSafe Thinking Patterns" href="patterns/README.html" />
+    <link rel="prev" title="YAML Frontmatter Examples" href="yaml_frontmatter_examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">VibeSafe Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats_next_script.html">What’s Next Script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compression-guide.html">VibeSafe Documentation Compression Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_examples.html">YAML Frontmatter Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VibeSafe YAML Frontmatter Schema</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#file-naming-conventions">File Naming Conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#naming-rules">Naming Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#yaml-frontmatter-fields">YAML Frontmatter Fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-fields-all-components">Common Fields (All Components)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#component-specific-fields">Component-Specific Fields</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cips">CIPs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backlog-tasks">Backlog Tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tenets">Tenets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#status-workflows">Status Workflows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">CIPs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Backlog Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Tenets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bottom-up-linking-pattern">Bottom-Up Linking Pattern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#linking-rules">Linking Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-not-to-do">What NOT to Do</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#validation">Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/README.html">VibeSafe Thinking Patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/goal-decomposition.html">Goal Decomposition Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">VibeSafe YAML Frontmatter Schema</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/yaml_frontmatter_schema.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="vibesafe-yaml-frontmatter-schema">
+<h1>VibeSafe YAML Frontmatter Schema<a class="headerlink" href="#vibesafe-yaml-frontmatter-schema" title="Link to this heading"></a></h1>
+<p>This document defines the standard YAML frontmatter schema for all VibeSafe components.</p>
+<section id="file-naming-conventions">
+<h2>File Naming Conventions<a class="headerlink" href="#file-naming-conventions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>File Pattern</p></th>
+<th class="head"><p>ID Pattern</p></th>
+<th class="head"><p>Example File</p></th>
+<th class="head"><p>Example ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Requirement</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reqXXXX_short-name.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;XXXX&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">req0001_yaml-standardization.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;0001&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CIP</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cipXXXX.md</span></code> or <code class="docutils literal notranslate"><span class="pre">cipXXXX_short-name.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;XXXX&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cip0011.md</span></code>, <code class="docutils literal notranslate"><span class="pre">cip0011_component-management.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;0011&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Backlog</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD_short-name.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;YYYY-MM-DD_short-name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2026-01-03_yaml-frontmatter.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;2026-01-03_yaml-frontmatter&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Tenet</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">short-name.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;short-name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">simplicity-of-use.md</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;simplicity-of-use&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<section id="naming-rules">
+<h3>Naming Rules<a class="headerlink" href="#naming-rules" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Requirements</strong>: 4-digit hexadecimal (0001-FFFF), lowercase, short name required</p></li>
+<li><p><strong>CIPs</strong>: 4-digit hexadecimal (0001-FFFF), lowercase, short name optional</p></li>
+<li><p><strong>Backlog</strong>: Date-based (YYYY-MM-DD), lowercase, short name required</p></li>
+<li><p><strong>Tenets</strong>: Descriptive kebab-case name, lowercase</p></li>
+</ul>
+</section>
+</section>
+<section id="yaml-frontmatter-fields">
+<h2>YAML Frontmatter Fields<a class="headerlink" href="#yaml-frontmatter-fields" title="Link to this heading"></a></h2>
+<section id="common-fields-all-components">
+<h3>Common Fields (All Components)<a class="headerlink" href="#common-fields-all-components" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"unique-identifier"</span><span class="w">       </span><span class="c1"># Required: Component's unique ID</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"Human-readable</span><span class="nv"> </span><span class="s">title"</span><span class="w">  </span><span class="c1"># Required: Descriptive title</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"Current</span><span class="nv"> </span><span class="s">status"</span><span class="w">       </span><span class="c1"># Required: Component state</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"YYYY-MM-DD"</span><span class="w">          </span><span class="c1"># Required: Creation date</span>
+<span class="nt">last_updated</span><span class="p">:</span><span class="w"> </span><span class="s">"YYYY-MM-DD"</span><span class="w">     </span><span class="c1"># Required: Last modification date</span>
+<span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">                       </span><span class="c1"># Optional: List of tags</span>
+</pre></div>
+</div>
+</section>
+<section id="component-specific-fields">
+<h3>Component-Specific Fields<a class="headerlink" href="#component-specific-fields" title="Link to this heading"></a></h3>
+<section id="requirements">
+<h4>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"0001"</span><span class="w">                     </span><span class="c1"># 4-digit hex</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"Requirement</span><span class="nv"> </span><span class="s">Title"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"Proposed"</span><span class="w">             </span><span class="c1"># Proposed, Refined, Ready, In Progress, Implemented, Validated, Deferred, Rejected</span>
+<span class="nt">priority</span><span class="p">:</span><span class="w"> </span><span class="s">"High"</span><span class="w">               </span><span class="c1"># High, Medium, Low</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">last_updated</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">related_tenets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">             </span><span class="c1"># Bottom-up: Which tenets inform this requirement</span>
+<span class="nt">stakeholders</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">               </span><span class="c1"># Who cares about this requirement</span>
+<span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</pre></div>
+</div>
+</section>
+<section id="cips">
+<h4>CIPs<a class="headerlink" href="#cips" title="Link to this heading"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"0011"</span><span class="w">                     </span><span class="c1"># 4-digit hex</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"CIP</span><span class="nv"> </span><span class="s">Title"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"In</span><span class="nv"> </span><span class="s">Progress"</span><span class="w">          </span><span class="c1"># Proposed, Accepted, In Progress, Implemented, Closed, Rejected, Deferred</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">last_updated</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="s">"Author</span><span class="nv"> </span><span class="s">Name"</span>
+<span class="nt">related_requirements</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">       </span><span class="c1"># Bottom-up: Which requirements this implements</span>
+<span class="nt">related_cips</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">               </span><span class="c1"># Optional: Related CIPs</span>
+<span class="nt">blocked_by</span><span class="p">:</span><span class="w"> </span><span class="s">"0012"</span><span class="w">             </span><span class="c1"># Optional: CIP ID blocking this (use with Deferred)</span>
+<span class="nt">superseded_by</span><span class="p">:</span><span class="w"> </span><span class="s">"0013"</span><span class="w">          </span><span class="c1"># Optional: CIP ID replacing this (use with Rejected)</span>
+<span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</pre></div>
+</div>
+</section>
+<section id="backlog-tasks">
+<h4>Backlog Tasks<a class="headerlink" href="#backlog-tasks" title="Link to this heading"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03_task-name"</span><span class="w">    </span><span class="c1"># Date-based</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"Task</span><span class="nv"> </span><span class="s">Title"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"In</span><span class="nv"> </span><span class="s">Progress"</span><span class="w">          </span><span class="c1"># Proposed, Ready, In Progress, Completed, Abandoned</span>
+<span class="nt">priority</span><span class="p">:</span><span class="w"> </span><span class="s">"High"</span><span class="w">               </span><span class="c1"># High, Medium, Low</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">last_updated</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="s">"features"</span><span class="w">           </span><span class="c1"># features, bugs, documentation, infrastructure</span>
+<span class="nt">related_cips</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">               </span><span class="c1"># Bottom-up: Which CIPs this task implements</span>
+<span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="s">"Person</span><span class="nv"> </span><span class="s">Name"</span><span class="w">           </span><span class="c1"># Optional</span>
+<span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">               </span><span class="c1"># Optional: Other task IDs</span>
+<span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</pre></div>
+</div>
+</section>
+<section id="tenets">
+<h4>Tenets<a class="headerlink" href="#tenets" title="Link to this heading"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"simplicity-of-use"</span><span class="w">        </span><span class="c1"># kebab-case</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">"Simplicity</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">All</span><span class="nv"> </span><span class="s">Levels"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"Active"</span><span class="w">               </span><span class="c1"># Active, Under Review, Archived</span>
+<span class="nt">created</span><span class="p">:</span><span class="w"> </span><span class="s">"2025-05-05"</span>
+<span class="nt">last_reviewed</span><span class="p">:</span><span class="w"> </span><span class="s">"2026-01-03"</span>
+<span class="nt">review_frequency</span><span class="p">:</span><span class="w"> </span><span class="s">"Annual"</span><span class="w">     </span><span class="c1"># Annual, Quarterly, Monthly</span>
+<span class="nt">conflicts_with</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w">             </span><span class="c1"># Optional: Other tenet IDs that conflict</span>
+<span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="status-workflows">
+<h2>Status Workflows<a class="headerlink" href="#status-workflows" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Requirements<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Proposed → Refined → Ready → In Progress → Implemented → Validated
+         └→ Rejected (won't implement)
+         └→ Deferred (postponed)
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>CIPs<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Proposed → Accepted → In Progress → Implemented → Closed
+         └→ Rejected (won't implement, use superseded_by if replaced)
+         └→ Deferred (postponed, use blocked_by to indicate blocker)
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>Backlog Tasks<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Proposed → Ready → In Progress → Completed
+         └→ Abandoned (won't do, with explanation)
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>Tenets<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Active → Under Review → Active (updated)
+       └→ Archived (no longer applicable)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="bottom-up-linking-pattern">
+<h2>Bottom-Up Linking Pattern<a class="headerlink" href="#bottom-up-linking-pattern" title="Link to this heading"></a></h2>
+<p>VibeSafe uses a bottom-up linking pattern where components reference their immediate upstream context:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Tenets (WHY - foundation)
+    ↑ related_tenets
+Requirements (WHAT) 
+    ↑ related_requirements
+CIPs (HOW)
+    ↑ related_cips
+Backlog (DO)
+    ↓
+Implementation
+</pre></div>
+</div>
+<section id="linking-rules">
+<h3>Linking Rules<a class="headerlink" href="#linking-rules" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Requirements</strong> link to <code class="docutils literal notranslate"><span class="pre">related_tenets</span></code> (WHY informs WHAT)</p></li>
+<li><p><strong>CIPs</strong> link to <code class="docutils literal notranslate"><span class="pre">related_requirements</span></code> (WHAT informs HOW)</p></li>
+<li><p><strong>Backlog</strong> links to <code class="docutils literal notranslate"><span class="pre">related_cips</span></code> (HOW informs DO)</p></li>
+<li><p><strong>Tenets</strong> don’t link upward (foundation layer)</p></li>
+</ul>
+</section>
+<section id="what-not-to-do">
+<h3>What NOT to Do<a class="headerlink" href="#what-not-to-do" title="Link to this heading"></a></h3>
+<p>❌ <strong>Don’t link backwards</strong>:</p>
+<ul class="simple">
+<li><p>Requirements should NOT have <code class="docutils literal notranslate"><span class="pre">related_cips</span></code></p></li>
+<li><p>CIPs should NOT have <code class="docutils literal notranslate"><span class="pre">related_backlog</span></code></p></li>
+<li><p>Backlog should NOT have <code class="docutils literal notranslate"><span class="pre">related_requirements</span></code></p></li>
+</ul>
+<p>✅ <strong>Instead</strong>: Scripts query DOWN to find dependencies:</p>
+<ul class="simple">
+<li><p>“Which CIPs implement this requirement?” → Query CIPs where <code class="docutils literal notranslate"><span class="pre">related_requirements</span></code> contains this requirement ID</p></li>
+<li><p>“Which tasks execute this CIP?” → Query backlog where <code class="docutils literal notranslate"><span class="pre">related_cips</span></code> contains this CIP ID</p></li>
+</ul>
+</section>
+</section>
+<section id="validation">
+<h2>Validation<a class="headerlink" href="#validation" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">scripts/validate_vibesafe_structure.py</span></code> script enforces:</p>
+<ol class="arabic simple">
+<li><p>Required fields are present</p></li>
+<li><p>Status values are from allowed lists</p></li>
+<li><p>Dates are in YYYY-MM-DD format</p></li>
+<li><p>File naming matches patterns</p></li>
+<li><p>Bottom-up linking pattern is followed</p></li>
+<li><p>Cross-references point to existing IDs</p></li>
+</ol>
+<p>Run validation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/validate_vibesafe_structure.py
+</pre></div>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>CIP-0011</strong>: Defines this standardization</p></li>
+<li><p><strong>Validation Script</strong>: <code class="docutils literal notranslate"><span class="pre">scripts/validate_vibesafe_structure.py</span></code></p></li>
+<li><p><strong>Templates</strong>: Located in component directories and <code class="docutils literal notranslate"><span class="pre">templates/</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="yaml_frontmatter_examples.html" class="btn btn-neutral float-left" title="YAML Frontmatter Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="patterns/README.html" class="btn btn-neutral float-right" title="VibeSafe Thinking Patterns" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VibeSafe Documentation Compression Guide &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing to VibeSafe" href="contributing.html" />
+    <link rel="prev" title="What’s Next Script" href="whats_next_script.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">VibeSafe Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats_next_script.html">What’s Next Script</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VibeSafe Documentation Compression Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-documentation-compression">What is Documentation Compression?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation-structure-detection">Documentation Structure Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adaptive-compression-targets">Adaptive Compression Targets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#for-sphinx-users-with-myst-for-markdown">For Sphinx Users (with MyST for Markdown)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#for-mkdocs-plain-markdown-users">For MkDocs/Plain Markdown Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#for-minimal-users">For Minimal Users</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#style-guide-for-compression">Style Guide for Compression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#balance-detail-and-brevity">Balance Detail and Brevity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples-by-length">Examples by Length</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#traceability-formats">Traceability Formats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inline-references">Inline References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#footer-references">Footer References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compression-workflow-7-steps">Compression Workflow (7 Steps)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#when-to-skip-compression">When to Skip Compression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-override-optional">Configuration Override (Optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#periodic-compression-review">Periodic Compression Review</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quarterly-review-workflow">Quarterly Review Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compression-quality-metrics">Compression Quality Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-quarterly-review-tasks">Creating Quarterly Review Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compression-vs-cip-history">Compression vs. CIP History</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#compression-is-not">Compression is NOT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compression-is">Compression IS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tools-and-templates">Tools and Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_examples.html">YAML Frontmatter Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_schema.html">VibeSafe YAML Frontmatter Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/README.html">VibeSafe Thinking Patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/goal-decomposition.html">Goal Decomposition Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">VibeSafe Documentation Compression Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/compression-guide.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="vibesafe-documentation-compression-guide">
+<h1>VibeSafe Documentation Compression Guide<a class="headerlink" href="#vibesafe-documentation-compression-guide" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><strong>Extracted from</strong>: <a class="reference internal" href="#../cip/cip0013.md"><span class="xref myst">CIP-0013: Documentation Compression Stage</span></a><br />
+<strong>Status</strong>: Formal documentation (compressed from closed CIP)</p>
+</div></blockquote>
+<section id="what-is-documentation-compression">
+<h2>What is Documentation Compression?<a class="headerlink" href="#what-is-documentation-compression" title="Link to this heading"></a></h2>
+<p><strong>Documentation compression</strong> is the systematic process of distilling knowledge from closed CIPs (design rationale), completed backlog tasks (implementation details), and finalized code into streamlined formal documentation that future users can understand without reading the entire development history.</p>
+<p><strong>The Compression Metaphor</strong>: During active development, information is “expanded” across CIPs, backlog tasks, and code. After completion, this information should be “compressed” into permanent, accessible documentation.</p>
+<p><strong>Workflow</strong>: WHY (Tenets) → WHAT (Requirements) → HOW (CIPs) → DO (Backlog) → <strong>DOCUMENT</strong> (Compression)</p>
+</section>
+<hr class="docutils" />
+<section id="documentation-structure-detection">
+<h2>Documentation Structure Detection<a class="headerlink" href="#documentation-structure-detection" title="Link to this heading"></a></h2>
+<p>VibeSafe <strong>detects</strong> your existing documentation structure and adapts guidance accordingly. We never force a specific system.</p>
+<p><strong>Detection Logic</strong>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Check</p></th>
+<th class="head"><p>Result</p></th>
+<th class="head"><p>Suggested Targets</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs/conf.py</span></code> exists?</p></td>
+<td><p><strong>Sphinx</strong> (✨ supports Markdown via MyST)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs/source/*.{rst,md}</span></code> + <a class="reference external" href="http://README.md">README.md</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mkdocs.yml</span></code> exists?</p></td>
+<td><p><strong>MkDocs</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs/*.md</span></code> + <a class="reference external" href="http://README.md">README.md</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs/*.md</span></code> exist?</p></td>
+<td><p><strong>Plain Markdown</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs/*.md</span></code> + <a class="reference external" href="http://README.md">README.md</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>None of above?</p></td>
+<td><p><strong>Minimal</strong></p></td>
+<td><p><a class="reference external" href="http://README.md">README.md</a> + optional <code class="docutils literal notranslate"><span class="pre">docs/</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>💡 Recommended: Sphinx with MyST Parser</strong></p>
+<p>Sphinx with the MyST parser gives you:</p>
+<ul class="simple">
+<li><p>✅ Professional documentation with Markdown (no need to learn reStructuredText)</p></li>
+<li><p>✅ ReadTheDocs integration for hosting</p></li>
+<li><p>✅ Cross-references, table of contents, search</p></li>
+<li><p>✅ Multiple output formats (HTML, PDF, ePub)</p></li>
+<li><p>✅ Full Markdown syntax support</p></li>
+</ul>
+<p>See <a class="reference external" href="https://myst-parser.readthedocs.io/">MyST Parser documentation</a> for setup.</p>
+</section>
+<hr class="docutils" />
+<section id="adaptive-compression-targets">
+<h2>Adaptive Compression Targets<a class="headerlink" href="#adaptive-compression-targets" title="Link to this heading"></a></h2>
+<section id="for-sphinx-users-with-myst-for-markdown">
+<h3>For Sphinx Users (with MyST for Markdown)<a class="headerlink" href="#for-sphinx-users-with-myst-for-markdown" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Infrastructure CIPs → <code class="docutils literal notranslate"><span class="pre">docs/source/architecture.md</span></code> (or <code class="docutils literal notranslate"><span class="pre">.rst</span></code>)</p></li>
+<li><p>Feature CIPs → <code class="docutils literal notranslate"><span class="pre">docs/source/features.md</span></code> (or <code class="docutils literal notranslate"><span class="pre">.rst</span></code>)</p></li>
+<li><p>Process CIPs → <code class="docutils literal notranslate"><span class="pre">docs/source/workflow.md</span></code> (or <code class="docutils literal notranslate"><span class="pre">.rst</span></code>)</p></li>
+<li><p>High-level → <code class="docutils literal notranslate"><span class="pre">README.md</span></code></p></li>
+</ul>
+<p><strong>Note</strong>: With MyST parser, you can write Sphinx docs in Markdown! VibeSafe itself uses this approach.</p>
+</section>
+<section id="for-mkdocs-plain-markdown-users">
+<h3>For MkDocs/Plain Markdown Users<a class="headerlink" href="#for-mkdocs-plain-markdown-users" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Infrastructure CIPs → <code class="docutils literal notranslate"><span class="pre">docs/architecture.md</span></code></p></li>
+<li><p>Feature CIPs → <code class="docutils literal notranslate"><span class="pre">docs/features.md</span></code></p></li>
+<li><p>Process CIPs → <code class="docutils literal notranslate"><span class="pre">docs/workflow.md</span></code></p></li>
+<li><p>High-level → <code class="docutils literal notranslate"><span class="pre">README.md</span></code></p></li>
+</ul>
+</section>
+<section id="for-minimal-users">
+<h3>For Minimal Users<a class="headerlink" href="#for-minimal-users" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Start with <code class="docutils literal notranslate"><span class="pre">README.md</span></code> sections</p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">docs/</span></code> when it grows</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="style-guide-for-compression">
+<h2>Style Guide for Compression<a class="headerlink" href="#style-guide-for-compression" title="Link to this heading"></a></h2>
+<p><strong>Structure</strong>: WHAT → WHY → HOW (high-level) → TRACE</p>
+<section id="balance-detail-and-brevity">
+<h3>Balance Detail and Brevity<a class="headerlink" href="#balance-detail-and-brevity" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>❌ <strong>Too brief</strong>: “Added search” (no context)</p></li>
+<li><p>❌ <strong>Too detailed</strong>: “Implemented BM25 algorithm with tf-idf weighting…” (belongs in CIP)</p></li>
+<li><p>✅ <strong>Just right</strong>: “Full-text search with semantic indexing. See <a class="reference internal" href="#../cip/cip00XX.md"><span class="xref myst">CIP-00XX</span></a> for details”</p></li>
+</ul>
+</section>
+<section id="examples-by-length">
+<h3>Examples by Length<a class="headerlink" href="#examples-by-length" title="Link to this heading"></a></h3>
+<p><strong>One-paragraph (README)</strong>:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="gu">## Multi-Platform AI Assistant Support</span>
+VibeSafe works with Cursor, Copilot, Claude, and Codex. See [<span class="nt">CIP-0012</span>](<span class="na">cip/cip0012.md</span>).
+</pre></div>
+</div>
+<p><strong>Two-paragraph (docs/features.md)</strong>:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="gu">## Multi-Platform AI Assistant Support</span>
+
+VibeSafe generates prompts for Cursor, Copilot, Claude, and Codex from <span class="sb">`templates/prompts/`</span>. 
+Users select platform via <span class="sb">`VIBESAFE_PLATFORM`</span> during installation.
+
+<span class="gs">**Architecture**</span>: Platform-agnostic base → install-time generation → platform-specific files.
+See [<span class="nt">CIP-0012</span>](<span class="na">../cip/cip0012.md</span>) for detailed rationale.
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="traceability-formats">
+<h2>Traceability Formats<a class="headerlink" href="#traceability-formats" title="Link to this heading"></a></h2>
+<p><strong>Always link docs → CIP</strong>. This maintains traceability and allows readers to dive deeper when needed.</p>
+<section id="inline-references">
+<h3>Inline References<a class="headerlink" href="#inline-references" title="Link to this heading"></a></h3>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span>Multi-platform support ([CIP-0012](../cip/cip0012.md)) enables...
+</pre></div>
+</div>
+</section>
+<section id="footer-references">
+<h3>Footer References<a class="headerlink" href="#footer-references" title="Link to this heading"></a></h3>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="gs">**Design**</span>: [<span class="nt">CIP-0012</span>](<span class="na">../cip/cip0012.md</span>) | <span class="gs">**Requirements**</span>: [<span class="nt">REQ-000C</span>](<span class="na">../requirements/req000C.md</span>)
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="compression-workflow-7-steps">
+<h2>Compression Workflow (7 Steps)<a class="headerlink" href="#compression-workflow-7-steps" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Identify</strong>: Run <code class="docutils literal notranslate"><span class="pre">./whats-next</span> <span class="pre">--compression-check</span></code> to find closed CIPs needing compression</p></li>
+<li><p><strong>Copy template</strong>: <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">templates/compression_checklist.md</span> <span class="pre">cip/cipXXXX-compression.md</span></code></p></li>
+<li><p><strong>Read CIP</strong>: Identify key decisions, outcomes, and essential knowledge</p></li>
+<li><p><strong>Choose targets</strong>: Use detection-based suggestions or custom config</p></li>
+<li><p><strong>Write compressed docs</strong>: Follow WHAT→WHY→HOW→TRACE structure</p></li>
+<li><p><strong>Mark compressed</strong>: Set <code class="docutils literal notranslate"><span class="pre">compressed:</span> <span class="pre">true</span></code> in CIP YAML frontmatter</p></li>
+<li><p><strong>Commit</strong>: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">-m</span> <span class="pre">&quot;Compress</span> <span class="pre">CIP-XXXX:</span> <span class="pre">[description]&quot;</span></code></p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="when-to-skip-compression">
+<h2>When to Skip Compression<a class="headerlink" href="#when-to-skip-compression" title="Link to this heading"></a></h2>
+<p>Not all closed CIPs need formal documentation compression. Skip if:</p>
+<ul class="simple">
+<li><p><strong>Minor/internal changes</strong>: Small process adjustments with no external impact</p></li>
+<li><p><strong>Rejected CIPs</strong>: No implementation to document</p></li>
+<li><p><strong>Superseded CIPs</strong>: Compress the replacement instead</p></li>
+<li><p><strong>Implementation details only</strong>: Fully captured in code/tests</p></li>
+</ul>
+<p>When skipping, still set <code class="docutils literal notranslate"><span class="pre">compressed:</span> <span class="pre">true</span></code> to remove the CIP from compression suggestions.</p>
+</section>
+<hr class="docutils" />
+<section id="configuration-override-optional">
+<h2>Configuration Override (Optional)<a class="headerlink" href="#configuration-override-optional" title="Link to this heading"></a></h2>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.vibesafe/documentation.yml</span></code> to customize compression behavior:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">documentation</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Recommended: Sphinx with MyST for Markdown support</span>
+<span class="w">  </span><span class="nt">system</span><span class="p">:</span><span class="w"> </span><span class="s">"sphinx-myst"</span><span class="w">  </span><span class="c1"># Options: sphinx, sphinx-myst, mkdocs, plain-markdown, readme-only</span>
+<span class="w">  </span><span class="nt">source_dir</span><span class="p">:</span><span class="w"> </span><span class="s">"docs/source"</span>
+<span class="w">  </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="s">"markdown"</span><span class="w">  </span><span class="c1"># Primary format (markdown or rst)</span>
+<span class="w">  </span><span class="nt">parser</span><span class="p">:</span><span class="w"> </span><span class="s">"myst"</span><span class="w">  </span><span class="c1"># For Sphinx: myst (Markdown) or default (reStructuredText)</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="nt">targets</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">infrastructure</span><span class="p">:</span><span class="w"> </span><span class="s">"docs/source/architecture.md"</span>
+<span class="w">    </span><span class="nt">feature</span><span class="p">:</span><span class="w"> </span><span class="s">"docs/source/features.md"</span>
+<span class="w">    </span><span class="nt">process</span><span class="p">:</span><span class="w"> </span><span class="s">"docs/source/workflow.md"</span>
+<span class="w">    </span><span class="nt">guides</span><span class="p">:</span><span class="w"> </span><span class="s">"docs/source/"</span>
+
+<span class="nt">compression</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">traceability</span><span class="p">:</span><span class="w"> </span><span class="s">"inline"</span><span class="w">  </span><span class="c1"># or "footer"</span>
+</pre></div>
+</div>
+<p><strong>Why sphinx-myst?</strong> Get professional documentation capabilities while writing in Markdown!</p>
+</section>
+<hr class="docutils" />
+<section id="periodic-compression-review">
+<h2>Periodic Compression Review<a class="headerlink" href="#periodic-compression-review" title="Link to this heading"></a></h2>
+<p><strong>Why periodic reviews?</strong> While <code class="docutils literal notranslate"><span class="pre">whats-next</span></code> prompts help, periodic reviews ensure nothing is forgotten. Quarterly rhythm provides natural checkpoints for documentation maintenance.</p>
+<section id="quarterly-review-workflow">
+<h3>Quarterly Review Workflow<a class="headerlink" href="#quarterly-review-workflow" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Check Status</strong>: <code class="docutils literal notranslate"><span class="pre">./whats-next</span> <span class="pre">--compression-check</span></code></p></li>
+<li><p><strong>Prioritize</strong>: Which CIPs are critical to document? Which can wait?</p></li>
+<li><p><strong>Batch Compress</strong>: Work through high-value CIPs using compression checklist</p></li>
+<li><p><strong>Update Metrics</strong>: Track compression quality (see below)</p></li>
+<li><p><strong>Reflect</strong>: What went well? What slipped through? Adjust workflow if needed</p></li>
+</ol>
+</section>
+<section id="compression-quality-metrics">
+<h3>Compression Quality Metrics<a class="headerlink" href="#compression-quality-metrics" title="Link to this heading"></a></h3>
+<p>Track these quarterly:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Target</p></th>
+<th class="head"><p>Why</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>30-day compliance</p></td>
+<td><p>&gt;80%</p></td>
+<td><p>Most CIPs compressed quickly</p></td>
+</tr>
+<tr class="row-odd"><td><p>90-day compliance</p></td>
+<td><p>&gt;95%</p></td>
+<td><p>Nearly all CIPs compressed eventually</p></td>
+</tr>
+<tr class="row-even"><td><p>Uncompressed backlog</p></td>
+<td><p>&lt;5 CIPs</p></td>
+<td><p>Manageable queue</p></td>
+</tr>
+<tr class="row-odd"><td><p>Oldest uncompressed</p></td>
+<td><p>&lt;120 days</p></td>
+<td><p>Nothing forgotten &gt;4 months</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="creating-quarterly-review-tasks">
+<h3>Creating Quarterly Review Tasks<a class="headerlink" href="#creating-quarterly-review-tasks" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># At end of each quarter (or start of next)</span>
+cp<span class="w"> </span>templates/quarterly_compression_review_template.md<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>backlog/documentation/YYYY-QX_quarterly-compression-review.md
+<span class="c1"># Edit dates, quarter number, set status to "Ready"</span>
+</pre></div>
+</div>
+<p><strong>First Review</strong>: Recommend Q2 2026 (Apr-Jun) as the first periodic review, allowing time for initial CIPs to close and establish baseline metrics.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="compression-vs-cip-history">
+<h2>Compression vs. CIP History<a class="headerlink" href="#compression-vs-cip-history" title="Link to this heading"></a></h2>
+<section id="compression-is-not">
+<h3>Compression is NOT<a class="headerlink" href="#compression-is-not" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>❌ Deleting CIPs (they remain for historical reference)</p></li>
+<li><p>❌ Rewriting CIPs (they stay as-is, documenting the journey)</p></li>
+<li><p>❌ Creating duplicate documentation (extract essence, don’t copy)</p></li>
+<li><p>❌ Required before CIP closure (recommended after)</p></li>
+</ul>
+</section>
+<section id="compression-is">
+<h3>Compression IS<a class="headerlink" href="#compression-is" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>✅ Extracting essential knowledge from development artifacts</p></li>
+<li><p>✅ Creating accessible documentation for future users</p></li>
+<li><p>✅ Validating that implementation matches design intent</p></li>
+<li><p>✅ Closing the feedback loop: WHY→WHAT→HOW→DO→DOCUMENT→WHY</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tools-and-templates">
+<h2>Tools and Templates<a class="headerlink" href="#tools-and-templates" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Compression Checklist</strong>: <code class="docutils literal notranslate"><span class="pre">templates/compression_checklist.md</span></code> - Step-by-step guide for compressing a single CIP</p></li>
+<li><p><strong>Quarterly Review Template</strong>: <code class="docutils literal notranslate"><span class="pre">templates/quarterly_compression_review_template.md</span></code> - Periodic review workflow</p></li>
+<li><p><strong>Detection Script</strong>: <code class="docutils literal notranslate"><span class="pre">./whats-next</span> <span class="pre">--compression-check</span></code> - Find CIPs needing compression</p></li>
+<li><p><strong>Example</strong>: This guide was created by compressing <a class="reference internal" href="#../cip/cip0013.md"><span class="xref myst">CIP-0013</span></a> using its own process!</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Design</strong>: <a class="reference internal" href="#../cip/cip0013.md"><span class="xref myst">CIP-0013: Documentation Compression Stage</span></a></p></li>
+<li><p><strong>Requirements</strong>:</p>
+<ul>
+<li><p><a class="reference internal" href="#../requirements/req000E_documentation-synchronization.md"><span class="xref myst">REQ-000E: Documentation Synchronization with Implementation</span></a></p></li>
+<li><p><a class="reference internal" href="#../requirements/req000F_documentation-structure-specification.md"><span class="xref myst">REQ-000F: Documentation Structure Specification</span></a></p></li>
+</ul>
+</li>
+<li><p><strong>Templates</strong>:</p>
+<ul>
+<li><p><a class="reference internal" href="#../templates/compression_checklist.md"><span class="xref myst">Compression Checklist</span></a></p></li>
+<li><p><a class="reference internal" href="#../templates/quarterly_compression_review_template.md"><span class="xref myst">Quarterly Review Template</span></a></p></li>
+</ul>
+</li>
+<li><p><strong>Related CIPs</strong>:</p>
+<ul>
+<li><p><a class="reference internal" href="#../cip/cip0007.md"><span class="xref myst">CIP-0007: Documentation and Implementation as a Unified Whole</span></a></p></li>
+</ul>
+</li>
+</ul>
+<hr class="docutils" />
+<p><em>Last updated: 2026-01-08</em><br />
+<em>Compressed from CIP-0013 (closed 2026-01-08)</em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="whats_next_script.html" class="btn btn-neutral float-left" title="What’s Next Script" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing to VibeSafe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

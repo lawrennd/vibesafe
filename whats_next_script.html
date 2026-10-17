@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What’s Next Script &mdash; VibeSafe 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=59ca3cb4" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VibeSafe Documentation Compression Guide" href="compression-guide.html" />
+    <link rel="prev" title="VibeSafe Development Workflow" href="workflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VibeSafe
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">VibeSafe Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">VibeSafe Development Workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s Next Script</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-line-options">Command Line Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output-sections">Output Sections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#git-status">Git Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cip-status">CIP Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backlog-status">Backlog Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recommended-next-steps">Recommended Next Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#files-needing-yaml-frontmatter">Files Needing YAML Frontmatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compression-suggestions-new">Compression Suggestions (New)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#yaml-frontmatter">YAML Frontmatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compression-detection">Compression Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-compression">What is Compression?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compression-check-flag">–compression-check Flag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compression-suggestions-in-main-output">Compression Suggestions in Main Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compression-workflow">Compression Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-the-script-detects-compression-needs">How the Script Detects Compression Needs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-compressed-true">Setting compressed: true</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extending-whats-next-with-local-hooks">Extending whats-next with Local Hooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#activation">Activation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hook-functions">Hook functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-local-sections-context-list"><code class="docutils literal notranslate"><span class="pre">get_local_sections(context)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#get-local-next-steps-context-list"><code class="docutils literal notranslate"><span class="pre">get_local_next_steps(context)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#context-dictionary">Context dictionary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-handling">Error handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-data-science-project">Example (data science project)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#for-developers">For Developers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#validation-checks">Validation Checks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cip-backlog-coverage-check-no-cip-backlog-check">CIP-Backlog Coverage Check (<code class="docutils literal notranslate"><span class="pre">--no-cip-backlog-check</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-structure">Project Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extending-the-script">Extending the Script</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#for-llms">For LLMs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compression-guide.html">VibeSafe Documentation Compression Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to VibeSafe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_examples.html">YAML Frontmatter Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_frontmatter_schema.html">VibeSafe YAML Frontmatter Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/README.html">VibeSafe Thinking Patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/goal-decomposition.html">Goal Decomposition Pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="patterns/stakeholder-identification.html">Stakeholder Identification Pattern</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VibeSafe</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">What’s Next Script</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/whats_next_script.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="whats-next-script">
+<h1>What’s Next Script<a class="headerlink" href="#whats-next-script" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The “What’s Next” script is a project status summarizer that helps LLMs and human users quickly understand the current state of the VibeSafe project and identify pending tasks. It provides a comprehensive overview of:</p>
+<ul class="simple">
+<li><p>Git repository status</p></li>
+<li><p>CIP (Code Improvement Proposal) status</p></li>
+<li><p>Backlog item status</p></li>
+<li><p>Recommended next steps</p></li>
+<li><p>Files needing YAML frontmatter</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>The script is located in the <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory of the VibeSafe repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>scripts/whats_next.py
+</pre></div>
+</div>
+<section id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h3>
+<p>The script requires:</p>
+<ul class="simple">
+<li><p>Python 3.6+</p></li>
+<li><p>PyYAML library</p></li>
+</ul>
+<p>You can install everything needed using:</p>
+<ol class="arabic">
+<li><p>The installation script (recommended):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># This creates a virtual environment and sets up a convenient wrapper</span>
+./install-whats-next.sh
+</pre></div>
+</div>
+</li>
+<li><p>Using the <a class="reference external" href="http://run-python-tests.sh">run-python-tests.sh</a> script (for development):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># This creates a virtual environment for testing</span>
+./scripts/run-python-tests.sh
+</pre></div>
+</div>
+</li>
+<li><p>Using the pyproject.toml file (if you have Poetry installed):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Poetry if you don't have it</span>
+curl<span class="w"> </span>-sSL<span class="w"> </span>https://install.python-poetry.org<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-
+
+<span class="c1"># Install dependencies</span>
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<p>After installation using the installation script, run the script using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./whats-next
+</pre></div>
+</div>
+<p>If you prefer to run it directly, make sure to activate the virtual environment first:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+python<span class="w"> </span>scripts/whats_next.py
+deactivate<span class="w">  </span><span class="c1"># When finished</span>
+</pre></div>
+</div>
+<section id="command-line-options">
+<h3>Command Line Options<a class="headerlink" href="#command-line-options" title="Link to this heading"></a></h3>
+<p>The script supports several command line options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--no-git</span></code>: Skip Git status information</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no-color</span></code>: Disable colored output</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--cip-only</span></code>: Only show CIP information</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--backlog-only</span></code>: Only show backlog information</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--requirements-only</span></code>: Only show requirements information</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--compression-check</span></code>: Show detailed compression candidates (closed CIPs needing compression)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--quiet</span></code>: Suppress all output except next steps</p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show only the next steps (useful for quick reference)</span>
+./whats-next<span class="w"> </span>--quiet
+
+<span class="c1"># Focus only on CIPs</span>
+./whats-next<span class="w"> </span>--cip-only
+
+<span class="c1"># Focus only on backlog items</span>
+./whats-next<span class="w"> </span>--backlog-only
+
+<span class="c1"># Disable color (useful for non-interactive terminals)</span>
+./whats-next<span class="w"> </span>--no-color
+</pre></div>
+</div>
+</section>
+</section>
+<section id="output-sections">
+<h2>Output Sections<a class="headerlink" href="#output-sections" title="Link to this heading"></a></h2>
+<section id="git-status">
+<h3>Git Status<a class="headerlink" href="#git-status" title="Link to this heading"></a></h3>
+<p>Shows the current branch, recent commits, modified files, and untracked files.</p>
+</section>
+<section id="cip-status">
+<h3>CIP Status<a class="headerlink" href="#cip-status" title="Link to this heading"></a></h3>
+<p>Lists all CIPs, categorized by their status (proposed, accepted, implemented, closed), and identifies those missing YAML frontmatter.</p>
+</section>
+<section id="backlog-status">
+<h3>Backlog Status<a class="headerlink" href="#backlog-status" title="Link to this heading"></a></h3>
+<p>Lists backlog items, highlighting high-priority items and those in progress, and identifies items missing YAML frontmatter.</p>
+</section>
+<section id="recommended-next-steps">
+<h3>Recommended Next Steps<a class="headerlink" href="#recommended-next-steps" title="Link to this heading"></a></h3>
+<p>Provides a prioritized list of recommended actions based on the project’s current state.</p>
+</section>
+<section id="files-needing-yaml-frontmatter">
+<h3>Files Needing YAML Frontmatter<a class="headerlink" href="#files-needing-yaml-frontmatter" title="Link to this heading"></a></h3>
+<p>Lists specific files that need YAML frontmatter to be added for better project tracking.</p>
+</section>
+<section id="compression-suggestions-new">
+<h3>Compression Suggestions (New)<a class="headerlink" href="#compression-suggestions-new" title="Link to this heading"></a></h3>
+<p>When closed CIPs haven’t been compressed into formal documentation, the script automatically detects and suggests compression actions. This helps ensure that knowledge from closed CIPs is systematically transferred to permanent documentation.</p>
+</section>
+</section>
+<section id="yaml-frontmatter">
+<h2>YAML Frontmatter<a class="headerlink" href="#yaml-frontmatter" title="Link to this heading"></a></h2>
+<p>The script checks for and recommends adding YAML frontmatter to CIPs and backlog items. See <a class="reference internal" href="yaml_frontmatter_examples.html"><span class="std std-doc">YAML Frontmatter Examples</span></a> for the required format.</p>
+</section>
+<section id="compression-detection">
+<h2>Compression Detection<a class="headerlink" href="#compression-detection" title="Link to this heading"></a></h2>
+<p>The “What’s Next” script automatically detects closed CIPs that haven’t been compressed into formal documentation and suggests compression actions.</p>
+<section id="what-is-compression">
+<h3>What is Compression?<a class="headerlink" href="#what-is-compression" title="Link to this heading"></a></h3>
+<p><strong>Documentation compression</strong> is the process of distilling knowledge from closed CIPs (design rationale), completed backlog tasks (implementation details), and finalized code into streamlined formal documentation. This ensures that future users can understand what was built without reading the entire development history.</p>
+</section>
+<section id="compression-check-flag">
+<h3>–compression-check Flag<a class="headerlink" href="#compression-check-flag" title="Link to this heading"></a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">--compression-check</span></code> flag to see a detailed view of compression candidates:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./whats-next<span class="w"> </span>--compression-check
+</pre></div>
+</div>
+<p><strong>Output includes</strong>:</p>
+<ul class="simple">
+<li><p>List of closed CIPs with <code class="docutils literal notranslate"><span class="pre">compressed:</span> <span class="pre">false</span></code> (or missing the field)</p></li>
+<li><p>Days since CIP closure</p></li>
+<li><p>Priority level (High, Medium, Low)</p></li>
+<li><p>Batch compression opportunities (3+ CIPs closed within 7 days)</p></li>
+</ul>
+</section>
+<section id="compression-suggestions-in-main-output">
+<h3>Compression Suggestions in Main Output<a class="headerlink" href="#compression-suggestions-in-main-output" title="Link to this heading"></a></h3>
+<p>When running <code class="docutils literal notranslate"><span class="pre">./whats-next</span></code> without flags, compression suggestions appear in the “Suggested Next Steps” section if:</p>
+<ol class="arabic simple">
+<li><p><strong>Any closed CIPs need compression</strong>: Suggests using the compression template</p></li>
+<li><p><strong>Batch opportunity detected</strong>: 3+ CIPs closed within 7 days</p></li>
+<li><p><strong>High-priority CIPs uncompressed</strong>: Older or high-priority CIPs are highlighted</p></li>
+</ol>
+</section>
+<section id="compression-workflow">
+<h3>Compression Workflow<a class="headerlink" href="#compression-workflow" title="Link to this heading"></a></h3>
+<p>The script suggests:</p>
+<ol class="arabic simple">
+<li><p><strong>Use template</strong>: <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">templates/compression_checklist.md</span> <span class="pre">cip/cipXXXX-compression.md</span></code></p></li>
+<li><p><strong>Or run detailed check</strong>: <code class="docutils literal notranslate"><span class="pre">./whats-next</span> <span class="pre">--compression-check</span></code></p></li>
+<li><p><strong>Follow the guide</strong>: See <a class="reference internal" href="compression-guide.html"><span class="std std-doc">Compression Guide</span></a></p></li>
+</ol>
+</section>
+<section id="how-the-script-detects-compression-needs">
+<h3>How the Script Detects Compression Needs<a class="headerlink" href="#how-the-script-detects-compression-needs" title="Link to this heading"></a></h3>
+<p>The script scans all closed CIPs and checks:</p>
+<ul class="simple">
+<li><p><strong>Status</strong>: Is the CIP closed?</p></li>
+<li><p><strong>Compressed field</strong>: Is <code class="docutils literal notranslate"><span class="pre">compressed:</span> <span class="pre">false</span></code> or missing?</p></li>
+<li><p><strong>Age</strong>: How many days since <code class="docutils literal notranslate"><span class="pre">last_updated</span></code>?</p></li>
+</ul>
+<p><strong>Prioritization</strong>:</p>
+<ul class="simple">
+<li><p>High-priority CIPs are flagged first</p></li>
+<li><p>Older CIPs are listed before newer ones</p></li>
+<li><p>Batch opportunities are highlighted</p></li>
+</ul>
+</section>
+<section id="setting-compressed-true">
+<h3>Setting compressed: true<a class="headerlink" href="#setting-compressed-true" title="Link to this heading"></a></h3>
+<p>After compressing a CIP into formal documentation:</p>
+<ol class="arabic simple">
+<li><p>Update the CIP’s YAML frontmatter: <code class="docutils literal notranslate"><span class="pre">compressed:</span> <span class="pre">true</span></code></p></li>
+<li><p>Commit the changes</p></li>
+<li><p>The CIP will no longer appear in compression suggestions</p></li>
+</ol>
+<p><strong>Example</strong>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">"0013"</span>
+<span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">"Closed"</span>
+<span class="nt">compressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Marks as compressed</span>
+<span class="nn">---</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="compression-guide.html"><span class="std std-doc">Compression Guide</span></a> for the complete workflow.</p>
+</section>
+</section>
+<section id="extending-whats-next-with-local-hooks">
+<h2>Extending whats-next with Local Hooks<a class="headerlink" href="#extending-whats-next-with-local-hooks" title="Link to this heading"></a></h2>
+<p>Projects can extend <code class="docutils literal notranslate"><span class="pre">whats-next</span></code> output with project-specific sections and
+next-step suggestions without modifying any VibeSafe system files (CIP-0017).</p>
+<section id="activation">
+<h3>Activation<a class="headerlink" href="#activation" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.vibesafe/whats_next_local.py</span></code> in your project root. VibeSafe
+discovers and loads it automatically on every <code class="docutils literal notranslate"><span class="pre">./whats-next</span></code> run. No
+installation step is required. A documented template stub is provided at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">templates</span><span class="o">/.</span><span class="n">vibesafe</span><span class="o">/</span><span class="n">whats_next_local</span><span class="o">.</span><span class="n">py</span><span class="o">.</span><span class="n">example</span>
+</pre></div>
+</div>
+<p>Copy and rename it to get started:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>templates/.vibesafe/whats_next_local.py.example<span class="w"> </span>.vibesafe/whats_next_local.py
+</pre></div>
+</div>
+</section>
+<section id="hook-functions">
+<h3>Hook functions<a class="headerlink" href="#hook-functions" title="Link to this heading"></a></h3>
+<p>The local module may define either or both of the following functions.
+Both are optional — omitting them is equivalent to returning an empty list.</p>
+<section id="get-local-sections-context-list">
+<h4><code class="docutils literal notranslate"><span class="pre">get_local_sections(context)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code><a class="headerlink" href="#get-local-sections-context-list" title="Link to this heading"></a></h4>
+<p>Called twice per run to inject custom output sections at controlled positions:</p>
+<ul class="simple">
+<li><p><strong>First call</strong> with <code class="docutils literal notranslate"><span class="pre">context[&quot;position&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;before&quot;</span></code> — sections are rendered
+<em>before</em> all VibeSafe built-in sections. Use for urgent project-wide alerts
+or blockers that must be seen first.</p></li>
+<li><p><strong>Second call</strong> with <code class="docutils literal notranslate"><span class="pre">context[&quot;position&quot;]</span> <span class="pre">=</span> <span class="pre">&quot;after&quot;</span></code> — sections are rendered
+<em>after</em> all VibeSafe sections. Use for supplementary project information.</p></li>
+</ul>
+<p>Each returned item is either:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Position</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(title,</span> <span class="pre">lines)</span></code></p></td>
+<td><p>“after” (default)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">(title,</span> <span class="pre">lines,</span> <span class="pre">&quot;before&quot;)</span></code></p></td>
+<td><p>before built-in sections</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(title,</span> <span class="pre">lines,</span> <span class="pre">&quot;after&quot;)</span></code></p></td>
+<td><p>after built-in sections</p></td>
+</tr>
+</tbody>
+</table>
+<p>where <code class="docutils literal notranslate"><span class="pre">title</span></code> is a <code class="docutils literal notranslate"><span class="pre">str</span></code> and <code class="docutils literal notranslate"><span class="pre">lines</span></code> is a <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> of content lines.</p>
+</section>
+<section id="get-local-next-steps-context-list">
+<h4><code class="docutils literal notranslate"><span class="pre">get_local_next_steps(context)</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code><a class="headerlink" href="#get-local-next-steps-context-list" title="Link to this heading"></a></h4>
+<p>Called once per run to inject additional items into the “Suggested Next Steps”
+list.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Position in output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>appended after VibeSafe suggestions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">(&quot;low&quot;,</span> <span class="pre">str)</span></code></p></td>
+<td><p>appended after VibeSafe suggestions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(&quot;high&quot;,</span> <span class="pre">str)</span></code></p></td>
+<td><p>prepended <em>before</em> VibeSafe suggestions</p></td>
+</tr>
+</tbody>
+</table>
+<p>Use <code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> for urgent, project-specific concerns (e.g. “pipeline failed”,
+“deadline today”) that must be seen before VibeSafe housekeeping items.</p>
+</section>
+</section>
+<section id="context-dictionary">
+<h3>Context dictionary<a class="headerlink" href="#context-dictionary" title="Link to this heading"></a></h3>
+<p>Both hooks receive the same <code class="docutils literal notranslate"><span class="pre">context</span></code> dict:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">git_info</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+<td><p>Output of <code class="docutils literal notranslate"><span class="pre">get_git_status()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cips_info</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+<td><p>Output of <code class="docutils literal notranslate"><span class="pre">scan_cips()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">backlog_info</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+<td><p>Output of <code class="docutils literal notranslate"><span class="pre">scan_backlog()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">requirements_info</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+<td><p>Output of <code class="docutils literal notranslate"><span class="pre">scan_requirements()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">args</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">argparse.Namespace</span></code></p></td>
+<td><p>CLI arguments (e.g. <code class="docutils literal notranslate"><span class="pre">args.quiet</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">get_local_sections()</span></code> additionally receives <code class="docutils literal notranslate"><span class="pre">context[&quot;position&quot;]</span></code> set to
+<code class="docutils literal notranslate"><span class="pre">&quot;before&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;after&quot;</span></code> for the current call. The dict is read-only from the
+hook’s perspective; mutations have no effect on the core script.</p>
+</section>
+<section id="error-handling">
+<h3>Error handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h3>
+<p>Errors in the local module are caught and reported as warnings — they never
+crash <code class="docutils literal notranslate"><span class="pre">whats-next</span></code>. Import errors are caught at load time; runtime errors inside
+each hook are caught per-call. The rest of the output is always produced.</p>
+</section>
+<section id="example-data-science-project">
+<h3>Example (data science project)<a class="headerlink" href="#example-data-science-project" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># .vibesafe/whats_next_local.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_local_sections</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"position"</span><span class="p">,</span> <span class="s2">"after"</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">position</span> <span class="o">==</span> <span class="s2">"before"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">".ci-failing"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"CI FAILING"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"  Fix CI before merging."</span><span class="p">],</span> <span class="s2">"before"</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">position</span> <span class="o">==</span> <span class="s2">"after"</span><span class="p">:</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"data/processed"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">stale</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">data_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*.parquet"</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">))</span>
+                   <span class="o">&gt;</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"  - </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">stale</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">"  All datasets are fresh."</span><span class="p">]</span>
+            <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"Data Freshness"</span><span class="p">,</span> <span class="n">lines</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sections</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_local_next_steps</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"results/latest_run.json"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"high"</span><span class="p">,</span> <span class="s2">"Run the pipeline: make run"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"tmp/"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Clean up tmp/: rm -rf tmp/"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">steps</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="for-developers">
+<h2>For Developers<a class="headerlink" href="#for-developers" title="Link to this heading"></a></h2>
+<section id="validation-checks">
+<h3>Validation Checks<a class="headerlink" href="#validation-checks" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">scripts/validate_vibesafe_structure.py</span></code> script runs automatically as a pre-commit hook
+and validates VibeSafe structure conformance. It performs six steps:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Check</p></th>
+<th class="head"><p>Flag to skip</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Fix reverse links (if <code class="docutils literal notranslate"><span class="pre">--fix-links</span></code>)</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Collect all IDs</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Validate each component’s YAML frontmatter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--component</span></code> to limit scope</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>System file drift (template vs runtime)</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Git-based governance drift</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--no-governance-drift</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>CIP→backlog coverage</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--no-cip-backlog-check</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<section id="cip-backlog-coverage-check-no-cip-backlog-check">
+<h4>CIP-Backlog Coverage Check (<code class="docutils literal notranslate"><span class="pre">--no-cip-backlog-check</span></code>)<a class="headerlink" href="#cip-backlog-coverage-check-no-cip-backlog-check" title="Link to this heading"></a></h4>
+<p><strong>What it checks:</strong> Every CIP with status <code class="docutils literal notranslate"><span class="pre">Accepted</span></code> or <code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">Progress</span></code> must have at least
+one backlog task whose <code class="docutils literal notranslate"><span class="pre">related_cips</span></code> field references that CIP’s id.</p>
+<p><strong>Severity:</strong> Warning (yellow) in normal mode; escalates to error (exit code 1) with <code class="docutils literal notranslate"><span class="pre">--strict</span></code>.</p>
+<p><strong>Example warning:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  cip/cip0019.md:
+    CIP '0019' (CIP-Backlog Coverage Check) is Accepted/In Progress but has no backlog
+    tasks referencing it. Break it down into backlog tasks before implementing
+    (VibeSafe workflow: Accepted → backlog tasks → In Progress).
+</pre></div>
+</div>
+<p><strong>How to fix:</strong> Create one or more backlog tasks with <code class="docutils literal notranslate"><span class="pre">related_cips:</span> <span class="pre">[&quot;0019&quot;]</span></code> in their
+YAML frontmatter (replacing <code class="docutils literal notranslate"><span class="pre">0019</span></code> with the relevant CIP id).</p>
+<p><strong>How to skip:</strong> Pass <code class="docutils literal notranslate"><span class="pre">--no-cip-backlog-check</span></code> to the validator, or use the <code class="docutils literal notranslate"><span class="pre">--strict</span></code>
+flag only when you want hard enforcement.</p>
+</section>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h3>
+<p>The script includes unit tests to ensure its functionality. To run the tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all tests (creates a virtual environment automatically)</span>
+./scripts/run-python-tests.sh
+
+<span class="c1"># Alternatively, run tests manually</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/
+deactivate
+</pre></div>
+</div>
+</section>
+<section id="project-structure">
+<h3>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>vibesafe/
+├── scripts/
+│   └── whats_next.py         # The main script
+├── docs/
+│   ├── whats_next_script.md  # This documentation
+│   └── yaml_frontmatter_examples.md  # YAML examples
+├── tests/
+│   └── test_whats_next.py    # Test cases for the script
+├── pyproject.toml            # Dependency and project configuration
+├── .venv/                    # Virtual environment (created by install script)
+├── whats-next                # Convenience wrapper script (created by install script)
+└── install-whats-next.sh     # Installation script
+</pre></div>
+</div>
+</section>
+<section id="extending-the-script">
+<h3>Extending the Script<a class="headerlink" href="#extending-the-script" title="Link to this heading"></a></h3>
+<p>The script is designed to be modular and extensible. If you want to add new functionality:</p>
+<ol class="arabic simple">
+<li><p>Add new functions in <code class="docutils literal notranslate"><span class="pre">scripts/whats_next.py</span></code></p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">generate_next_steps</span></code> function to include your new functionality</p></li>
+<li><p>Add tests for your changes in <code class="docutils literal notranslate"><span class="pre">tests/test_whats_next.py</span></code></p></li>
+<li><p>Update this documentation as needed</p></li>
+</ol>
+</section>
+</section>
+<section id="for-llms">
+<h2>For LLMs<a class="headerlink" href="#for-llms" title="Link to this heading"></a></h2>
+<p>This script is particularly useful for LLMs working on the VibeSafe project, as it provides quick context about the project’s current state and priorities.</p>
+<p>When an LLM is asked to work on VibeSafe, it should:</p>
+<ol class="arabic simple">
+<li><p>Run the “What’s Next” script to get current project status</p></li>
+<li><p>Review the recommended next steps</p></li>
+<li><p>Understand the high-priority items</p></li>
+<li><p>Check if there are files missing YAML frontmatter that need updating</p></li>
+</ol>
+<p>This approach ensures that LLMs have the necessary context to make informed decisions about what tasks to prioritize.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="workflow.html" class="btn btn-neutral float-left" title="VibeSafe Development Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="compression-guide.html" class="btn btn-neutral float-right" title="VibeSafe Documentation Compression Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Neil Lawrence.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
