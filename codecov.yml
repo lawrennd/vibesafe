@@ -12,7 +12,8 @@ coverage:
   status:
     project:
       default:
-        # Allow coverage to drop by 2%
+        # Floor aligned with recent main uploads; allow small dips
+        target: 70%
         threshold: 2%
     patch:
       default:
@@ -21,4 +22,6 @@ coverage:
         threshold: 5%
 
 ignore:
-  - "scripts/test/**/*"   # Ignore test files 
+  - "scripts/test/**/*"   # Ignore test files
+  - "docs/**/*"
+  - "**/__pycache__/**" 
