@@ -58,9 +58,10 @@ The script provides a comprehensive overview of:
 
 1. **Git Status**: Current branch, recent commits, modified files, untracked files
 2. **CIP Status**: All CIPs categorized by status (proposed, accepted, implemented, closed)
-3. **Backlog Status**: Backlog items with priority and status information
-4. **Recommended Next Steps**: Prioritized actions based on the project's current state
-5. **Files Needing YAML Frontmatter**: Specific files missing required metadata
+3. **CoE Status**: Open/Analysed/Closed Correction of Error documents (CIP-0016), when `coe/` exists
+4. **Backlog Status**: Backlog items with priority and status information
+5. **Recommended Next Steps**: Prioritized actions based on the project's current state
+6. **Files Needing YAML Frontmatter**: Specific files missing required metadata
 
 ## For LLMs: How to Use This Information
 
@@ -69,7 +70,7 @@ As an LLM working on the VibeSafe project, you should:
 1. Run the "What's Next" script at the beginning of your session
 2. Review the recommended next steps section for guidance on priorities
 3. Pay attention to any files needing YAML frontmatter
-4. Focus on high-priority backlog items and accepted CIPs
+4. Focus on high-priority backlog items, accepted CIPs, and open/analysed CoEs
 5. Check the current branch before making changes
 
 This approach ensures you have the necessary context to make informed decisions about what to work on and how to prioritize tasks.

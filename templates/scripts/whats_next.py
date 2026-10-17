@@ -536,7 +536,7 @@ def scan_cips() -> Dict[str, Any]:
 
 
 def scan_coes() -> Dict[str, Any]:
-    """Scan all CoE (Cause of Error) documents and collect their status (CIP-0016).
+    """Scan all CoE (Correction of Error) documents and collect their status (CIP-0016).
 
     Returns:
         Dictionary containing CoE status information, or empty dict if no coe/ directory.
@@ -1778,7 +1778,7 @@ def main():
             open_coes = coes_info['by_status']['open']
             analysed_coes = coes_info['by_status']['analysed']
             closed_coes = coes_info['by_status']['closed']
-            print(f"{Colors.BOLD}CoEs (Cause of Error):{Colors.ENDC}")
+            print(f"{Colors.BOLD}CoEs (Correction of Error):{Colors.ENDC}")
             print(f"  Total: {coes_info['total']}")
             if open_coes:
                 print(f"  {Colors.RED}Open:{Colors.ENDC} {len(open_coes)}")

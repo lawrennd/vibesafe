@@ -105,6 +105,8 @@ install_system_files() {
       "backlog/update_index.py"
       "cip/README.md"
       "cip/cip_template.md"
+      "coe/README.md"
+      "coe/coe_template.md"
       "tenets/README.md"
       "tenets/tenet_template.md"
       "tenets/combine_tenets.py"
@@ -156,6 +158,7 @@ install_minimal_system_files() {
   # Create directory structure
   mkdir -p backlog/{documentation,features,infrastructure,bugs}
   mkdir -p cip
+  mkdir -p coe
   mkdir -p tenets
   mkdir -p requirements
   
@@ -766,6 +769,10 @@ generate_cursor_rules() {
         cip)
           description="Code Improvement Plans (CIPs) - Structured process for planning and implementing significant code changes"
           globs="cip/**/*.md"
+          ;;
+        coe)
+          description="VibeSafe Correction of Error (CoE) - Blameless post-incident process for governance and traceability failures"
+          globs="coe/**/*.md"
           ;;
         requirements)
           description="VibeSafe Requirements - Defining WHAT needs to be built (outcomes), not HOW to build it (implementation)"

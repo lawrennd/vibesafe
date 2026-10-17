@@ -16,10 +16,20 @@ tags:
 
 # CoE: [Brief description of the incident]
 
-> **Note**: CoEs are orthogonal to the WHY→WHAT→HOW→DO hierarchy. They examine where
-> the hierarchy broke and produce items at the appropriate level to fix it. The CoE itself
-> does not implement fixes — it produces outputs (CIPs, backlog tasks, requirements,
-> tripwires) that are implemented separately.
+> **Correction of Error** (CIP-0016). CoEs are orthogonal to the WHY→WHAT→HOW→DO
+> hierarchy. They examine where the hierarchy broke and produce items at the appropriate
+> level to fix it. The CoE itself does not implement fixes — it produces outputs (CIPs,
+> backlog tasks, requirements, tripwires) that are implemented separately.
+>
+> Blameless: focus on process, tooling, and design — not people.
+>
+> Analysis depth: Class 0 may abbreviate Timeline, Incident questions, and 5 Whys.
+> Class 1+ should complete them in full.
+
+## Summary
+
+[Write last. Stand-alone: who/what was impacted, when, how discovered, how mitigated,
+and how recurrence will be prevented. Readable without the other sections.]
 
 ## Severity
 
@@ -31,25 +41,80 @@ tags:
 
 **Blast radius**: [Describe who/what was affected]
 
-## What happened
-
-[1–3 sentences. What was the observable symptom or discovery?]
-
 ## Impact
 
-[Who was affected and how? Internal team / contributors / downstream users / deployed systems?]
+[Who was affected and how? Internal team / contributors / downstream users / deployed systems?
+Include approximate duration if known.]
 
-## Proximate failure
+## Timeline
 
-[What specifically broke or was missing? E.g. "Validator rule implemented without a CIP."]
+[Bullet list of what happened and when. Required for Class 1+; optional for Class 0.]
 
-## Root cause(s)
+- YYYY-MM-DD HH:MM — [event]
+- YYYY-MM-DD HH:MM — [event]
 
-[Why did it happen? E.g. "No check existed to catch governance-sensitive changes without planning artifacts."]
+## Evidence / metrics
 
-## Contributing factors
+[Optional. Validator output, git commits, install logs, screenshots, or other evidence
+that supports the impact and diagnosis.]
 
-[Process, tooling, or assumption gaps that made this easier to miss. E.g. "The commit hook only checked file naming, not cross-component coverage."]
+## What happened
+
+[1–3 sentences. Observable symptom or discovery — the proximate failure.]
+
+## Incident questions
+
+Adapted from Amazon’s Detect / Diagnose / Mitigate set. “Impact” means contributors,
+downstream projects, installs, or external users — depending on Class.
+
+### Detection
+
+1. **When did you learn there was impact?**
+   - [answer]
+2. **How did you learn there was impact?** (validator, `whats-next`, human review, user report, …)
+   - [answer]
+3. **How can we reduce the time-to-detect in half?**
+   - [answer]
+
+### Diagnosis
+
+4. **What was the underlying cause of the impact?**
+   - [answer]
+5. **Was an internal activity underway during the incident?** (install/update, CIP work, rule change, refactor, …)
+   - [answer]
+6. **How can we reduce the time-to-diagnose in half?**
+   - [answer]
+
+### Mitigation
+
+7. **When did impact return to pre-incident levels (or when will it)?**
+   - [answer]
+8. **How does the owner know the system/process is properly restored?**
+   - [answer]
+9. **How did you determine where and how to mitigate?**
+   - [answer]
+10. **How can we reduce the time-to-mitigate in half?**
+    - [answer]
+
+## 5 Whys
+
+Ask why at least five times (more if needed). Do not stop at “human error” — ask why
+that error was possible. Each gap should feed a follow-up output.
+
+1. **Why** [problem statement]?
+   - Because …
+2. **Why** …?
+   - Because …
+3. **Why** …?
+   - Because …
+4. **Why** …?
+   - Because …
+5. **Why** …?
+   - Because …
+6. *(optional)* **Why** …?
+   - Because …
+
+**Root cause(s)**: [1–3 sentences synthesising the chain]
 
 ## Traceability artifacts missing or incorrect
 
@@ -65,33 +130,35 @@ tags:
 
 ## Follow-up outputs
 
-[List what this CoE produces. Implement these separately; link them back via frontmatter fields.]
+[Action items: improve prevention, detection, or mitigation. Implement separately;
+link via frontmatter `spawned_*` fields. Each item needs an owner.]
 
 ### Backlog tasks
 
-- [ ] [Task description] — `backlog/features/YYYY-MM-DD_task.md`
+- [ ] [Task description] — owner: [Name] — `backlog/features/YYYY-MM-DD_task.md`
 
 ### CIPs
 
-- [ ] [CIP description] — `cip/cipXXXX.md`
+- [ ] [CIP description] — owner: [Name] — `cip/cipXXXX.md`
 
 ### Requirements
 
-- [ ] [Requirement description] — `requirements/reqXXXX_name.md`
+- [ ] [Requirement description] — owner: [Name] — `requirements/reqXXXX_name.md`
 
 ### Validation tripwires
 
-- [ ] [Tripwire description] — implement in `validate_vibesafe_structure.py` or `whats-next`
+- [ ] [Tripwire description] — owner: [Name] — `validate_vibesafe_structure.py` or `whats-next`
 
 ## Checklist
 
 - [ ] Severity class assigned
 - [ ] Single-threaded owner named
+- [ ] Summary written (stand-alone)
 - [ ] Impact documented
-- [ ] Proximate failure identified
-- [ ] Root cause(s) identified
-- [ ] Contributing factors identified
+- [ ] Timeline documented (required Class 1+; optional Class 0)
+- [ ] Incident questions answered (Detect / Diagnose / Mitigate)
+- [ ] 5 Whys completed (abbreviated OK for Class 0; full for Class 1+)
 - [ ] Missing/incorrect traceability artifacts identified
-- [ ] Follow-up outputs listed (and created)
+- [ ] Follow-up outputs listed with owners (and created)
 - [ ] CoE status updated to Analysed once outputs are created
 - [ ] CoE status updated to Closed once outputs are implemented
