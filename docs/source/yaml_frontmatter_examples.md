@@ -16,6 +16,7 @@ tags:
   - "project-management"
   - "automation"
   - "tooling"
+github_prs: [101]
 ---
 ```
 
@@ -32,8 +33,13 @@ tags:
 - `author`: The name of the CIP author
 - `tags`: A list of relevant tags
 - `related_cips`: A list of related CIP IDs
+- `related_requirements`: Requirement IDs this CIP implements
 - `implementation_date`: The date the CIP was implemented (for implemented CIPs)
 - `completion_date`: The date the CIP was closed (for closed CIPs)
+- `github_issues`: List of related GitHub issue numbers (optional; CIP-001A)
+- `github_prs`: List of related GitHub pull request numbers (optional; CIP-001A)
+- `github_discussions`: List of related GitHub discussion numbers (optional; CIP-001A)
+- `github_issue`: Legacy single issue number; treated as `github_issues: [n]`
 
 ## Backlog Item Frontmatter Example
 
@@ -46,7 +52,8 @@ priority: "high"
 created: "2025-05-11"
 last_updated: "2025-05-11"
 owner: "Neil Lawrence"
-github_issue: 42
+github_issues: [42]
+github_prs: [101]
 dependencies:
   - "2025-05-01_prerequisite-feature"
 tags:
@@ -67,11 +74,33 @@ tags:
 ### Optional Fields for Backlog Items
 
 - `owner`: The person responsible for the task
-- `github_issue`: The related GitHub issue number
+- `github_issues`: List of related GitHub issue numbers (preferred; CIP-001A)
+- `github_prs`: List of related GitHub pull request numbers (optional; CIP-001A)
+- `github_discussions`: List of related GitHub discussion numbers (optional; CIP-001A)
+- `github_issue`: Legacy single issue number; treated as `github_issues: [n]`
 - `dependencies`: A list of dependent item IDs
 - `tags`: A list of relevant tags
 - `completion_date`: The date the item was completed (for completed items)
 - `related_cips`: CIP numbers related to this backlog item
+
+## Optional GitHub Links (CIP-001A)
+
+VibeSafe remains the planning source of truth. When a project uses GitHub, artifacts may optionally declare collaboration links in frontmatter:
+
+```yaml
+github_issues: [42]
+github_prs: [101, 102]
+github_discussions: [7]
+# Legacy alias (still accepted):
+github_issue: 42
+```
+
+Rules:
+
+- Fields are optional; empty string, `null`, or `N/A` means absent
+- Prefer lists of positive integers; a bare integer is also accepted
+- Invalid values produce validator **warnings**, not hard failures
+- Closing a GitHub item does not automatically change VibeSafe status
 
 ## Using YAML Frontmatter
 
@@ -102,4 +131,4 @@ The frontmatter provides structured metadata that can be programmatically parsed
 
 ## Migration Script
 
-The "what's next" script will automatically detect files without proper YAML frontmatter and list them as action items. A migration script will be provided to help add frontmatter to existing CIPs and backlog items. 
+The "what's next" script will automatically detect files without proper YAML frontmatter and list them as action items. A migration script will be provided to help add frontmatter to existing CIPs and backlog items.

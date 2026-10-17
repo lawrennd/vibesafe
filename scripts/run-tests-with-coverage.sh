@@ -38,7 +38,8 @@ if ! command -v kcov >/dev/null 2>&1; then
 fi
 
 # First run kcov directly on the install script to get its coverage
-if ! run_with_timeout "kcov --include-pattern=install-minimal.sh $COVERAGE_DIR ./scripts/install-minimal.sh" 30 "coverage for install script"; then
+# Prefer local templates when dogfooding this repo (avoid cloning origin/main over PR changes).
+if ! run_with_timeout "kcov --include-pattern=install-minimal.sh $COVERAGE_DIR env VIBESAFE_TEMPLATES_DIR=\"$(pwd)\" ./scripts/install-minimal.sh" 30 "coverage for install script"; then
   if [ $? -eq 124 ]; then
     echo "Aborting due to timeout."
     exit 1
@@ -78,7 +79,7 @@ if [ -d "tests" ] && [ -f "templates/scripts/whats_next.py" ]; then
       source "$VENV_DIR/bin/activate"
       
       # Install dependencies in the virtual environment
-      python3 -m pip install --quiet pytest pytest-cov pyyaml python-frontmatter
+      python3 -m pip install --quiet pytest pytest-cov pyyaml 'python-frontmatter>=1.0.0,<1.2'
 
       # Coverage: focus on canonical template code (templates/)
       python3 -m pytest tests/ --cov=templates --cov-report=xml:$COVERAGE_DIR/python-coverage.xml

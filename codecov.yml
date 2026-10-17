@@ -16,7 +16,8 @@ coverage:
         threshold: 2%
     patch:
       default:
-        # Allow new contributions to drop coverage by 5%
+        # New code should be substantially covered; allow small gaps
+        target: 90%
         threshold: 5%
 
 ignore:

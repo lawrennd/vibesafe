@@ -12,7 +12,7 @@ Checks:
 - Cross-references between components (valid IDs)
 - Bottom-up linking pattern (requirements→tenets, CIPs→requirements, backlog→CIPs)
 
-Implementation: CIP-0011 Phase 0a
+Implementation: CIP-0011 Phase 0a; CIP-001A Phase 0 (optional GitHub refs)
 """
 
 import os
@@ -21,7 +21,7 @@ import re
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any, Tuple
 
 try:
     import frontmatter
@@ -82,6 +82,138 @@ _ATTRIBUTION_DISALLOWED_SUBSTRINGS = [
     "author name",
     "person name",
 ]
+
+
+# CIP-001A / REQ-0011: optional GitHub collaboration links (read-only bridge)
+GITHUB_REF_FIELDS = ('github_issues', 'github_prs', 'github_discussions')
+GITHUB_LEGACY_ISSUE_FIELD = 'github_issue'
+_GITHUB_ABSENT_STRINGS = {'', 'n/a', 'na', 'none', 'null'}
+
+
+def _is_github_absent(value: Any) -> bool:
+    """Return True when an optional GitHub field should be treated as unset."""
+    if value is None:
+        return True
+    if isinstance(value, str) and value.strip().lower() in _GITHUB_ABSENT_STRINGS:
+        return True
+    if isinstance(value, (list, tuple)) and len(value) == 0:
+        return True
+    return False
+
+
+def _parse_github_id(item: Any) -> Optional[int]:
+    """Parse a single GitHub numeric ID; return None if not a positive integer."""
+    if isinstance(item, bool):
+        return None
+    if isinstance(item, int):
+        return item if item > 0 else None
+    if isinstance(item, float) and item.is_integer():
+        parsed = int(item)
+        return parsed if parsed > 0 else None
+    if isinstance(item, str):
+        text = item.strip()
+        if text.startswith('#'):
+            text = text[1:]
+        if text.isdigit():
+            parsed = int(text)
+            return parsed if parsed > 0 else None
+    return None
+
+
+def normalize_github_id_list(value: Any) -> Tuple[Optional[List[int]], List[Any]]:
+    """Normalize a GitHub ID field to a list of positive ints.
+
+    Accepts a single int/string or a list. Empty / null / ``N/A`` → absent.
+
+    Returns:
+        ``(ids, invalid_items)`` where ``ids`` is ``None`` if the field is
+        absent, otherwise a de-duplicated list of positive ints (order preserved).
+        ``invalid_items`` lists values that could not be parsed as IDs.
+    """
+    if _is_github_absent(value):
+        return None, []
+
+    if isinstance(value, (list, tuple)):
+        items = list(value)
+    else:
+        items = [value]
+
+    ids: List[int] = []
+    invalid: List[Any] = []
+    seen = set()
+    for item in items:
+        if _is_github_absent(item):
+            continue
+        parsed = _parse_github_id(item)
+        if parsed is None:
+            invalid.append(item)
+            continue
+        if parsed not in seen:
+            seen.add(parsed)
+            ids.append(parsed)
+
+    if not ids and not invalid:
+        return None, []
+    return ids, invalid
+
+
+def normalize_github_refs(frontmatter: Optional[Dict[str, Any]]) -> Dict[str, List[int]]:
+    """Normalize optional GitHub link fields from artifact frontmatter.
+
+    Merges legacy ``github_issue`` into ``github_issues``. Always returns the
+    three canonical keys as lists (empty when absent). Does not mutate input.
+    """
+    result = {
+        'github_issues': [],
+        'github_prs': [],
+        'github_discussions': [],
+    }
+    if not frontmatter:
+        return result
+
+    for field in GITHUB_REF_FIELDS:
+        ids, _invalid = normalize_github_id_list(frontmatter.get(field))
+        if ids:
+            result[field] = ids
+
+    legacy_ids, _legacy_invalid = normalize_github_id_list(
+        frontmatter.get(GITHUB_LEGACY_ISSUE_FIELD)
+    )
+    if legacy_ids:
+        merged = list(result['github_issues'])
+        seen = set(merged)
+        for issue_id in legacy_ids:
+            if issue_id not in seen:
+                seen.add(issue_id)
+                merged.append(issue_id)
+        result['github_issues'] = merged
+
+    return result
+
+
+def validate_github_refs(frontmatter, file_path, result):
+    """Warn on invalid optional GitHub reference fields (never hard-fail)."""
+    if not frontmatter:
+        return
+
+    for field in GITHUB_REF_FIELDS:
+        if field not in frontmatter:
+            continue
+        _ids, invalid = normalize_github_id_list(frontmatter.get(field))
+        for bad in invalid:
+            result.add_warning(
+                f"Invalid optional '{field}' value: {bad!r} (expected positive integer or list of ints)",
+                file_path,
+            )
+
+    if GITHUB_LEGACY_ISSUE_FIELD in frontmatter:
+        _ids, invalid = normalize_github_id_list(frontmatter.get(GITHUB_LEGACY_ISSUE_FIELD))
+        for bad in invalid:
+            result.add_warning(
+                f"Invalid optional 'github_issue' value: {bad!r} "
+                "(expected positive integer; prefer github_issues: [n])",
+                file_path,
+            )
 
 
 def validate_human_attribution(component_type, file_path, field_name, value, result):
@@ -276,7 +408,10 @@ COMPONENT_SPECS = {
         'pattern': r'^cip([0-9A-Fa-f]{4})(_[\w-]+)?\.md$',
         'id_format': 'XXXX (4-digit hex)',
         'required_fields': ['id', 'title', 'status', 'created', 'last_updated', 'author'],
-        'optional_fields': ['related_requirements', 'related_cips', 'blocked_by', 'superseded_by', 'tags'],
+        'optional_fields': [
+            'related_requirements', 'related_cips', 'blocked_by', 'superseded_by', 'tags',
+            'github_issues', 'github_issue', 'github_prs', 'github_discussions',  # CIP-001A
+        ],
         'allowed_status': ['Proposed', 'Accepted', 'In Progress', 'Implemented', 'Closed', 'Rejected', 'Deferred'],
         'links_to': ['related_requirements'],  # Bottom-up: CIPs → requirements
         'should_not_have': ['related_backlog'],  # Violates bottom-up
@@ -287,7 +422,10 @@ COMPONENT_SPECS = {
         'id_format': 'YYYY-MM-DD_short-name',
         'required_fields': ['id', 'title', 'status', 'priority', 'created', 'last_updated', 'category', 'related_cips', 'owner'],
         # Exception path (Option B): allow backlog → requirement only when explicitly justified.
-        'optional_fields': ['dependencies', 'tags', 'related_requirements', 'no_cip_reason'],
+        'optional_fields': [
+            'dependencies', 'tags', 'related_requirements', 'no_cip_reason',
+            'github_issues', 'github_issue', 'github_prs', 'github_discussions',  # CIP-001A
+        ],
         'allowed_status': ['Proposed', 'Ready', 'In Progress', 'Completed', 'Abandoned'],
         'allowed_priority': ['High', 'Medium', 'Low'],
         'links_to': ['related_cips'],  # Bottom-up: backlog → CIPs
@@ -359,9 +497,14 @@ def write_frontmatter(file_path, metadata, dry_run=False):
         # Update metadata
         post.metadata = metadata
         
-        # Write back
-        with open(file_path, 'wb') as f:
-            frontmatter.dump(post, f)
+        # python-frontmatter <1.2 dumps bytes; 1.3+ dumps str. Support both.
+        serialized = frontmatter.dumps(post)
+        if isinstance(serialized, bytes):
+            with open(file_path, 'wb') as f:
+                f.write(serialized)
+        else:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(serialized)
         
         return True
     
@@ -716,6 +859,10 @@ def validate_yaml_frontmatter(component_type, file_path, result, auto_fix=False,
                 f"Violates bottom-up pattern: Has '{field}' field. {component_type}s should only link upward",
                 file_path
             )
+
+    # CIP-001A: optional GitHub refs — warn on bad values, never require or hard-fail
+    if component_type in ('cip', 'backlog'):
+        validate_github_refs(frontmatter, file_path, result)
     
     return frontmatter
 

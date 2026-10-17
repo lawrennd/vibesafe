@@ -57,4 +57,10 @@ myst_enable_extensions = [
     'smartquotes',
     'substitution',
     'tasklist',
+]
+
+# Docs intentionally link to repo artifacts (cip/, requirements/, tenets/) that are
+# outside docs/source and are not Sphinx documents. Treat those as ordinary links.
+suppress_warnings = [
+    'myst.xref_missing',
 ] 

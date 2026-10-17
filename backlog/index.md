@@ -68,6 +68,14 @@ This file provides an overview of all current backlog items organized by categor
 
 ### Ready
 
+- [CIP-001A Phase 3: Soft next-steps and optional GitHub repo glance](features/2026-10-17_cip001A-phase3-next-steps-glance.md)
+
+- [CIP-001A Phase 4: Dogfood GitHub links on VibeSafe artifacts](features/2026-10-17_cip001A-phase4-dogfood.md)
+
+- [CIP-001A Phase 2: whats-next Layer 1 GitHub enrichment and --no-github](features/2026-10-17_cip001A-phase2-whats-next-layer1.md)
+
+- [CIP-001A Phase 1: Templates and agent prompts for GitHub links](features/2026-10-17_cip001A-phase1-templates-prompts.md)
+
 - [Implement Requirements-CIP Integration](features/2025-05-16_requirements-cip-integration.md)
 
 - [Implement GitHub Issue Integration](features/2025-05-05_github-integration.md)
@@ -116,15 +124,15 @@ This file provides an overview of all current backlog items organized by categor
 
 ## Recently Completed Tasks
 
-- [CIP-0013 Phase 1: Create Compression Checklist Template](features/2026-01-08_cip0013-phase1-compression-checklist.md)
+- [CIP-001A Phase 0: GitHub frontmatter normalization and validator support](features/2026-10-17_cip001A-phase0-normalization.md)
 
-- [CIP-0013 Phase 4: Integrate Compression into VibeSafe Workflow](features/2026-01-08_cip0013-phase4-workflow-integration.md)
+- [CIP-0019: Document CIP-backlog coverage check in validation docs](documentation/2026-06-13_cip0019-docs.md)
 
-- [CIP-0013 Phase 0: Add Compression Metadata to CIP Format](features/2026-01-08_cip0013-phase0-compression-metadata.md)
+- [CIP-0017: Extend main() with get_local_sections() before/after hook](features/2026-05-14_cip0017-local-sections-hook.md)
 
-- [CIP-0013 Phase 3: Establish Documentation Structure for Compression](features/2026-01-08_cip0013-phase3-documentation-structure.md)
+- [CIP-0019: Sync validate_vibesafe_structure.py template → runtime](features/2026-06-13_cip0019-sync-runtime.md)
 
-- [CIP-0013 Phase 2: Integrate Compression Prompts with whats-next](features/2026-01-08_cip0013-phase2-whats-next-integration.md)
+- [CIP-0017: Update docs/whats_next_script.md with hook documentation](features/2026-05-14_cip0017-docs.md)
 
 
 ## Recently Abandoned Tasks

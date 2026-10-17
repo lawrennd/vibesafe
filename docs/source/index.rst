@@ -16,6 +16,8 @@ VibeSafe is a project management framework that supports consistent development 
    yaml_frontmatter_examples
    yaml_frontmatter_schema
    patterns/README
+   patterns/goal-decomposition
+   patterns/stakeholder-identification
 
 Indices and tables
 ==================
