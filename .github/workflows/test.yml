@@ -1,4 +1,4 @@
-name: Test Coverage
+name: Poetry Coverage
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-coverage:
+  poetry-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,10 +24,13 @@ jobs:
         run: poetry install
       - name: Run tests with coverage
         run: |
-          # VibeSafe dogfoods: canonical tooling lives under templates/
-          poetry run pytest --cov=templates --cov-report=xml
+          # Canonical tooling lives under templates/
+          poetry run pytest --cov=templates --cov-report=xml --cov-report=term
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
-          fail_ci_if_error: false 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: poetry
+          name: poetry-coverage
+          fail_ci_if_error: false

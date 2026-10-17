@@ -7,9 +7,15 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Repo default GITHUB_TOKEN is read-only; elevate for gh-pages deploy on main.
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -31,8 +37,8 @@ jobs:
         run: |
           poetry run sphinx-build -b html docs/source docs/_build/html
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-        if: github.ref == 'refs/heads/main' 
+        if: github.ref == 'refs/heads/main'

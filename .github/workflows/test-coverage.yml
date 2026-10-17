@@ -67,5 +67,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: lawrennd/vibesafe
           directory: ./coverage
+          flags: kcov
+          name: test-coverage
           fail_ci_if_error: false
-          verbose: true 
+          verbose: true

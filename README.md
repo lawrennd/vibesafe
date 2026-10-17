@@ -1,8 +1,11 @@
 # VibeSafe
 
-[![Installation Test](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml)
+[![Python Tests](https://github.com/lawrennd/vibesafe/actions/workflows/python-tests.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/python-tests.yml)
 [![Test Coverage](https://github.com/lawrennd/vibesafe/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/test-coverage.yml)
-[![codecov](https://codecov.io/gh/lawrennd/vibesafe/branch/main/graph/badge.svg)](https://codecov.io/gh/lawrennd/vibesafe)
+[![Poetry Coverage](https://github.com/lawrennd/vibesafe/actions/workflows/test.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/test.yml)
+[![Documentation](https://github.com/lawrennd/vibesafe/actions/workflows/docs.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/docs.yml)
+[![Installation Test](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml/badge.svg)](https://github.com/lawrennd/vibesafe/actions/workflows/installation-test.yml)
+[![codecov](https://codecov.io/gh/lawrennd/vibesafe/branch/main/graph/badge.svg)](https://app.codecov.io/gh/lawrennd/vibesafe)
 
 VibeSafe is a collection of standardized project management practices designed to promote consistent, high-quality development across projects.
 
