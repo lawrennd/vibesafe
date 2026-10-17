@@ -41,6 +41,9 @@ from scripts.validate_vibesafe_structure import (  # pyright: ignore[reportMissi
     check_governance_drift,
     check_cip_backlog_coverage,
     fix_reverse_links,
+    normalize_github_id_list,
+    normalize_github_refs,
+    validate_github_refs,
     ValidationResult,
     COMPONENT_SPECS,
 )
@@ -1575,6 +1578,102 @@ related_cips: [{cips_yaml}]
                 with self.assertRaises(SystemExit) as ctx:
                     v.main()
             self.assertEqual(ctx.exception.code, 1)
+
+
+class TestGitHubRefNormalization(unittest.TestCase):
+    """CIP-001A Phase 0: optional GitHub frontmatter normalization."""
+
+    def test_absent_values(self):
+        for value in (None, '', 'N/A', 'n/a', 'none', [], 'null'):
+            ids, invalid = normalize_github_id_list(value)
+            self.assertIsNone(ids, msg=f"expected absent for {value!r}")
+            self.assertEqual(invalid, [])
+
+    def test_single_int_and_list(self):
+        ids, invalid = normalize_github_id_list(42)
+        self.assertEqual(ids, [42])
+        self.assertEqual(invalid, [])
+
+        ids, invalid = normalize_github_id_list([101, 102])
+        self.assertEqual(ids, [101, 102])
+        self.assertEqual(invalid, [])
+
+    def test_string_and_hash_prefix(self):
+        ids, invalid = normalize_github_id_list("42")
+        self.assertEqual(ids, [42])
+        self.assertEqual(invalid, [])
+
+        ids, invalid = normalize_github_id_list("#7")
+        self.assertEqual(ids, [7])
+        self.assertEqual(invalid, [])
+
+    def test_dedupe_preserves_order(self):
+        ids, invalid = normalize_github_id_list([3, 1, 3, 2])
+        self.assertEqual(ids, [3, 1, 2])
+        self.assertEqual(invalid, [])
+
+    def test_invalid_items_reported(self):
+        ids, invalid = normalize_github_id_list([1, "nope", -5, True, 2])
+        self.assertEqual(ids, [1, 2])
+        self.assertEqual(invalid, ["nope", -5, True])
+
+    def test_normalize_github_refs_merges_legacy(self):
+        refs = normalize_github_refs({
+            'github_issue': 42,
+            'github_issues': [7],
+            'github_prs': [101],
+            'github_discussions': '3',
+        })
+        self.assertEqual(refs['github_issues'], [7, 42])
+        self.assertEqual(refs['github_prs'], [101])
+        self.assertEqual(refs['github_discussions'], [3])
+
+    def test_normalize_github_refs_empty_frontmatter(self):
+        refs = normalize_github_refs({})
+        self.assertEqual(refs, {
+            'github_issues': [],
+            'github_prs': [],
+            'github_discussions': [],
+        })
+        self.assertEqual(normalize_github_refs(None), refs)
+
+    def test_validate_github_refs_warns_not_errors(self):
+        result = ValidationResult()
+        validate_github_refs(
+            {'github_prs': [1, 'bad'], 'github_issue': 'N/A'},
+            '/tmp/task.md',
+            result,
+        )
+        self.assertFalse(result.has_errors())
+        self.assertTrue(result.has_warnings())
+        self.assertTrue(any('github_prs' in msg for msg, _ in result.warnings))
+
+    def test_validate_yaml_frontmatter_accepts_github_fields(self):
+        """Optional GitHub fields on backlog do not cause errors when valid."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "2026-10-17_example.md"
+            path.write_text(
+                "---\n"
+                "id: \"2026-10-17_example\"\n"
+                "title: \"Example\"\n"
+                "status: \"Ready\"\n"
+                "priority: \"Medium\"\n"
+                "created: \"2026-10-17\"\n"
+                "last_updated: \"2026-10-17\"\n"
+                "category: \"features\"\n"
+                "related_cips: [\"001A\"]\n"
+                "owner: \"Neil Lawrence\"\n"
+                "github_issues: [42]\n"
+                "github_prs: [101]\n"
+                "github_discussions: [7]\n"
+                "---\n\n# Task\n",
+                encoding="utf-8",
+            )
+            result = ValidationResult()
+            fm = validate_yaml_frontmatter('backlog', str(path), result)
+            self.assertIsNotNone(fm)
+            self.assertFalse(result.has_errors())
+            self.assertFalse(result.has_warnings())
 
 
 if __name__ == '__main__':
