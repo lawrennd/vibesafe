@@ -534,6 +534,57 @@ def scan_cips() -> Dict[str, Any]:
     
     return cips_info
 
+
+def scan_coes() -> Dict[str, Any]:
+    """Scan all CoE (Correction of Error) documents and collect their status (CIP-0016).
+
+    Returns:
+        Dictionary containing CoE status information, or empty dict if no coe/ directory.
+    """
+    coe_dir = 'coe'
+    if not os.path.isdir(coe_dir):
+        return {}
+
+    coes_info: Dict[str, Any] = {
+        'total': 0,
+        'by_status': {
+            'open': [],
+            'analysed': [],
+            'closed': [],
+        },
+        'without_frontmatter': [],
+    }
+
+    skip = {'README.md', 'coe_template.md'}
+    for coe_file in sorted(glob.glob(f'{coe_dir}/*.md')):
+        if os.path.basename(coe_file) in skip:
+            continue
+
+        coes_info['total'] += 1
+        frontmatter = extract_frontmatter(coe_file)
+        if not frontmatter:
+            coes_info['without_frontmatter'].append({'file': coe_file})
+            continue
+
+        status = frontmatter.get('status', 'Open').lower()
+        entry = {
+            'id': frontmatter.get('id', os.path.basename(coe_file)),
+            'title': frontmatter.get('title', 'Untitled'),
+            'class': frontmatter.get('class', '?'),
+            'owner': frontmatter.get('owner', ''),
+            'file': coe_file,
+        }
+
+        if status == 'open':
+            coes_info['by_status']['open'].append(entry)
+        elif status == 'analysed':
+            coes_info['by_status']['analysed'].append(entry)
+        else:
+            coes_info['by_status']['closed'].append(entry)
+
+    return coes_info
+
+
 def scan_backlog() -> Dict[str, Any]:
     """Scan all backlog items and collect their status."""
     backlog_info = {
@@ -1349,7 +1400,22 @@ def generate_next_steps(git_info: Dict[str, Any], cips_info: Dict[str, Any],
     # Add compression suggestions (REQ-000E Triggers 1-8)
     compression_suggestions = generate_compression_suggestions(cips_info)
     next_steps.extend(compression_suggestions)
-    
+
+    # CoE suggestions (CIP-0016): flag open/analysed CoEs as high-priority next steps
+    coes_info = scan_coes()
+    if coes_info:
+        for coe in coes_info['by_status']['open']:
+            next_steps.insert(0,
+                f"{Colors.RED}Open CoE (Class {coe['class']}):{Colors.ENDC} "
+                f"{coe['title']} — create follow-up outputs and move to Analysed\n"
+                f"      → {coe['file']}"
+            )
+        for coe in coes_info['by_status']['analysed']:
+            next_steps.append(
+                f"Close CoE once follow-ups are implemented: {coe['title']}\n"
+                f"      → {coe['file']}"
+            )
+
     # Add documentation specification prompts (REQ-000F Triggers 1, 5, 6)
     doc_spec_prompts = generate_documentation_spec_prompts(cips_info)
     next_steps.extend(doc_spec_prompts)
@@ -1704,6 +1770,26 @@ def main():
                 for cip in cips_info['without_frontmatter']:
                     print(f"    - {cip['id']}: {cip.get('title', 'Untitled')}")
             
+            print("")
+
+        # CoE section (CIP-0016): shown alongside CIPs when coe/ directory exists
+        coes_info = scan_coes()
+        if coes_info and not args.quiet:
+            open_coes = coes_info['by_status']['open']
+            analysed_coes = coes_info['by_status']['analysed']
+            closed_coes = coes_info['by_status']['closed']
+            print(f"{Colors.BOLD}CoEs (Correction of Error):{Colors.ENDC}")
+            print(f"  Total: {coes_info['total']}")
+            if open_coes:
+                print(f"  {Colors.RED}Open:{Colors.ENDC} {len(open_coes)}")
+                for coe in open_coes:
+                    print(f"    - [Class {coe['class']}] {coe['title']} ({coe['id']})")
+            if analysed_coes:
+                print(f"  {Colors.YELLOW}Analysed:{Colors.ENDC} {len(analysed_coes)}")
+                for coe in analysed_coes:
+                    print(f"    - [Class {coe['class']}] {coe['title']} ({coe['id']})")
+            if closed_coes:
+                print(f"  Closed: {len(closed_coes)}")
             print("")
     
     # Get backlog info if not cip-only

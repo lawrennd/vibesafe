@@ -49,6 +49,7 @@ from scripts.whats_next import (  # pyright: ignore[reportMissingImports]
     get_compression_target,
     generate_documentation_spec_prompts,
     scan_cips,
+    scan_coes,
     scan_backlog,
     _load_local_module,
     _render_local_sections,
@@ -2481,6 +2482,115 @@ class TestLocalHooks(unittest.TestCase):
         _render_local_sections(mod, {}, "before")
         self.assertEqual(getattr(_builtins, "_test_pos", None), "before")
         shutil.rmtree(td)
+
+
+class TestScanCoes(unittest.TestCase):
+    """Tests for scan_coes() — CoE directory scanning (CIP-0016)."""
+
+    def _write(self, path: str, content: str) -> None:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(content)
+
+    def _coe(self, td: str, name: str, status: str, cls: int = 0) -> str:
+        content = f"""---
+id: "{name}"
+title: "Test CoE {name}"
+class: {cls}
+owner: "Test Owner"
+status: "{status}"
+created: "2026-07-16"
+last_updated: "2026-07-16"
+incident_date: "2026-07-16"
+spawned_cips: []
+spawned_backlog: []
+spawned_requirements: []
+---
+# CoE: Test
+"""
+        path = os.path.join(td, "coe", f"{name}.md")
+        self._write(path, content)
+        return path
+
+    def test_returns_empty_when_no_coe_dir(self):
+        td = tempfile.mkdtemp()
+        try:
+            orig = os.getcwd()
+            os.chdir(td)
+            result = scan_coes()
+            self.assertEqual(result, {})
+        finally:
+            os.chdir(orig)
+            shutil.rmtree(td)
+
+    def test_skips_readme_and_template(self):
+        td = tempfile.mkdtemp()
+        try:
+            orig = os.getcwd()
+            os.chdir(td)
+            os.makedirs(os.path.join(td, "coe"))
+            self._write(os.path.join(td, "coe", "README.md"), "# readme")
+            self._write(os.path.join(td, "coe", "coe_template.md"), "# template")
+            result = scan_coes()
+            self.assertEqual(result["total"], 0)
+        finally:
+            os.chdir(orig)
+            shutil.rmtree(td)
+
+    def test_open_coe_appears_in_open(self):
+        td = tempfile.mkdtemp()
+        try:
+            orig = os.getcwd()
+            os.chdir(td)
+            self._coe(td, "2026-07-16_test-incident", "Open", cls=1)
+            result = scan_coes()
+            self.assertEqual(result["total"], 1)
+            self.assertEqual(len(result["by_status"]["open"]), 1)
+            self.assertEqual(result["by_status"]["open"][0]["class"], 1)
+        finally:
+            os.chdir(orig)
+            shutil.rmtree(td)
+
+    def test_analysed_coe_appears_in_analysed(self):
+        td = tempfile.mkdtemp()
+        try:
+            orig = os.getcwd()
+            os.chdir(td)
+            self._coe(td, "2026-07-16_analysed", "Analysed")
+            result = scan_coes()
+            self.assertEqual(len(result["by_status"]["analysed"]), 1)
+            self.assertEqual(len(result["by_status"]["open"]), 0)
+        finally:
+            os.chdir(orig)
+            shutil.rmtree(td)
+
+    def test_closed_coe_appears_in_closed(self):
+        td = tempfile.mkdtemp()
+        try:
+            orig = os.getcwd()
+            os.chdir(td)
+            self._coe(td, "2026-07-16_closed", "Closed")
+            result = scan_coes()
+            self.assertEqual(len(result["by_status"]["closed"]), 1)
+            self.assertEqual(len(result["by_status"]["open"]), 0)
+        finally:
+            os.chdir(orig)
+            shutil.rmtree(td)
+
+    def test_no_frontmatter_tracked(self):
+        td = tempfile.mkdtemp()
+        try:
+            orig = os.getcwd()
+            os.chdir(td)
+            path = os.path.join(td, "coe", "2026-07-16_bare.md")
+            self._write(path, "# No frontmatter here\n")
+            result = scan_coes()
+            self.assertEqual(result["total"], 1)
+            self.assertEqual(len(result["without_frontmatter"]), 1)
+            self.assertEqual(len(result["by_status"]["open"]), 0)
+        finally:
+            os.chdir(orig)
+            shutil.rmtree(td)
 
 
 if __name__ == "__main__":
